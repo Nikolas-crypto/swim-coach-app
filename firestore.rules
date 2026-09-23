@@ -16,7 +16,7 @@ service cloud.firestore {
 
     function isValidSeason(data) {
       return data.id is string && data.id.size() <= 128 &&
-             data.name is string && data.name.size() <= 100 &&
+             data.name is string && data.name.size() <= 250 &&
              data.poolLength in ['25m', '50m', '25y'] &&
              data.lanes is list &&
              data.weeks is list;

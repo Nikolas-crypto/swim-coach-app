@@ -1,18 +1,44 @@
-import { doc, onSnapshot, setDoc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType, auth } from '../firebase';
-import { SeasonPlan, DrillLibraryItem } from '../types/swim';
-import { INITIAL_SEASON, INITIAL_DRILLS } from '../data/seedData';
+import { SeasonPlan } from '../types/swim';
+import { INITIAL_SEASON } from '../data/seedData';
+import { normalizeSeason } from '../utils/normalizeSeason';
 
 const ACTIVE_SEASON_DOC_ID = 'active_season';
 
 export type SyncStatus = 'connected' | 'saving' | 'synced' | 'offline' | 'error';
+
+// Unique client identifier for this tab session to distinguish local echoing writes from remote collaborators
+let cachedClientId: string = '';
+export function getClientId(): string {
+  if (!cachedClientId) {
+    cachedClientId = 'client_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 7);
+  }
+  return cachedClientId;
+}
+
+/**
+ * Deep sanitization function for Firestore payloads.
+ * Firestore strictly rejects documents that contain any field with value `undefined`, throwing:
+ * "Function setDoc() called with invalid data. Unsupported field value: undefined"
+ * This converts undefined properties into omissions/null and prevents runtime crashes.
+ */
+export function sanitizeForFirestore<T>(data: T): T {
+  const jsonStr = JSON.stringify(data, (_, value) => {
+    if (typeof value === 'number' && isNaN(value)) {
+      return 0;
+    }
+    return value;
+  });
+  return JSON.parse(jsonStr);
+}
 
 /**
  * Subscribes to real-time season updates across all devices.
  * If no cloud data exists yet, it seeds the initial season plan into Firestore.
  */
 export function subscribeToActiveSeason(
-  onData: (season: SeasonPlan) => void,
+  onData: (season: SeasonPlan, isRemoteUpdate: boolean) => void,
   onStatusChange: (status: SyncStatus, lastSaved?: Date) => void
 ) {
   const seasonDocRef = doc(db, 'seasons', ACTIVE_SEASON_DOC_ID);
@@ -21,8 +47,10 @@ export function subscribeToActiveSeason(
     seasonDocRef,
     async (snapshot) => {
       if (snapshot.exists()) {
-        const cloudSeason = snapshot.data() as SeasonPlan;
-        onData(cloudSeason);
+        const cloudSeason = normalizeSeason(snapshot.data());
+        const myClientId = getClientId();
+        const isRemote = !snapshot.metadata.hasPendingWrites && cloudSeason.lastClientId !== myClientId;
+        onData(cloudSeason, isRemote);
         onStatusChange('synced', new Date());
       } else {
         // Initialize default season in Firestore
@@ -32,35 +60,47 @@ export function subscribeToActiveSeason(
             ...INITIAL_SEASON,
             id: ACTIVE_SEASON_DOC_ID,
           };
-          await setDoc(seasonDocRef, {
+          const payload = sanitizeForFirestore({
             ...initialPayload,
             updatedAt: new Date().toISOString(),
+            lastClientId: getClientId(),
             updatedBy: auth.currentUser?.email || auth.currentUser?.uid || 'coach',
           });
-          onData(initialPayload);
+          await setDoc(seasonDocRef, payload);
+          onData(initialPayload, false);
           onStatusChange('synced', new Date());
         } catch (err) {
-          handleFirestoreError(err, OperationType.WRITE, `seasons/${ACTIVE_SEASON_DOC_ID}`);
+          console.error('Failed to initialize seed season in Firestore:', err);
           onStatusChange('error');
+          try {
+            handleFirestoreError(err, OperationType.WRITE, `seasons/${ACTIVE_SEASON_DOC_ID}`);
+          } catch {
+            // Handled and logged to console
+          }
         }
       }
     },
     (err) => {
       console.warn('Real-time season sync status:', err?.message || err);
       onStatusChange('error');
+      try {
+        handleFirestoreError(err, OperationType.GET, `seasons/${ACTIVE_SEASON_DOC_ID}`);
+      } catch {
+        // Handled
+      }
     }
   );
 
   return unsubscribe;
 }
 
-let pendingSaveTimeout: any = null;
+let pendingSaveTimeout: ReturnType<typeof setTimeout> | null = null;
 let latestPendingSeason: SeasonPlan | null = null;
 
 /**
- * Persists updated season plan to Firestore so all users on any device see the updates in real time.
- * Includes automatic 400ms debouncing to consolidate rapid edits into a single write operation,
- * keeping database write consumption virtually zero and well within Firebase's permanent free tier.
+ * Persists updated season plan to Firestore so all users on any device see updates in real time.
+ * Includes automatic 300ms debouncing to consolidate rapid keystrokes/edits into a clean write operation,
+ * with complete undefined-sanitization to prevent Firestore rejection.
  */
 export async function persistSeasonToCloud(
   season: SeasonPlan,
@@ -75,17 +115,21 @@ export async function persistSeasonToCloud(
     }
 
     pendingSaveTimeout = setTimeout(async () => {
-      if (!latestPendingSeason) return;
+      if (!latestPendingSeason) {
+        resolve();
+        return;
+      }
       const toSave = latestPendingSeason;
       const seasonDocRef = doc(db, 'seasons', ACTIVE_SEASON_DOC_ID);
 
       try {
-        const payload = {
+        const payload = sanitizeForFirestore({
           ...toSave,
           id: ACTIVE_SEASON_DOC_ID,
           updatedAt: new Date().toISOString(),
+          lastClientId: getClientId(),
           updatedBy: auth.currentUser?.email || auth.currentUser?.uid || 'coach',
-        };
+        });
 
         await setDoc(seasonDocRef, payload);
         if (onStatusChange) onStatusChange('synced', new Date());
@@ -93,9 +137,13 @@ export async function persistSeasonToCloud(
       } catch (err) {
         console.error('Failed to save season to Firestore:', err);
         if (onStatusChange) onStatusChange('error');
-        handleFirestoreError(err, OperationType.WRITE, `seasons/${ACTIVE_SEASON_DOC_ID}`);
+        try {
+          handleFirestoreError(err, OperationType.WRITE, `seasons/${ACTIVE_SEASON_DOC_ID}`);
+        } catch {
+          // Handled and logged to console
+        }
         resolve();
       }
-    }, 350);
+    }, 300);
   });
 }

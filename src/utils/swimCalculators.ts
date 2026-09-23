@@ -125,23 +125,23 @@ export function calculateItemDistance(item: WorkoutItem): number {
 }
 
 export function calculateBlockDistance(block: WorkoutBlock): number {
-  const roundDist = block.items.reduce((sum, item) => sum + calculateItemDistance(item), 0);
-  return roundDist * (block.rounds || 1);
+  const roundDist = (block?.items || []).reduce((sum, item) => sum + calculateItemDistance(item), 0);
+  return roundDist * (block?.rounds || 1);
 }
 
 export function calculateSessionDistance(session: WorkoutSession): number {
-  return session.blocks.reduce((sum, block) => sum + calculateBlockDistance(block), 0);
+  return (session?.blocks || []).reduce((sum, block) => sum + calculateBlockDistance(block), 0);
 }
 
 export function calculateSessionEstimatedMinutes(session: WorkoutSession, averageBasePaceSec = 90): number {
   let totalSeconds = 0;
-  for (const block of session.blocks) {
-    const rounds = block.rounds || 1;
-    for (const item of block.items) {
-      const reps = item.reps || 1;
-      const dist = item.distance || 0;
+  for (const block of (session?.blocks || [])) {
+    const rounds = block?.rounds || 1;
+    for (const item of (block?.items || [])) {
+      const reps = item?.reps || 1;
+      const dist = item?.distance || 0;
       let intervalSec = 0;
-      if (item.sendOffMode === 'fixed-interval' && item.fixedInterval) {
+      if (item?.sendOffMode === 'fixed-interval' && item?.fixedInterval) {
         intervalSec = parseTimeToSeconds(item.fixedInterval);
       } else {
         // Average lane send-off approximation
@@ -189,10 +189,13 @@ export function autoPopulateNextWeek(
     theme = `Week ${nextWeekNumber} - Race Speed & Sharpening`;
   }
 
-  const newSessions: WorkoutSession[] = currentWeek.sessions.map((oldSession, sIndex) => {
+  const oldSessions = Array.isArray(currentWeek?.sessions) ? currentWeek.sessions : [];
+  const newSessions: WorkoutSession[] = oldSessions.map((oldSession, sIndex) => {
     // Clone blocks and adjust based on progression
-    const newBlocks: WorkoutBlock[] = oldSession.blocks.map(block => {
-      const clonedItems: WorkoutItem[] = block.items.map(item => {
+    const oldBlocks = Array.isArray(oldSession?.blocks) ? oldSession.blocks : [];
+    const newBlocks: WorkoutBlock[] = oldBlocks.map(block => {
+      const oldItems = Array.isArray(block?.items) ? block.items : [];
+      const clonedItems: WorkoutItem[] = oldItems.map(item => {
         let newReps = item.reps;
         let newDist = item.distance;
         let newDesc = item.description;
@@ -232,6 +235,7 @@ export function autoPopulateNextWeek(
           reps: newReps,
           distance: newDist,
           description: newDesc,
+          equipment: Array.isArray(item.equipment) ? [...item.equipment] : [],
         };
       });
 

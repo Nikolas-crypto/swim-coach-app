@@ -44,20 +44,29 @@ interface WeeklyPlannerProps {
 }
 
 export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
-  weeks,
+  weeks = [],
   currentWeekNumber,
-  lanes,
+  lanes = [],
   scheduleSlots,
-  poolLength,
+  poolLength = '25m',
   onSelectWeek,
   onUpdateWeek,
   onAddNextWeek,
   onOpenSessionInBuilder,
   onOpenSettings,
 }) => {
-  const currentWeek = weeks.find(w => w.weekNumber === currentWeekNumber) || weeks[0];
-  const prevWeek = weeks.find(w => w.weekNumber === currentWeekNumber - 1);
-  const nextWeekExists = weeks.some(w => w.weekNumber === currentWeekNumber + 1);
+  const safeWeeks = Array.isArray(weeks) && weeks.length > 0 ? weeks : [];
+  const currentWeek: WeekCycle = safeWeeks.find(w => w.weekNumber === currentWeekNumber) || safeWeeks[0] || {
+    weekNumber: currentWeekNumber || 1,
+    theme: `Week ${currentWeekNumber || 1}`,
+    phase: 'Build Phase',
+    targetVolumeMeters: 20000,
+    actualVolumeMeters: 0,
+    sessions: [],
+    isConfirmed: false,
+  };
+  const prevWeek = safeWeeks.find(w => w.weekNumber === currentWeekNumber - 1);
+  const nextWeekExists = safeWeeks.some(w => w.weekNumber === currentWeekNumber + 1);
 
   const [isAutoPopulateModalOpen, setIsAutoPopulateModalOpen] = useState(false);
   const [selectedProgressionMode, setSelectedProgressionMode] = useState<ProgressionMode>('overload_volume');
@@ -209,7 +218,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
   };
 
   // Progression delta vs previous week
-  const actualVolume = currentWeek.sessions.reduce((sum, s) => sum + s.totalDistance, 0);
+  const actualVolume = (currentWeek.sessions || []).reduce((sum, s) => sum + (s.totalDistance || 0), 0);
   let volumeDeltaPercent = 0;
   if (prevWeek && prevWeek.actualVolumeMeters > 0) {
     volumeDeltaPercent = Math.round(((actualVolume - prevWeek.actualVolumeMeters) / prevWeek.actualVolumeMeters) * 100);
@@ -254,7 +263,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
 
             <button
               type="button"
-              disabled={!nextWeekExists && currentWeekNumber >= weeks.length}
+              disabled={!nextWeekExists && currentWeekNumber >= (safeWeeks?.length || 0)}
               onClick={() => onSelectWeek(currentWeekNumber + 1)}
               className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white disabled:opacity-30 disabled:pointer-events-none transition"
               title="Next Week"
@@ -411,10 +420,10 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
           <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
             <span className="text-slate-400 font-semibold block text-[11px]">Planned Sessions</span>
             <div className="text-xl font-pace font-bold text-white mt-0.5">
-              {currentWeek.sessions.length} <span className="text-xs text-slate-500 font-sans font-normal">practices</span>
+              {currentWeek.sessions?.length || 0} <span className="text-xs text-slate-500 font-sans font-normal">practices</span>
             </div>
             <span className="text-[10px] text-slate-500">
-              Across {lanes.length} squad lanes
+              Across {lanes?.length || 0} squad lanes
             </span>
           </div>
 
@@ -445,7 +454,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {days.map((day) => {
-            const daySessions = currentWeek.sessions.filter(s => s.dayOfWeek === day);
+            const daySessions = (currentWeek.sessions || []).filter(s => s.dayOfWeek === day);
 
             return (
               <div 
@@ -658,7 +667,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                 • Target Volume: ~{Math.round(actualVolume * (selectedProgressionMode === 'overload_volume' ? 1.08 : selectedProgressionMode === 'deload_recovery' ? 0.78 : 1.02)).toLocaleString()}{poolLength.slice(-1)}
               </div>
               <div className="text-slate-400 text-xs">
-                • Automatically retains squad lanes (Lanes 1 to {lanes.length}) and time schedules.
+                • Automatically retains squad lanes (Lanes 1 to {lanes?.length || 0}) and time schedules.
               </div>
             </div>
 

@@ -51,9 +51,9 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
   };
 
   const handleAddLane = () => {
-    const nextNumber = lanes.length + 1;
+    const nextNumber = (lanes?.length || 0) + 1;
     const colorIndex = (nextNumber - 1) % PRESET_COLORS.length;
-    const lastLane = lanes[lanes.length - 1];
+    const lastLane = lanes && lanes.length > 0 ? lanes[lanes.length - 1] : undefined;
     const newBase = lastLane ? lastLane.basePace100mSeconds + 10 : 90;
 
     const newLane: LaneConfig = {
@@ -67,19 +67,19 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
       notes: `${formatSecondsToTime(newBase)} base CSS pace.`,
     };
 
-    const updated = [...lanes, newLane];
+    const updated = [...(lanes || []), newLane];
     onUpdateLanes(updated);
     setSelectedLaneId(newLane.id);
   };
 
   const handleDeleteLane = (id: string) => {
-    if (lanes.length <= 1) return;
-    const updated = lanes.filter(l => l.id !== id).map((l, idx) => ({
+    if ((lanes?.length || 0) <= 1) return;
+    const updated = (lanes || []).filter(l => l.id !== id).map((l, idx) => ({
       ...l,
       laneNumber: idx + 1,
     }));
     onUpdateLanes(updated);
-    if (selectedLaneId === id) {
+    if (selectedLaneId === id && updated.length > 0) {
       setSelectedLaneId(updated[0].id);
     }
   };
@@ -142,12 +142,12 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
         {/* Lane Float Graphic Banner */}
         <div className="mt-6 pt-4 border-t border-slate-800">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-2 font-semibold">
-            <span>Pool Deck Layout ({poolLength} Course - {lanes.length} Active Lanes)</span>
-            <span>Total Squad Swimmers: {lanes.reduce((acc, l) => acc + l.swimmers.length, 0)}</span>
+            <span>Pool Deck Layout ({poolLength} Course - {lanes?.length || 0} Active Lanes)</span>
+            <span>Total Squad Swimmers: {(lanes || []).reduce((acc, l) => acc + (l?.swimmers?.length || 0), 0)}</span>
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
-            {lanes.map((lane) => {
+            {(lanes || []).map((lane) => {
               const isSelected = lane.id === selectedLaneId;
               return (
                 <button
@@ -179,7 +179,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                   </div>
                   <div className="text-[11px] text-slate-400 flex items-center space-x-1 mt-1">
                     <Users className="w-3 h-3 text-slate-500" />
-                    <span>{lane.swimmers.length} swimmers</span>
+                    <span>{lane?.swimmers?.length || 0} swimmers</span>
                   </div>
                 </button>
               );
@@ -326,7 +326,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-slate-300 font-semibold flex items-center space-x-1.5">
                       <Users className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Swimmer Roster ({selectedLane.swimmers.length} athletes)</span>
+                      <span>Swimmer Roster ({selectedLane?.swimmers?.length || 0} athletes)</span>
                     </label>
                   </div>
 
@@ -350,10 +350,10 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                   </div>
 
                   <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-slate-950/60 rounded-lg border border-slate-800/80">
-                    {selectedLane.swimmers.length === 0 ? (
+                    {(selectedLane?.swimmers?.length || 0) === 0 ? (
                       <span className="text-[11px] text-slate-500 italic p-1">No swimmers assigned yet</span>
                     ) : (
-                      selectedLane.swimmers.map((swimmer, idx) => (
+                      (selectedLane?.swimmers || []).map((swimmer, idx) => (
                         <span
                           key={idx}
                           className="inline-flex items-center space-x-1 bg-slate-800/80 text-slate-200 px-2 py-0.5 rounded text-[11px] border border-slate-700"

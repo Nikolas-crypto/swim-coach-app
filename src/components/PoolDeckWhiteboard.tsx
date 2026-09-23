@@ -235,9 +235,9 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
                         </p>
                       )}
 
-                      {item.equipment.length > 0 && (
+                      {(item.equipment?.length || 0) > 0 && (
                         <div className="flex flex-wrap gap-1">
-                          {item.equipment.map(eq => (
+                          {(item.equipment || []).map(eq => (
                             <span key={eq} className="text-[9px] px-1 py-0.2 rounded bg-slate-900 text-slate-400">
                               {eq}
                             </span>

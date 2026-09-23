@@ -29,6 +29,7 @@ import {
   persistSeasonToCloud, 
   SyncStatus 
 } from './services/seasonSync';
+import { normalizeSeason } from './utils/normalizeSeason';
 import { Waves, Sparkles, RefreshCw, CloudCheck, Radio } from 'lucide-react';
 
 const STORAGE_KEY_SEASON = 'swim_coach_season_v2';
@@ -49,11 +50,11 @@ export default function App() {
   const [season, setSeason] = useState<SeasonPlan>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_SEASON);
-      if (saved) return JSON.parse(saved);
+      if (saved) return normalizeSeason(JSON.parse(saved));
     } catch (e) {
       console.error('Failed to load season from localStorage', e);
     }
-    return INITIAL_SEASON;
+    return normalizeSeason(INITIAL_SEASON);
   });
 
   const [drillLibrary, setDrillLibrary] = useState<DrillLibraryItem[]>(() => {
@@ -69,7 +70,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('planner');
   const [currentWeekNumber, setCurrentWeekNumber] = useState<number>(season.currentWeekNumber || 1);
   const [activeSession, setActiveSession] = useState<WorkoutSession>(() => {
-    return season.weeks[0]?.sessions[0] || INITIAL_SEASON.weeks[0].sessions[0];
+    return season.weeks?.[0]?.sessions?.[0] || INITIAL_SEASON.weeks[0].sessions[0];
   });
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -79,9 +80,6 @@ export default function App() {
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [cloudNotification, setCloudNotification] = useState<string | null>(null);
 
-  // Track if this client made the write to avoid showing self-update notification
-  const isLocalUpdateRef = useRef(false);
-
   // Initialize Firebase Auth & Real-Time Sync
   useEffect(() => {
     testConnection();
@@ -90,9 +88,9 @@ export default function App() {
     const unsubscribeAuth = initAuth(() => {});
 
     const unsubscribeSeason = subscribeToActiveSeason(
-      (cloudSeason) => {
-        if (!isLocalUpdateRef.current) {
-          // Received update from cloud (or another user/device)
+      (cloudSeason, isRemoteUpdate) => {
+        if (isRemoteUpdate) {
+          // Received update from cloud from another user/device
           setSeason(cloudSeason);
           try {
             localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(cloudSeason));
@@ -109,12 +107,16 @@ export default function App() {
             return cloudSeason.weeks[0]?.sessions[0] || prev;
           });
 
-          // Show subtle notification of cloud sync
+          // Show subtle notification of remote sync
           setCloudNotification('Squad updates synchronized from cloud');
           setTimeout(() => setCloudNotification(null), 3500);
         } else {
-          // Reset local update flag
-          isLocalUpdateRef.current = false;
+          // Local write acknowledging or initial server state
+          try {
+            localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(cloudSeason));
+          } catch (e) {
+            // cache update
+          }
         }
       },
       (status, lastSaved) => {
@@ -140,7 +142,6 @@ export default function App() {
 
   // Central function to update season both locally and to Cloud Firestore
   const updateSeasonAndPersist = async (updatedSeason: SeasonPlan) => {
-    isLocalUpdateRef.current = true;
     setSeason(updatedSeason);
     try {
       localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(updatedSeason));
@@ -163,9 +164,11 @@ export default function App() {
 
   // Handlers
   const handleUpdateWeek = (updatedWeek: WeekCycle) => {
-    const updatedWeeks = season.weeks.map(w => 
-      w.weekNumber === updatedWeek.weekNumber ? updatedWeek : w
-    );
+    const weekExists = season.weeks.some(w => w.weekNumber === updatedWeek.weekNumber);
+    const updatedWeeks = weekExists
+      ? season.weeks.map(w => w.weekNumber === updatedWeek.weekNumber ? updatedWeek : w)
+      : [...season.weeks, updatedWeek].sort((a, b) => a.weekNumber - b.weekNumber);
+
     const updatedSeason: SeasonPlan = {
       ...season,
       weeks: updatedWeeks,
@@ -191,31 +194,46 @@ export default function App() {
     updateSeasonAndPersist(updatedSeason);
 
     setCurrentWeekNumber(newWeek.weekNumber);
-    if (newWeek.sessions.length > 0) {
+    if ((newWeek?.sessions?.length || 0) > 0) {
       setActiveSession(newWeek.sessions[0]);
     }
   };
 
   const handleSaveSessionFromBuilder = (updatedSession: WorkoutSession) => {
     const targetWeek = season.weeks.find(w => w.weekNumber === updatedSession.weekNumber);
-    if (!targetWeek) return;
+    let updatedWeeks: WeekCycle[];
 
-    const exists = targetWeek.sessions.some(s => s.id === updatedSession.id);
-    const updatedSessions = exists
-      ? targetWeek.sessions.map(s => s.id === updatedSession.id ? updatedSession : s)
-      : [...targetWeek.sessions, updatedSession];
+    if (!targetWeek) {
+      const targetMacro = SEASON_MACROCYCLE_TARGETS.find(m => m.weekNumber === updatedSession.weekNumber);
+      const newWeek: WeekCycle = {
+        weekNumber: updatedSession.weekNumber,
+        theme: targetMacro?.theme || `Week ${updatedSession.weekNumber}`,
+        phase: targetMacro?.phase || 'Build Phase',
+        targetVolumeMeters: targetMacro?.targetVolumeMeters || 22000,
+        actualVolumeMeters: updatedSession.totalDistance || 0,
+        sessions: [updatedSession],
+        isConfirmed: false,
+      };
+      updatedWeeks = [...season.weeks, newWeek].sort((a, b) => a.weekNumber - b.weekNumber);
+    } else {
+      const exists = targetWeek.sessions.some(s => s.id === updatedSession.id);
+      const updatedSessions = exists
+        ? targetWeek.sessions.map(s => s.id === updatedSession.id ? updatedSession : s)
+        : [...targetWeek.sessions, updatedSession];
 
-    const newTotalVolume = updatedSessions.reduce((sum, s) => sum + (s.totalDistance || 0), 0);
+      const newTotalVolume = updatedSessions.reduce((sum, s) => sum + (s.totalDistance || 0), 0);
 
-    const updatedWeek: WeekCycle = {
-      ...targetWeek,
-      sessions: updatedSessions,
-      actualVolumeMeters: newTotalVolume,
-    };
+      const updatedWeek: WeekCycle = {
+        ...targetWeek,
+        sessions: updatedSessions,
+        actualVolumeMeters: newTotalVolume,
+      };
 
-    const updatedWeeks = season.weeks.map(w => 
-      w.weekNumber === updatedWeek.weekNumber ? updatedWeek : w
-    );
+      updatedWeeks = season.weeks.map(w => 
+        w.weekNumber === updatedWeek.weekNumber ? updatedWeek : w
+      );
+    }
+
     const updatedSeason: SeasonPlan = {
       ...season,
       weeks: updatedWeeks,
@@ -347,9 +365,25 @@ export default function App() {
               setActiveTab('planner');
             }}
             onUpdateWeekVolumeTarget={(weekNum, newTarget) => {
-              const updatedWeeks = season.weeks.map(w =>
-                w.weekNumber === weekNum ? { ...w, targetVolumeMeters: newTarget } : w
-              );
+              const weekExists = season.weeks.some(w => w.weekNumber === weekNum);
+              let updatedWeeks: WeekCycle[];
+              if (weekExists) {
+                updatedWeeks = season.weeks.map(w =>
+                  w.weekNumber === weekNum ? { ...w, targetVolumeMeters: newTarget } : w
+                );
+              } else {
+                const targetMacro = SEASON_MACROCYCLE_TARGETS.find(m => m.weekNumber === weekNum);
+                const newWeekCycle: WeekCycle = {
+                  weekNumber: weekNum,
+                  theme: targetMacro?.theme || `Week ${weekNum}`,
+                  phase: targetMacro?.phase || 'Build Phase',
+                  targetVolumeMeters: newTarget,
+                  actualVolumeMeters: 0,
+                  sessions: [],
+                  isConfirmed: false,
+                };
+                updatedWeeks = [...season.weeks, newWeekCycle].sort((a, b) => a.weekNumber - b.weekNumber);
+              }
               updateSeasonAndPersist({
                 ...season,
                 weeks: updatedWeeks,
@@ -397,8 +431,8 @@ export default function App() {
               <RefreshCw className="w-3 h-3" />
               <span>Reset Defaults</span>
             </button>
-            <span>{season.poolLength} Pool</span>
-            <span>{season.lanes.length} Lanes Configured</span>
+            <span>{season?.poolLength || '25m'} Pool</span>
+            <span>{season?.lanes?.length || 0} Lanes Configured</span>
           </div>
         </div>
       </footer>

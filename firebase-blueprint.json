@@ -15,7 +15,8 @@
         "lanes": { "type": "array" },
         "weeks": { "type": "array" },
         "updatedAt": { "type": "string" },
-        "updatedBy": { "type": "string", "maxLength": 128 }
+        "updatedBy": { "type": "string", "maxLength": 128 },
+        "lastClientId": { "type": "string", "maxLength": 64 }
       },
       "required": ["id", "name", "poolLength", "lanes", "weeks"]
     },

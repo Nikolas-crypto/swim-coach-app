@@ -33,8 +33,8 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
 
   const maxVolume = Math.max(
     30000,
-    ...season.weeks.map(w => w.targetVolumeMeters || 0),
-    ...season.weeks.map(w => w.actualVolumeMeters || 0),
+    ...(season?.weeks || []).map(w => w.targetVolumeMeters || 0),
+    ...(season?.weeks || []).map(w => w.actualVolumeMeters || 0),
     ...SEASON_MACROCYCLE_TARGETS.map(m => m.targetVolumeMeters)
   );
 
@@ -290,7 +290,7 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                           title="Click to edit weekly volume target"
                         >
                           <span className="font-mono text-slate-300 group-hover:text-cyan-300 font-bold">
-                            {(weekData?.targetVolumeMeters ?? target.targetVolumeMeters).toLocaleString()}{season.poolLength.slice(-1)}
+                            {(weekData?.targetVolumeMeters ?? target.targetVolumeMeters).toLocaleString()}{(season?.poolLength || '25m').slice(-1)}
                           </span>
                           <Edit3 className="w-3 h-3 text-slate-500 opacity-0 group-hover:opacity-100 group-hover:text-cyan-400 transition" />
                         </button>
@@ -300,7 +300,7 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                     <td className="py-3 px-3">
                       {actualVol > 0 ? (
                         <span className="font-pace font-bold text-cyan-300">
-                          {actualVol.toLocaleString()}{season.poolLength.slice(-1)}
+                          {actualVol.toLocaleString()}{(season?.poolLength || '25m').slice(-1)}
                         </span>
                       ) : (
                         <span className="text-slate-500 italic">Not yet populated</span>

@@ -100,7 +100,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
   useEffect(() => {
     setCurrentSession(session);
     setSaveStatus('saved');
-  }, [session.id, session.weekNumber, session.name]);
+  }, [session.id, session.weekNumber, session.name, session.totalDistance]);
 
   // New drill form state
   const [newDrillName, setNewDrillName] = useState('');
@@ -141,8 +141,8 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
 
   const handleMoveBlock = (blockIndex: number, direction: 'up' | 'down') => {
     const targetIndex = direction === 'up' ? blockIndex - 1 : blockIndex + 1;
-    if (targetIndex < 0 || targetIndex >= currentSession.blocks.length) return;
-    const newBlocks = [...currentSession.blocks];
+    if (targetIndex < 0 || targetIndex >= (currentSession?.blocks?.length || 0)) return;
+    const newBlocks = [...(currentSession?.blocks || [])];
     const temp = newBlocks[blockIndex];
     newBlocks[blockIndex] = newBlocks[targetIndex];
     newBlocks[targetIndex] = temp;
@@ -219,7 +219,9 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
       description: itemTemplate?.description ?? '',
       equipment: itemTemplate?.equipment ?? [],
       sendOffMode: itemTemplate?.sendOffMode ?? 'lane-scaled',
-      fixedInterval: itemTemplate?.fixedInterval,
+      ...(itemTemplate?.fixedInterval ? { fixedInterval: itemTemplate.fixedInterval } : {}),
+      ...(itemTemplate?.restSeconds ? { restSeconds: itemTemplate.restSeconds } : {}),
+      ...(itemTemplate?.notes ? { notes: itemTemplate.notes } : {}),
     };
 
     handleUpdateSession({
@@ -275,9 +277,9 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
 
   const handleMoveItem = (blockId: string, itemIndex: number, direction: 'up' | 'down') => {
     handleUpdateSession({
-      blocks: currentSession.blocks.map(b => {
+      blocks: (currentSession?.blocks || []).map(b => {
         if (b.id !== blockId) return b;
-        const newItems = [...b.items];
+        const newItems = [...(b.items || [])];
         const targetIndex = direction === 'up' ? itemIndex - 1 : itemIndex + 1;
         if (targetIndex < 0 || targetIndex >= newItems.length) return b;
         const temp = newItems[itemIndex];
@@ -343,11 +345,11 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
     let text = `🏊 ${currentSession.name.toUpperCase()} (${poolLength})\n`;
     text += `Focus: ${currentSession.focus} | Total Volume: ${totalMeters}${poolLength.slice(-1)} | Est. Time: ${estimatedMins} min\n\n`;
 
-    currentSession.blocks.forEach(b => {
+    (currentSession?.blocks || []).forEach(b => {
       text += `--- ${b.title.toUpperCase()} ${b.rounds > 1 ? `(${b.rounds} Rounds)` : ''} ---\n`;
-      b.items.forEach(i => {
+      (b.items || []).forEach(i => {
         text += `• ${i.reps} x ${i.distance}m ${i.stroke} [${i.intensity}]`;
-        if (i.equipment.length > 0) text += ` w/ ${i.equipment.join(', ')}`;
+        if ((i.equipment?.length || 0) > 0) text += ` w/ ${i.equipment.join(', ')}`;
         if (i.description) text += ` - "${i.description}"\n`;
         else text += '\n';
 
@@ -556,12 +558,12 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
 
             {/* Drills List */}
             <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-              {filteredDrills.length === 0 ? (
+              {(filteredDrills?.length || 0) === 0 ? (
                 <div className="text-center py-10 text-xs text-slate-500">
                   No drills match your filter.
                 </div>
               ) : (
-                filteredDrills.map((drill) => (
+                (filteredDrills || []).map((drill) => (
                   <div
                     key={drill.id}
                     draggable
@@ -665,7 +667,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                         </button>
                         <button
                           type="button"
-                          disabled={blockIdx === currentSession.blocks.length - 1}
+                          disabled={blockIdx === (currentSession?.blocks?.length || 0) - 1}
                           onClick={() => handleMoveBlock(blockIdx, 'down')}
                           className="p-1 text-slate-500 hover:text-white disabled:opacity-20 transition"
                           title="Move block down"
@@ -736,12 +738,12 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
 
                   {/* Block Items (Drills / Repetitions) */}
                   <div className="space-y-3">
-                    {block.items.length === 0 ? (
+                    {(block.items?.length || 0) === 0 ? (
                       <div className="border border-dashed border-slate-800 rounded-xl py-6 text-center text-xs text-slate-500">
                         Drag drills from the left library here, or click "Add Rep"
                       </div>
                     ) : (
-                      block.items.map((item, itemIdx) => {
+                      (block.items || []).map((item, itemIdx) => {
                         return (
                           <div
                             key={item.id}
@@ -761,7 +763,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                 </button>
                                 <button
                                   type="button"
-                                  disabled={itemIdx === block.items.length - 1}
+                                  disabled={itemIdx === (block.items?.length || 0) - 1}
                                   onClick={() => handleMoveItem(block.id, itemIdx, 'down')}
                                   className="text-slate-500 hover:text-white disabled:opacity-30"
                                 >
@@ -890,15 +892,16 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                             <div className="flex flex-wrap items-center gap-1">
                               <span className="text-[10px] text-slate-500 mr-1">Gear:</span>
                               {ALL_EQUIPMENT.map(eq => {
-                                const hasEq = item.equipment.includes(eq);
+                                const currentEq = Array.isArray(item.equipment) ? item.equipment : [];
+                                const hasEq = currentEq.includes(eq);
                                 return (
                                   <button
                                     key={eq}
                                     type="button"
                                     onClick={() => {
                                       const updatedEq = hasEq
-                                        ? item.equipment.filter(e => e !== eq)
-                                        : [...item.equipment, eq];
+                                        ? currentEq.filter(e => e !== eq)
+                                        : [...currentEq, eq];
                                       handleUpdateItem(block.id, item.id, { equipment: updatedEq });
                                     }}
                                     className={`px-1.5 py-0.5 rounded text-[10px] transition ${

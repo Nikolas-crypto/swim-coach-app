@@ -44,7 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   lastSyncedAt,
   onLockApp,
 }) => {
-  const totalSwimmers = season.lanes.reduce((sum, l) => sum + l.swimmers.length, 0);
+  const totalSwimmers = (season?.lanes || []).reduce((sum, l) => sum + (l?.swimmers?.length || 0), 0);
 
   const tabs: { id: ActiveTab; label: string; icon: React.ReactNode; badge?: string }[] = [
     {
@@ -67,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       id: 'lanes',
       label: 'Lane Rosters & Paces',
       icon: <Gauge className="w-4 h-4" />,
-      badge: `${season.lanes.length} Lanes`,
+      badge: `${season?.lanes?.length || 0} Lanes`,
     },
     {
       id: 'whiteboard',

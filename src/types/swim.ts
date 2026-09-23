@@ -118,4 +118,7 @@ export interface SeasonPlan {
   weeklySchedule: SessionScheduleSlot[];
   lanes: LaneConfig[];
   weeks: WeekCycle[];
+  updatedAt?: string;
+  updatedBy?: string;
+  lastClientId?: string;
 }
