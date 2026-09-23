@@ -18,6 +18,7 @@ import { SeasonProgression } from './components/SeasonProgression';
 import { LaneManager } from './components/LaneManager';
 import { PoolDeckWhiteboard } from './components/PoolDeckWhiteboard';
 import { SeasonSettingsModal } from './components/SeasonSettingsModal';
+import { ShareModal } from './components/ShareModal';
 import { Waves, Sparkles, RefreshCw } from 'lucide-react';
 
 const STORAGE_KEY_SEASON = 'swim_coach_season_v2';
@@ -51,6 +52,7 @@ export default function App() {
     return season.weeks[0]?.sessions[0] || INITIAL_SEASON.weeks[0].sessions[0];
   });
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Sync to localStorage
   useEffect(() => {
@@ -165,6 +167,7 @@ export default function App() {
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
+        onOpenShare={() => setIsShareModalOpen(true)}
         poolLength={season.poolLength}
         onChangePoolLength={handleChangePoolLength}
       />
@@ -258,6 +261,19 @@ export default function App() {
         isOpen={isSettingsModalOpen}
         onClose={() => setIsSettingsModalOpen(false)}
         onSave={(updated) => setSeason(updated)}
+      />
+
+      {/* Share & Web Access Modal */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        season={season}
+        onImportSeason={(imported) => {
+          setSeason(imported);
+          if (imported.weeks?.[0]?.sessions?.[0]) {
+            setActiveSession(imported.weeks[0].sessions[0]);
+          }
+        }}
       />
     </div>
   );

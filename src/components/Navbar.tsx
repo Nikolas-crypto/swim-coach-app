@@ -9,7 +9,8 @@ import {
   Clipboard, 
   Settings, 
   Users,
-  Target
+  Target,
+  Share2
 } from 'lucide-react';
 
 export type ActiveTab = 'planner' | 'builder' | 'progression' | 'lanes' | 'whiteboard';
@@ -19,6 +20,7 @@ interface NavbarProps {
   activeTab: ActiveTab;
   onSelectTab: (tab: ActiveTab) => void;
   onOpenSettings: () => void;
+  onOpenShare: () => void;
   poolLength: '25m' | '50m' | '25y';
   onChangePoolLength: (length: '25m' | '50m' | '25y') => void;
 }
@@ -28,6 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   onSelectTab,
   onOpenSettings,
+  onOpenShare,
   poolLength,
   onChangePoolLength,
 }) => {
@@ -138,6 +141,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               ))}
             </div>
+
+            {/* Share / Public Web Access Button */}
+            <button
+              onClick={onOpenShare}
+              className="px-3 py-1.5 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition flex items-center space-x-1.5 cursor-pointer shadow-sm shadow-cyan-950"
+              title="Share app web link or export squad plans"
+            >
+              <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="hidden sm:inline">Share</span>
+            </button>
 
             {/* Season Settings Modal Button */}
             <button
