@@ -1,5 +1,6 @@
 import React from 'react';
 import { SeasonPlan } from '../types/swim';
+import { SyncStatus } from '../services/seasonSync';
 import { 
   Waves, 
   Calendar, 
@@ -10,7 +11,10 @@ import {
   Settings, 
   Users,
   Target,
-  Share2
+  Share2,
+  RefreshCw,
+  AlertCircle,
+  Lock
 } from 'lucide-react';
 
 export type ActiveTab = 'planner' | 'builder' | 'progression' | 'lanes' | 'whiteboard';
@@ -23,6 +27,9 @@ interface NavbarProps {
   onOpenShare: () => void;
   poolLength: '25m' | '50m' | '25y';
   onChangePoolLength: (length: '25m' | '50m' | '25y') => void;
+  syncStatus: SyncStatus;
+  lastSyncedAt: Date | null;
+  onLockApp?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -33,6 +40,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenShare,
   poolLength,
   onChangePoolLength,
+  syncStatus,
+  lastSyncedAt,
+  onLockApp,
 }) => {
   const totalSwimmers = season.lanes.reduce((sum, l) => sum + l.swimmers.length, 0);
 
@@ -122,8 +132,41 @@ export const Navbar: React.FC<NavbarProps> = ({
             })}
           </nav>
 
-          {/* Right Controls: Pool Length Toggle & Settings */}
-          <div className="flex items-center space-x-3">
+          {/* Right Controls: Cloud Sync, Pool Course Switcher & Settings */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Real-time Cloud Sync Indicator */}
+            <div 
+              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold shadow-inner"
+              title={
+                syncStatus === 'synced'
+                  ? `Real-time cloud database connected. Last synced at ${lastSyncedAt ? lastSyncedAt.toLocaleTimeString() : 'just now'}. Changes sync across all devices.`
+                  : syncStatus === 'saving'
+                  ? 'Saving changes to cloud Firestore...'
+                  : syncStatus === 'error'
+                  ? 'Cloud sync issue. Edits cached locally.'
+                  : 'Connecting to Cloud Firestore...'
+              }
+            >
+              {syncStatus === 'synced' && (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[11px] text-emerald-400 hidden lg:inline font-bold">Cloud Synced</span>
+                </>
+              )}
+              {syncStatus === 'saving' && (
+                <>
+                  <RefreshCw className="w-3 h-3 text-amber-400 animate-spin" />
+                  <span className="text-[11px] text-amber-400 hidden lg:inline font-bold">Syncing...</span>
+                </>
+              )}
+              {syncStatus === 'error' && (
+                <>
+                  <AlertCircle className="w-3 h-3 text-rose-400" />
+                  <span className="text-[11px] text-rose-400 hidden lg:inline font-bold">Offline</span>
+                </>
+              )}
+            </div>
+
             {/* Pool Course Switcher */}
             <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5 text-xs">
               {(['25m', '50m', '25y'] as const).map((len) => (
@@ -160,6 +203,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Settings className="w-4 h-4" />
             </button>
+
+            {/* Lock Dashboard / Logout */}
+            {onLockApp && (
+              <button
+                onClick={onLockApp}
+                className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-rose-400 border border-slate-800 transition cursor-pointer"
+                title="Lock Squad Dashboard"
+              >
+                <Lock className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 

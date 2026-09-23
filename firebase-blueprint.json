@@ -1,0 +1,49 @@
+{
+  "entities": {
+    "Season": {
+      "title": "Season",
+      "description": "Swim squad season plan with microcycles, workouts, and lane configurations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "goal": { "type": "string", "maxLength": 200 },
+        "poolLength": { "type": "string", "enum": ["25m", "50m", "25y"] },
+        "totalWeeks": { "type": "number" },
+        "currentWeekNumber": { "type": "number" },
+        "weeklySchedule": { "type": "array" },
+        "lanes": { "type": "array" },
+        "weeks": { "type": "array" },
+        "updatedAt": { "type": "string" },
+        "updatedBy": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["id", "name", "poolLength", "lanes", "weeks"]
+    },
+    "Drill": {
+      "title": "Drill",
+      "description": "Shared swimming drill in library",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "category": { "type": "string", "maxLength": 50 },
+        "focus": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 500 },
+        "stroke": { "type": "string", "maxLength": 50 },
+        "equipment": { "type": "array" },
+        "suggestedDistance": { "type": "number" }
+      },
+      "required": ["id", "name", "category", "focus"]
+    }
+  },
+  "firestore": {
+    "/seasons/{seasonId}": {
+      "schema": { "$ref": "#/entities/Season" },
+      "description": "Squad season training plans and workouts"
+    },
+    "/drills/{drillId}": {
+      "schema": { "$ref": "#/entities/Drill" },
+      "description": "Custom drills added to team library"
+    }
+  }
+}

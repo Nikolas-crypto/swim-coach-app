@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   SeasonPlan, 
   WorkoutSession, 
@@ -19,13 +19,33 @@ import { LaneManager } from './components/LaneManager';
 import { PoolDeckWhiteboard } from './components/PoolDeckWhiteboard';
 import { SeasonSettingsModal } from './components/SeasonSettingsModal';
 import { ShareModal } from './components/ShareModal';
-import { Waves, Sparkles, RefreshCw } from 'lucide-react';
+import { SquadLoginGate } from './components/SquadLoginGate';
+import { 
+  initAuth, 
+  testConnection 
+} from './firebase';
+import { 
+  subscribeToActiveSeason, 
+  persistSeasonToCloud, 
+  SyncStatus 
+} from './services/seasonSync';
+import { Waves, Sparkles, RefreshCw, CloudCheck, Radio } from 'lucide-react';
 
 const STORAGE_KEY_SEASON = 'swim_coach_season_v2';
 const STORAGE_KEY_DRILLS = 'swim_coach_drills_v2';
+const STORAGE_KEY_AUTH = 'swim_coach_auth_v1';
 
 export default function App() {
-  // Load state from localStorage or seed
+  // Passcode gate state
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY_AUTH) === 'cambosquad_granted';
+    } catch {
+      return false;
+    }
+  });
+
+  // Load initial state from localStorage or seed
   const [season, setSeason] = useState<SeasonPlan>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_SEASON);
@@ -54,15 +74,62 @@ export default function App() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-  // Sync to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(season));
-    } catch (e) {
-      console.error('Storage save error', e);
-    }
-  }, [season]);
+  // Cloud sync states
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('connected');
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+  const [cloudNotification, setCloudNotification] = useState<string | null>(null);
 
+  // Track if this client made the write to avoid showing self-update notification
+  const isLocalUpdateRef = useRef(false);
+
+  // Initialize Firebase Auth & Real-Time Sync
+  useEffect(() => {
+    testConnection();
+
+    // Automatically establish anonymous auth so any device can view and edit immediately
+    const unsubscribeAuth = initAuth(() => {});
+
+    const unsubscribeSeason = subscribeToActiveSeason(
+      (cloudSeason) => {
+        if (!isLocalUpdateRef.current) {
+          // Received update from cloud (or another user/device)
+          setSeason(cloudSeason);
+          try {
+            localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(cloudSeason));
+          } catch (e) {
+            console.error('Storage cache error', e);
+          }
+
+          // Keep activeSession fresh if it exists in updated season
+          setActiveSession(prev => {
+            for (const week of cloudSeason.weeks) {
+              const matched = week.sessions.find(s => s.id === prev.id);
+              if (matched) return matched;
+            }
+            return cloudSeason.weeks[0]?.sessions[0] || prev;
+          });
+
+          // Show subtle notification of cloud sync
+          setCloudNotification('Squad updates synchronized from cloud');
+          setTimeout(() => setCloudNotification(null), 3500);
+        } else {
+          // Reset local update flag
+          isLocalUpdateRef.current = false;
+        }
+      },
+      (status, lastSaved) => {
+        setSyncStatus(status);
+        if (lastSaved) setLastSyncedAt(lastSaved);
+      }
+    );
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeSeason();
+    };
+  }, []);
+
+  // Sync drill library to localStorage
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_DRILLS, JSON.stringify(drillLibrary));
@@ -70,6 +137,26 @@ export default function App() {
       console.error('Storage save error', e);
     }
   }, [drillLibrary]);
+
+  // Central function to update season both locally and to Cloud Firestore
+  const updateSeasonAndPersist = async (updatedSeason: SeasonPlan) => {
+    isLocalUpdateRef.current = true;
+    setSeason(updatedSeason);
+    try {
+      localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(updatedSeason));
+    } catch (e) {
+      console.error('LocalStorage write error', e);
+    }
+
+    try {
+      await persistSeasonToCloud(updatedSeason, (status, savedTime) => {
+        setSyncStatus(status);
+        if (savedTime) setLastSyncedAt(savedTime);
+      });
+    } catch (err) {
+      console.error('Could not save to cloud:', err);
+    }
+  };
 
   // Current active week
   const activeWeek = season.weeks.find(w => w.weekNumber === currentWeekNumber) || season.weeks[0];
@@ -79,14 +166,14 @@ export default function App() {
     const updatedWeeks = season.weeks.map(w => 
       w.weekNumber === updatedWeek.weekNumber ? updatedWeek : w
     );
-    setSeason({
+    const updatedSeason: SeasonPlan = {
       ...season,
       weeks: updatedWeeks,
-    });
+    };
+    updateSeasonAndPersist(updatedSeason);
   };
 
   const handleAddNextWeek = (newWeek: WeekCycle) => {
-    // If week already exists, replace it, otherwise append and sort
     const existingIdx = season.weeks.findIndex(w => w.weekNumber === newWeek.weekNumber);
     let updatedWeeks: WeekCycle[];
     if (existingIdx >= 0) {
@@ -96,11 +183,13 @@ export default function App() {
       updatedWeeks = [...season.weeks, newWeek].sort((a, b) => a.weekNumber - b.weekNumber);
     }
 
-    setSeason({
+    const updatedSeason: SeasonPlan = {
       ...season,
       weeks: updatedWeeks,
       currentWeekNumber: newWeek.weekNumber,
-    });
+    };
+    updateSeasonAndPersist(updatedSeason);
+
     setCurrentWeekNumber(newWeek.weekNumber);
     if (newWeek.sessions.length > 0) {
       setActiveSession(newWeek.sessions[0]);
@@ -108,7 +197,6 @@ export default function App() {
   };
 
   const handleSaveSessionFromBuilder = (updatedSession: WorkoutSession) => {
-    // Save into the corresponding week
     const targetWeek = season.weeks.find(w => w.weekNumber === updatedSession.weekNumber);
     if (!targetWeek) return;
 
@@ -123,7 +211,15 @@ export default function App() {
       actualVolumeMeters: newTotalVolume,
     };
 
-    handleUpdateWeek(updatedWeek);
+    const updatedWeeks = season.weeks.map(w => 
+      w.weekNumber === updatedWeek.weekNumber ? updatedWeek : w
+    );
+    const updatedSeason: SeasonPlan = {
+      ...season,
+      weeks: updatedWeeks,
+    };
+
+    updateSeasonAndPersist(updatedSeason);
     setActiveSession(updatedSession);
   };
 
@@ -133,10 +229,11 @@ export default function App() {
   };
 
   const handleUpdateLanes = (updatedLanes: LaneConfig[]) => {
-    setSeason({
+    const updatedSeason: SeasonPlan = {
       ...season,
       lanes: updatedLanes,
-    });
+    };
+    updateSeasonAndPersist(updatedSeason);
   };
 
   const handleAddCustomDrill = (newDrill: DrillLibraryItem) => {
@@ -144,20 +241,48 @@ export default function App() {
   };
 
   const handleChangePoolLength = (length: '25m' | '50m' | '25y') => {
-    setSeason(prev => ({
-      ...prev,
+    const updatedSeason: SeasonPlan = {
+      ...season,
       poolLength: length,
-    }));
+    };
+    updateSeasonAndPersist(updatedSeason);
   };
 
-  const handleResetToDefaults = () => {
-    if (window.confirm('Reset squad data to initial championship template?')) {
-      setSeason(INITIAL_SEASON);
+  const handleResetToDefaults = async () => {
+    if (window.confirm('Reset squad data to initial championship template across all devices?')) {
+      const resetPlan = {
+        ...INITIAL_SEASON,
+        id: 'active_season',
+      };
+      await updateSeasonAndPersist(resetPlan);
       setDrillLibrary(INITIAL_DRILLS);
       setCurrentWeekNumber(1);
       setActiveSession(INITIAL_SEASON.weeks[0].sessions[0]);
     }
   };
+
+  const handleUnlock = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY_AUTH, 'cambosquad_granted');
+    } catch (e) {
+      console.error('Storage error', e);
+    }
+    setIsAuthenticated(true);
+  };
+
+  const handleLock = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY_AUTH);
+    } catch (e) {
+      console.error('Storage error', e);
+    }
+    setIsAuthenticated(false);
+  };
+
+  // If passcode not entered, show passcode gate screen
+  if (!isAuthenticated) {
+    return <SquadLoginGate onUnlock={handleUnlock} />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col pool-tiles-deep selection:bg-cyan-500 selection:text-white">
@@ -170,7 +295,18 @@ export default function App() {
         onOpenShare={() => setIsShareModalOpen(true)}
         poolLength={season.poolLength}
         onChangePoolLength={handleChangePoolLength}
+        syncStatus={syncStatus}
+        lastSyncedAt={lastSyncedAt}
+        onLockApp={handleLock}
       />
+
+      {/* Real-time Cloud Update Toast Indicator */}
+      {cloudNotification && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 border border-cyan-500/40 text-cyan-300 px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-2 text-xs font-bold animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
+          <span>{cloudNotification}</span>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -260,7 +396,7 @@ export default function App() {
         season={season}
         isOpen={isSettingsModalOpen}
         onClose={() => setIsSettingsModalOpen(false)}
-        onSave={(updated) => setSeason(updated)}
+        onSave={(updated) => updateSeasonAndPersist(updated)}
       />
 
       {/* Share & Web Access Modal */}
@@ -269,7 +405,7 @@ export default function App() {
         onClose={() => setIsShareModalOpen(false)}
         season={season}
         onImportSeason={(imported) => {
-          setSeason(imported);
+          updateSeasonAndPersist(imported);
           if (imported.weeks?.[0]?.sessions?.[0]) {
             setActiveSession(imported.weeks[0].sessions[0]);
           }
