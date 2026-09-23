@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   WeekCycle, 
   WorkoutSession, 
@@ -61,6 +61,26 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
 
   const [isAutoPopulateModalOpen, setIsAutoPopulateModalOpen] = useState(false);
   const [selectedProgressionMode, setSelectedProgressionMode] = useState<ProgressionMode>('overload_volume');
+
+  // Weekly volume target editing
+  const [isEditingTargetVolume, setIsEditingTargetVolume] = useState(false);
+  const [targetVolumeInput, setTargetVolumeInput] = useState<number>(currentWeek.targetVolumeMeters || 20000);
+
+  useEffect(() => {
+    setTargetVolumeInput(currentWeek.targetVolumeMeters || 20000);
+    setIsEditingTargetVolume(false);
+  }, [currentWeek.weekNumber, currentWeek.targetVolumeMeters]);
+
+  const handleSaveTargetVolume = () => {
+    const val = Number(targetVolumeInput);
+    if (!isNaN(val) && val >= 0) {
+      onUpdateWeek({
+        ...currentWeek,
+        targetVolumeMeters: Math.round(val),
+      });
+    }
+    setIsEditingTargetVolume(false);
+  };
 
   // Confirmation toggle
   const handleToggleConfirmWeek = () => {
@@ -273,15 +293,100 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
 
         {/* Weekly Metrics Banner */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 text-xs">
-          {/* Actual Volume */}
-          <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-            <span className="text-slate-400 font-semibold block text-[11px]">Total Week Volume</span>
-            <div className="text-xl font-pace font-bold text-cyan-300 mt-0.5">
-              {actualVolume.toLocaleString()}<span className="text-xs text-slate-500 font-sans ml-1">{poolLength.slice(-1)}</span>
+          {/* Actual Volume & Editable Target Goal */}
+          <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400 font-semibold block text-[11px]">Total Week Volume</span>
+                {!isEditingTargetVolume && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTargetVolumeInput(currentWeek.targetVolumeMeters || 20000);
+                      setIsEditingTargetVolume(true);
+                    }}
+                    className="text-[10px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center space-x-1 px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 hover:border-cyan-500/40 transition cursor-pointer"
+                    title="Change weekly volume goal"
+                  >
+                    <Edit3 className="w-2.5 h-2.5" />
+                    <span>Edit Goal</span>
+                  </button>
+                )}
+              </div>
+              <div className="text-xl font-pace font-bold text-cyan-300 mt-0.5">
+                {actualVolume.toLocaleString()}<span className="text-xs text-slate-500 font-sans ml-1">{poolLength.slice(-1)}</span>
+              </div>
             </div>
-            <span className="text-[10px] text-slate-500">
-              Target: {currentWeek.targetVolumeMeters.toLocaleString()}{poolLength.slice(-1)}
-            </span>
+
+            {isEditingTargetVolume ? (
+              <div className="mt-2 pt-2 border-t border-slate-800/80 space-y-1.5">
+                <div className="flex items-center space-x-1">
+                  <input
+                    type="number"
+                    step="500"
+                    min="0"
+                    max="100000"
+                    value={targetVolumeInput}
+                    onChange={(e) => setTargetVolumeInput(Number(e.target.value))}
+                    className="w-full bg-slate-900 border border-cyan-500/50 rounded px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                    autoFocus
+                  />
+                  <span className="text-[11px] text-slate-400">{poolLength.slice(-1)}</span>
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-400">
+                  <button
+                    type="button"
+                    onClick={() => setTargetVolumeInput(v => Math.max(0, v - 1000))}
+                    className="px-1.5 py-0.5 rounded bg-slate-900 hover:bg-slate-800 transition"
+                  >
+                    -1k
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTargetVolumeInput(v => v + 1000)}
+                    className="px-1.5 py-0.5 rounded bg-slate-900 hover:bg-slate-800 transition"
+                  >
+                    +1k
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTargetVolumeInput(actualVolume)}
+                    className="px-1.5 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-cyan-400 transition"
+                    title="Set goal equal to currently planned session volume"
+                  >
+                    = Actual
+                  </button>
+                </div>
+                <div className="flex items-center space-x-1.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleSaveTargetVolume}
+                    className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded py-1 font-bold text-[10px] transition cursor-pointer"
+                  >
+                    Save Goal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingTargetVolume(false)}
+                    className="px-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded py-1 text-[10px] transition cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div 
+                onClick={() => {
+                  setTargetVolumeInput(currentWeek.targetVolumeMeters || 20000);
+                  setIsEditingTargetVolume(true);
+                }}
+                className="text-[10px] text-slate-400 hover:text-cyan-300 cursor-pointer flex items-center space-x-1 group mt-1"
+                title="Click to edit target volume goal"
+              >
+                <span>Target: <strong className="text-slate-300 group-hover:text-cyan-300">{(currentWeek.targetVolumeMeters || 20000).toLocaleString()}{poolLength.slice(-1)}</strong></span>
+                <Edit3 className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition text-cyan-400" />
+              </div>
+            )}
           </div>
 
           {/* Volume Progression Overload */}

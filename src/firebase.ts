@@ -84,7 +84,8 @@ export async function testConnection() {
   }
 }
 
-// Seamless authentication: ensures every visitor/device gets an instant session to read & edit
+// Seamless authentication: tries anonymous session if enabled on Firebase, 
+// or cleanly falls back to passcode-gate mode if Anonymous Auth is disabled in Firebase console.
 export function initAuth(onUserChange?: (user: User | null) => void) {
   return onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -93,9 +94,20 @@ export function initAuth(onUserChange?: (user: User | null) => void) {
       try {
         const cred = await signInAnonymously(auth);
         if (onUserChange) onUserChange(cred.user);
-      } catch (err) {
-        console.error('Anonymous auth error:', err);
-        if (onUserChange) onUserChange(null);
+      } catch (err: unknown) {
+        const errorObj = err as { code?: string; message?: string };
+        // If Anonymous Auth is not enabled in Firebase Console (auth/admin-restricted-operation),
+        // we cleanly operate in passcode-gated mode without throwing or logging console errors.
+        if (
+          errorObj?.code === 'auth/admin-restricted-operation' ||
+          errorObj?.message?.includes('admin-restricted-operation') ||
+          errorObj?.code === 'auth/operation-not-allowed'
+        ) {
+          if (onUserChange) onUserChange(null);
+        } else {
+          console.warn('Firebase auth notice:', errorObj?.message || errorObj);
+          if (onUserChange) onUserChange(null);
+        }
       }
     }
   });

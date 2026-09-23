@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { WeekCycle, SeasonPlan } from '../types/swim';
 import { SEASON_MACROCYCLE_TARGETS } from '../data/seedData';
 import { 
@@ -11,23 +11,52 @@ import {
   CheckCircle2, 
   Flame,
   ArrowUpRight,
-  Info
+  Info,
+  Edit3,
+  Check,
+  X
 } from 'lucide-react';
 
 interface SeasonProgressionProps {
   season: SeasonPlan;
   onSelectWeek: (weekNum: number) => void;
+  onUpdateWeekVolumeTarget?: (weekNum: number, newTarget: number) => void;
 }
 
 export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
   season,
   onSelectWeek,
+  onUpdateWeekVolumeTarget,
 }) => {
+  const [editingWeekNum, setEditingWeekNum] = useState<number | null>(null);
+  const [tempTargetVal, setTempTargetVal] = useState<number>(20000);
+
   const maxVolume = Math.max(
     30000,
-    ...SEASON_MACROCYCLE_TARGETS.map(m => m.targetVolumeMeters),
-    ...season.weeks.map(w => w.actualVolumeMeters)
+    ...season.weeks.map(w => w.targetVolumeMeters || 0),
+    ...season.weeks.map(w => w.actualVolumeMeters || 0),
+    ...SEASON_MACROCYCLE_TARGETS.map(m => m.targetVolumeMeters)
   );
+
+  const handleStartEdit = (e: React.MouseEvent, weekNum: number, currentTarget: number) => {
+    e.stopPropagation();
+    setEditingWeekNum(weekNum);
+    setTempTargetVal(currentTarget);
+  };
+
+  const handleSaveEdit = (e: React.MouseEvent, weekNum: number) => {
+    e.stopPropagation();
+    const val = Number(tempTargetVal);
+    if (!isNaN(val) && val >= 0 && onUpdateWeekVolumeTarget) {
+      onUpdateWeekVolumeTarget(weekNum, Math.round(val));
+    }
+    setEditingWeekNum(null);
+  };
+
+  const handleCancelEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingWeekNum(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -87,8 +116,9 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
             {SEASON_MACROCYCLE_TARGETS.slice(0, season.totalWeeks).map((target) => {
               const weekData = season.weeks.find(w => w.weekNumber === target.weekNumber);
               const actualVol = weekData ? weekData.actualVolumeMeters : 0;
+              const weekTargetVol = weekData?.targetVolumeMeters ?? target.targetVolumeMeters;
               const actualHeightPercent = Math.min(100, Math.round((actualVol / maxVolume) * 100));
-              const targetHeightPercent = Math.min(100, Math.round((target.targetVolumeMeters / maxVolume) * 100));
+              const targetHeightPercent = Math.min(100, Math.round((weekTargetVol / maxVolume) * 100));
               const isCurrent = target.weekNumber === season.currentWeekNumber;
 
               let phaseColor = 'bg-cyan-500';
@@ -108,8 +138,8 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                   {/* Tooltip on Hover */}
                   <div className="opacity-0 group-hover:opacity-100 pointer-events-none absolute -top-16 z-20 bg-slate-950 border border-slate-700 text-white rounded-lg p-2 text-[10px] whitespace-nowrap shadow-xl transition">
                     <div className="font-bold text-cyan-300">Week {target.weekNumber}: {target.theme}</div>
-                    <div>Actual: {actualVol ? `${actualVol.toLocaleString()}m` : 'Not planned'}</div>
-                    <div className="text-slate-400">Target: {target.targetVolumeMeters.toLocaleString()}m ({target.phase})</div>
+                    <div>Actual: {actualVol ? `${actualVol.toLocaleString()}${season.poolLength.slice(-1)}` : 'Not planned'}</div>
+                    <div className="text-slate-400">Target Goal: {weekTargetVol.toLocaleString()}${season.poolLength.slice(-1)} ({target.phase})</div>
                   </div>
 
                   {/* Target line indicator */}
@@ -219,8 +249,52 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                       </div>
                     </td>
 
-                    <td className="py-3 px-3 font-mono text-slate-300">
-                      {target.targetVolumeMeters.toLocaleString()}{season.poolLength.slice(-1)}
+                    <td className="py-3 px-3">
+                      {editingWeekNum === target.weekNumber ? (
+                        <div 
+                          className="flex items-center space-x-1" 
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <input
+                            type="number"
+                            step="500"
+                            min="0"
+                            max="100000"
+                            value={tempTargetVal}
+                            onChange={(e) => setTempTargetVal(Number(e.target.value))}
+                            className="w-24 bg-slate-950 border border-cyan-500 rounded px-2 py-1 text-xs text-white focus:outline-none"
+                            autoFocus
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => handleSaveEdit(e, target.weekNumber)}
+                            className="p-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer"
+                            title="Save Target Volume"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleCancelEdit}
+                            className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 cursor-pointer"
+                            title="Cancel"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={(e) => handleStartEdit(e, target.weekNumber, weekData?.targetVolumeMeters ?? target.targetVolumeMeters)}
+                          className="group flex items-center space-x-1.5 px-2 py-1 rounded-lg hover:bg-slate-800/80 border border-transparent hover:border-slate-700 transition cursor-pointer text-left"
+                          title="Click to edit weekly volume target"
+                        >
+                          <span className="font-mono text-slate-300 group-hover:text-cyan-300 font-bold">
+                            {(weekData?.targetVolumeMeters ?? target.targetVolumeMeters).toLocaleString()}{season.poolLength.slice(-1)}
+                          </span>
+                          <Edit3 className="w-3 h-3 text-slate-500 opacity-0 group-hover:opacity-100 group-hover:text-cyan-400 transition" />
+                        </button>
+                      )}
                     </td>
 
                     <td className="py-3 px-3">

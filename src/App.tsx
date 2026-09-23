@@ -200,10 +200,12 @@ export default function App() {
     const targetWeek = season.weeks.find(w => w.weekNumber === updatedSession.weekNumber);
     if (!targetWeek) return;
 
-    const updatedSessions = targetWeek.sessions.map(s => 
-      s.id === updatedSession.id ? updatedSession : s
-    );
-    const newTotalVolume = updatedSessions.reduce((sum, s) => sum + s.totalDistance, 0);
+    const exists = targetWeek.sessions.some(s => s.id === updatedSession.id);
+    const updatedSessions = exists
+      ? targetWeek.sessions.map(s => s.id === updatedSession.id ? updatedSession : s)
+      : [...targetWeek.sessions, updatedSession];
+
+    const newTotalVolume = updatedSessions.reduce((sum, s) => sum + (s.totalDistance || 0), 0);
 
     const updatedWeek: WeekCycle = {
       ...targetWeek,
@@ -333,6 +335,7 @@ export default function App() {
             onSaveSession={handleSaveSessionFromBuilder}
             onAddCustomDrill={handleAddCustomDrill}
             poolLength={season.poolLength}
+            onBackToPlanner={() => setActiveTab('planner')}
           />
         )}
 
@@ -342,6 +345,15 @@ export default function App() {
             onSelectWeek={(weekNum) => {
               setCurrentWeekNumber(weekNum);
               setActiveTab('planner');
+            }}
+            onUpdateWeekVolumeTarget={(weekNum, newTarget) => {
+              const updatedWeeks = season.weeks.map(w =>
+                w.weekNumber === weekNum ? { ...w, targetVolumeMeters: newTarget } : w
+              );
+              updateSeasonAndPersist({
+                ...season,
+                weeks: updatedWeeks,
+              });
             }}
           />
         )}
