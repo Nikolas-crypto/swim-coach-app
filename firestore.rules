@@ -31,16 +31,16 @@ service cloud.firestore {
 
     // Squad seasons and workouts collection
     match /seasons/{seasonId} {
-      allow get, list: if isSignedIn();
-      allow create, update: if isSignedIn() && isValidId(seasonId) && isValidSeason(request.resource.data);
-      allow delete: if isSignedIn() && isValidId(seasonId);
+      allow get, list: if true;
+      allow create, update: if isValidId(seasonId) && isValidSeason(request.resource.data);
+      allow delete: if isValidId(seasonId);
     }
 
     // Squad drill library collection
     match /drills/{drillId} {
-      allow get, list: if isSignedIn();
-      allow create, update: if isSignedIn() && isValidId(drillId) && isValidDrill(request.resource.data);
-      allow delete: if isSignedIn() && isValidId(drillId);
+      allow get, list: if true;
+      allow create, update: if isValidId(drillId) && isValidDrill(request.resource.data);
+      allow delete: if isValidId(drillId);
     }
   }
 }

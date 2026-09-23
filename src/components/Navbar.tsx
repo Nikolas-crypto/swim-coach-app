@@ -147,6 +147,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                   : 'Connecting to Cloud Firestore...'
               }
             >
+              {syncStatus === 'connected' && (
+                <>
+                  <RefreshCw className="w-3 h-3 text-cyan-400 animate-spin" />
+                  <span className="text-[11px] text-cyan-400 hidden lg:inline font-bold">Connecting...</span>
+                </>
+              )}
               {syncStatus === 'synced' && (
                 <>
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

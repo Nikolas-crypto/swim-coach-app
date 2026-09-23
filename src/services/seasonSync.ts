@@ -46,8 +46,7 @@ export function subscribeToActiveSeason(
       }
     },
     (err) => {
-      console.error('Real-time season sync error:', err);
-      handleFirestoreError(err, OperationType.GET, `seasons/${ACTIVE_SEASON_DOC_ID}`);
+      console.warn('Real-time season sync status:', err?.message || err);
       onStatusChange('error');
     }
   );
