@@ -1,0 +1,7 @@
+{
+  "name": "Swim Coach - Squad & Season Planner",
+  "description": "Plan multi-lane swim sessions, season progression, and custom workouts with drag-and-drop drills and pool pace scaling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
