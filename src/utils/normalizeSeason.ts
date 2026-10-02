@@ -1,5 +1,6 @@
 import { SeasonPlan, WeekCycle, WorkoutSession, WorkoutBlock, WorkoutItem, LaneConfig } from '../types/swim';
 import { INITIAL_SEASON } from '../data/seedData';
+import { scaleSeasonSessionsToTarget } from './volumeScaler';
 
 /**
  * Ensures all nested collections (lanes, swimmers, weeks, sessions, blocks, items, equipment)
@@ -84,13 +85,16 @@ export function normalizeSeason(raw: any): SeasonPlan {
     }
   );
 
-  return {
+  const normalized: SeasonPlan = {
     id: raw?.id || 'active_season',
     name: raw?.name || INITIAL_SEASON.name,
     goal: raw?.goal || INITIAL_SEASON.goal,
     poolLength: ['25m', '50m', '25y'].includes(raw?.poolLength) ? raw.poolLength : '25m',
     totalWeeks: typeof raw?.totalWeeks === 'number' ? raw.totalWeeks : 12,
     currentWeekNumber: typeof raw?.currentWeekNumber === 'number' ? raw.currentWeekNumber : 1,
+    targetSessionVolumeMeters: typeof raw?.targetSessionVolumeMeters === 'number' ? raw.targetSessionVolumeMeters : 3000,
+    cycleFocus: raw?.cycleFocus,
+    cycleConfig: raw?.cycleConfig,
     weeklySchedule: Array.isArray(raw?.weeklySchedule) ? raw.weeklySchedule : INITIAL_SEASON.weeklySchedule,
     lanes,
     weeks: weeks.length > 0 ? weeks : JSON.parse(JSON.stringify(INITIAL_SEASON.weeks)),
@@ -98,4 +102,15 @@ export function normalizeSeason(raw: any): SeasonPlan {
     updatedBy: raw?.updatedBy,
     lastClientId: raw?.lastClientId,
   };
+
+  // If stored season has excessively high session volumes (> 3,600m average), calibrate to ~3,000m target
+  const allSessions = (normalized.weeks || []).flatMap(w => w.sessions || []);
+  if (allSessions.length > 0) {
+    const avgDist = allSessions.reduce((sum, s) => sum + (s.totalDistance || 0), 0) / allSessions.length;
+    if (avgDist > 3600) {
+      return scaleSeasonSessionsToTarget(normalized, normalized.targetSessionVolumeMeters || 3000);
+    }
+  }
+
+  return normalized;
 }

@@ -1,33 +1,111 @@
 import React, { useState } from 'react';
-import { Waves, Lock, ArrowRight, ShieldCheck, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { 
+  Waves, 
+  Lock, 
+  ArrowRight, 
+  ShieldCheck, 
+  AlertCircle, 
+  Eye, 
+  EyeOff, 
+  User as UserIcon, 
+  Crown, 
+  Sparkles, 
+  Calendar,
+  CheckCircle2,
+  LogIn
+} from 'lucide-react';
+import { AppUser, UserRole } from '../types/auth';
+import { LaneConfig } from '../types/swim';
+import { 
+  loginAsAdmin, 
+  loginAsSwimmer, 
+  signInWithGoogle, 
+  quickDemoLogin 
+} from '../services/authService';
 
 interface SquadLoginGateProps {
-  onUnlock: () => void;
+  onLoginSuccess: (user: AppUser) => void;
+  lanes?: LaneConfig[];
 }
 
-const CORRECT_PASSWORD = 'cambosquad';
+export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({ 
+  onLoginSuccess,
+  lanes = [] 
+}) => {
+  const [activeTab, setActiveTab] = useState<'admin' | 'swimmer'>('admin');
+  
+  // Admin form state
+  const [adminPasscode, setAdminPasscode] = useState('');
+  const [coachName, setCoachName] = useState('Coach Nikolas');
+  const [showAdminPasscode, setShowAdminPasscode] = useState(false);
+  
+  // Swimmer form state
+  const [swimmerName, setSwimmerName] = useState('Sarah M.');
+  const [assignedLane, setAssignedLane] = useState<number>(1);
 
-export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({ onUnlock }) => {
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(false);
+  // Common UI state
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Gather existing swimmers from squad lanes for convenient quick-pick
+  const rosterSwimmers: { name: string; lane: number }[] = [];
+  lanes.forEach(lane => {
+    (lane.swimmers || []).forEach(s => {
+      rosterSwimmers.push({ name: s, lane: lane.laneNumber });
+    });
+  });
+
+  const handleAdminSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError(false);
+    setErrorMsg(null);
 
-    const cleanInput = password.trim().toLowerCase();
+    try {
+      const user = await loginAsAdmin(adminPasscode, coachName);
+      onLoginSuccess(user);
+    } catch (err: unknown) {
+      const errObj = err as Error;
+      setErrorMsg(errObj?.message || 'Invalid coach passcode. Try "cambosquad".');
+      setIsSubmitting(false);
+    }
+  };
 
-    setTimeout(() => {
-      if (cleanInput === CORRECT_PASSWORD) {
-        onUnlock();
-      } else {
-        setError(true);
-        setIsSubmitting(false);
-      }
-    }, 250);
+  const handleSwimmerSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrorMsg(null);
+
+    try {
+      const user = await loginAsSwimmer(swimmerName, assignedLane);
+      onLoginSuccess(user);
+    } catch (err: unknown) {
+      const errObj = err as Error;
+      setErrorMsg(errObj?.message || 'Failed to enter swimmer portal.');
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleSignIn = async (role: UserRole) => {
+    setIsSubmitting(true);
+    setErrorMsg(null);
+
+    try {
+      const user = await signInWithGoogle(role);
+      onLoginSuccess(user);
+    } catch (err: unknown) {
+      const errObj = err as Error;
+      setErrorMsg(errObj?.message || 'Google sign-in could not be completed.');
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleQuickDemo = (role: UserRole) => {
+    setErrorMsg(null);
+    const user = quickDemoLogin(
+      role, 
+      role === 'admin' ? 'Coach Nikolas' : (swimmerName || 'Sarah M.')
+    );
+    onLoginSuccess(user);
   };
 
   return (
@@ -37,88 +115,280 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({ onUnlock }) => {
       <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Login Card */}
-      <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl relative z-10">
+      <div className="w-full max-w-lg bg-slate-900/95 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative z-10">
         {/* Brand Icon & Heading */}
-        <div className="text-center mb-8">
-          <div className="inline-flex p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 mb-4 shadow-lg shadow-cyan-950/50">
-            <Waves className="w-9 h-9" />
+        <div className="text-center mb-6">
+          <div className="inline-flex p-3.5 rounded-2xl bg-gradient-to-tr from-cyan-600 via-cyan-500 to-blue-500 text-white mb-3 shadow-lg shadow-cyan-900/40">
+            <Waves className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-white flex items-center justify-center space-x-2">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center justify-center space-x-2">
             <span>Swim Coach</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-widest font-bold">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-widest font-extrabold">
               Squad
             </span>
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
-            Championship Season Planner & Live Whiteboard
+          <p className="text-slate-400 text-xs sm:text-sm mt-1">
+            Season Periodization, Multi-Lane Pacing & Whiteboard
           </p>
         </div>
 
-        {/* Access Protection Notice */}
-        <div className="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 mb-6 flex items-start space-x-3">
-          <Lock className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
-          <div className="text-xs text-slate-300 leading-relaxed">
-            <span className="font-semibold text-white">Squad Protected Portal:</span> Enter the squad passcode to access and edit workout plans, lane pacing, and macrocycle progressions.
-          </div>
+        {/* User Group Role Selector Tabs */}
+        <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800 mb-6">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('admin');
+              setErrorMsg(null);
+            }}
+            className={`py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2 cursor-pointer ${
+              activeTab === 'admin'
+                ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md shadow-cyan-900/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+            }`}
+          >
+            <Crown className="w-4 h-4 text-amber-300" />
+            <span>Coach / Admin</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('swimmer');
+              setErrorMsg(null);
+            }}
+            className={`py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2 cursor-pointer ${
+              activeTab === 'swimmer'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-900/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+            }`}
+          >
+            <UserIcon className="w-4 h-4 text-emerald-300" />
+            <span>Swimmer User</span>
+          </button>
         </div>
 
-        {/* Password Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
-              Squad Passcode
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (error) setError(false);
-                }}
-                placeholder="Enter squad passcode..."
-                autoFocus
-                autoComplete="current-password"
-                className={`w-full bg-slate-950/80 border rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition pr-11 ${
-                  error
-                    ? 'border-rose-500/80 focus:ring-rose-500/40 text-rose-200'
-                    : 'border-slate-800 focus:border-cyan-500 focus:ring-cyan-500/30'
-                }`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition p-1"
-                tabIndex={-1}
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+        {/* Role Permissions Summary Box */}
+        {activeTab === 'admin' ? (
+          <div className="bg-cyan-950/30 border border-cyan-500/30 rounded-2xl p-4 mb-6 flex items-start space-x-3">
+            <Crown className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+            <div className="text-xs text-slate-300 leading-relaxed">
+              <span className="font-bold text-white">Admin Privileges:</span> Full access to Weekly Planner, Workout Builder, Season Progression, Lane Rosters, Poolside Whiteboard, and Season Settings.
             </div>
           </div>
-
-          {/* Error Message */}
-          {error && (
-            <div className="flex items-center space-x-2 text-rose-400 text-xs bg-rose-950/30 border border-rose-900/50 p-2.5 rounded-xl animate-in fade-in duration-200">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>Incorrect passcode. Please check with your coach.</span>
+        ) : (
+          <div className="bg-emerald-950/30 border border-emerald-500/30 rounded-2xl p-4 mb-6 flex items-start space-x-3">
+            <Calendar className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="text-xs text-slate-300 leading-relaxed">
+              <span className="font-bold text-white">Swimmer Privileges:</span> Read-only view of the current week's training schedule, sessions, sets, intervals, and personal lane pace. Edits are disabled.
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting || !password.trim()}
-            className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm tracking-wide shadow-lg shadow-cyan-900/30 transition flex items-center justify-center space-x-2 cursor-pointer mt-2"
-          >
-            <span>{isSubmitting ? 'Verifying...' : 'Unlock Squad Dashboard'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </form>
+        {/* Error message */}
+        {errorMsg && (
+          <div className="flex items-center space-x-2 text-rose-400 text-xs bg-rose-950/40 border border-rose-900/60 p-3 rounded-xl mb-4 animate-in fade-in duration-200">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
+        {/* ADMIN LOGIN FORM */}
+        {activeTab === 'admin' && (
+          <form onSubmit={handleAdminSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">
+                Coach Display Name
+              </label>
+              <input
+                type="text"
+                value={coachName}
+                onChange={(e) => setCoachName(e.target.value)}
+                placeholder="Coach Nikolas"
+                className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  Admin Passcode
+                </label>
+                <span className="text-[11px] text-cyan-400 font-mono">
+                  Default: <span className="font-bold underline cursor-pointer" onClick={() => setAdminPasscode('cambosquad')}>cambosquad</span>
+                </span>
+              </div>
+              <div className="relative">
+                <input
+                  type={showAdminPasscode ? 'text' : 'password'}
+                  value={adminPasscode}
+                  onChange={(e) => {
+                    setAdminPasscode(e.target.value);
+                    if (errorMsg) setErrorMsg(null);
+                  }}
+                  placeholder="Enter coach passcode (cambosquad)..."
+                  autoFocus
+                  autoComplete="current-password"
+                  className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 pr-11"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowAdminPasscode(!showAdminPasscode)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition p-1"
+                  tabIndex={-1}
+                >
+                  {showAdminPasscode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-2 space-y-2">
+              <button
+                type="submit"
+                disabled={isSubmitting || !adminPasscode.trim()}
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white font-extrabold text-sm tracking-wide shadow-lg shadow-cyan-950/40 transition flex items-center justify-center space-x-2 cursor-pointer"
+              >
+                <span>{isSubmitting ? 'Verifying Admin...' : 'Sign In as Coach / Admin'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickDemo('admin')}
+                className="w-full py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer border border-slate-700/60"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Instant Quick Access (Admin Demo)</span>
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* SWIMMER LOGIN FORM */}
+        {activeTab === 'swimmer' && (
+          <form onSubmit={handleSwimmerSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">
+                Swimmer Name
+              </label>
+              <input
+                type="text"
+                value={swimmerName}
+                onChange={(e) => setSwimmerName(e.target.value)}
+                placeholder="e.g. Sarah M., Jordan K., Marcus T."
+                autoFocus
+                className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              />
+            </div>
+
+            {/* Quick Roster Selection if available */}
+            {rosterSwimmers.length > 0 && (
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase">
+                  Or pick from squad roster:
+                </label>
+                <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
+                  {rosterSwimmers.map(({ name, lane }) => (
+                    <button
+                      key={name}
+                      type="button"
+                      onClick={() => {
+                        setSwimmerName(name);
+                        setAssignedLane(lane);
+                      }}
+                      className={`text-[11px] font-semibold px-2 py-1 rounded-lg transition border ${
+                        swimmerName === name
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/60'
+                          : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                      }`}
+                    >
+                      {name} (L{lane})
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">
+                Assigned Lane (for CSS paces)
+              </label>
+              <select
+                value={assignedLane}
+                onChange={(e) => setAssignedLane(Number(e.target.value))}
+                className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              >
+                {lanes.map((lane) => (
+                  <option key={lane.id} value={lane.laneNumber}>
+                    Lane {lane.laneNumber}: {lane.name} ({Math.floor(lane.basePace100mSeconds / 60)}:{String(lane.basePace100mSeconds % 60).padStart(2, '0')} pace)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="pt-2 space-y-2">
+              <button
+                type="submit"
+                disabled={isSubmitting || !swimmerName.trim()}
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-white font-extrabold text-sm tracking-wide shadow-lg shadow-emerald-950/40 transition flex items-center justify-center space-x-2 cursor-pointer"
+              >
+                <span>{isSubmitting ? 'Entering Portal...' : 'View Current Week Schedule'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickDemo('swimmer')}
+                className="w-full py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-emerald-300 text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer border border-slate-700/60"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Instant Quick Access (Swimmer Demo)</span>
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Divider for Google Sign-in */}
+        <div className="relative my-6 text-center">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-800" />
+          </div>
+          <span className="relative bg-slate-900 px-3 text-[11px] uppercase tracking-wider text-slate-400 font-bold">
+            Or Sign In with Google
+          </span>
+        </div>
+
+        {/* Google Sign-in Button */}
+        <button
+          type="button"
+          onClick={() => handleGoogleSignIn(activeTab)}
+          disabled={isSubmitting}
+          className="w-full py-2.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-200 border border-slate-700/80 text-xs font-bold transition flex items-center justify-center space-x-2.5 shadow-sm cursor-pointer disabled:opacity-50"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24">
+            <path
+              fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+            />
+          </svg>
+          <span>Continue with Google ({activeTab === 'admin' ? 'Coach' : 'Swimmer'})</span>
+        </button>
 
         {/* Footer info */}
-        <div className="mt-8 text-center pt-6 border-t border-slate-800/80 text-[11px] text-slate-400 flex items-center justify-center space-x-1.5">
+        <div className="mt-6 text-center pt-4 border-t border-slate-800/80 text-[11px] text-slate-400 flex items-center justify-center space-x-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Real-time Cloud Sync & Multi-Device Access</span>
+          <span>Role-Based Squad Security • Firebase Firestore Synced</span>
         </div>
       </div>
     </div>

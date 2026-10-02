@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { WorkoutSession, LaneConfig } from '../types/swim';
+import { WorkoutSession, LaneConfig, SavedWorkoutItem } from '../types/swim';
 import { calculateLaneSendOff } from '../utils/swimCalculators';
 import { 
   Timer, 
@@ -11,8 +11,10 @@ import {
   VolumeX, 
   Check, 
   Sparkles,
-  ChevronDown
+  ChevronDown,
+  Bookmark
 } from 'lucide-react';
+import { SaveWorkoutModal } from './SaveWorkoutModal';
 
 interface PoolDeckWhiteboardProps {
   sessions: WorkoutSession[];
@@ -20,6 +22,7 @@ interface PoolDeckWhiteboardProps {
   onSelectSession: (id: string) => void;
   lanes: LaneConfig[];
   poolLength: '25m' | '50m' | '25y';
+  onSaveWorkoutToLibrary?: (workout: SavedWorkoutItem) => void;
 }
 
 export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
@@ -28,8 +31,11 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
   onSelectSession,
   lanes,
   poolLength,
+  onSaveWorkoutToLibrary,
 }) => {
   const currentSession = sessions.find(s => s.id === selectedSessionId) || sessions[0];
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [savedSuccessToast, setSavedSuccessToast] = useState(false);
 
   // Pace clock state (0 to 59 seconds loop)
   const [clockSeconds, setClockSeconds] = useState(0);
@@ -142,14 +148,26 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
                 </button>
               </div>
 
-              <button
-                type="button"
-                onClick={handlePrint}
-                className="w-full px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition"
-              >
-                <Printer className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Print Deck Sheet</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setIsSaveModalOpen(true)}
+                  className="flex-1 px-3 py-1.5 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 transition"
+                  title="Save this completed session into your squad workout library"
+                >
+                  <Bookmark className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Save to Library</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  className="flex-1 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition"
+                >
+                  <Printer className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Print Sheet</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -281,6 +299,27 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Save Workout Modal */}
+      <SaveWorkoutModal
+        session={currentSession}
+        isOpen={isSaveModalOpen}
+        onClose={() => setIsSaveModalOpen(false)}
+        onSave={(workout) => {
+          if (onSaveWorkoutToLibrary) {
+            onSaveWorkoutToLibrary(workout);
+          }
+          setSavedSuccessToast(true);
+          setTimeout(() => setSavedSuccessToast(false), 3000);
+        }}
+      />
+
+      {savedSuccessToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 border border-cyan-500/50 text-cyan-300 px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-2 text-xs font-bold animate-in fade-in duration-300">
+          <Bookmark className="w-4 h-4 text-cyan-400" />
+          <span>Saved to Workout Library!</span>
+        </div>
+      )}
     </div>
   );
 };

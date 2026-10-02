@@ -5,7 +5,8 @@ import {
   WorkoutItem, 
   WorkoutSession, 
   WeekCycle,
-  LaneConfig 
+  LaneConfig,
+  CycleFocusType 
 } from '../types/swim';
 
 export function formatSecondsToTime(totalSeconds: number): string {
@@ -164,29 +165,53 @@ export type ProgressionMode = 'overload_volume' | 'sharpen_threshold' | 'taper_s
 export function autoPopulateNextWeek(
   currentWeek: WeekCycle,
   nextWeekNumber: number,
-  progressionMode: ProgressionMode = 'overload_volume'
+  progressionMode: ProgressionMode = 'overload_volume',
+  cycleFocus?: CycleFocusType
 ): WeekCycle {
   // Determine progression factors
   let volumeMultiplier = 1.06; // standard +6% to +8%
   let phase: WeekCycle['phase'] = 'Build Phase';
   let theme = `Week ${nextWeekNumber} - Progressive Build`;
 
-  if (progressionMode === 'overload_volume') {
-    volumeMultiplier = 1.08;
-    phase = 'Build Phase';
-    theme = `Week ${nextWeekNumber} - Overload & Endurance`;
-  } else if (progressionMode === 'sharpen_threshold') {
+  if (cycleFocus === 'endurance_focus') {
+    volumeMultiplier = progressionMode === 'deload_recovery' ? 0.82 : 1.09;
+    phase = progressionMode === 'deload_recovery' ? 'Deload / Recovery' : 'Build Phase';
+    theme = `Week ${nextWeekNumber} - Aerobic Mileage & Pull Engine`;
+  } else if (cycleFocus === 'threshold_focus') {
+    volumeMultiplier = progressionMode === 'deload_recovery' ? 0.80 : 1.03;
+    phase = progressionMode === 'deload_recovery' ? 'Deload / Recovery' : 'Threshold Peak';
+    theme = `Week ${nextWeekNumber} - CSS Density & Lactate Shuttling`;
+  } else if (cycleFocus === 'vo2max_focus') {
+    volumeMultiplier = progressionMode === 'deload_recovery' ? 0.75 : 1.04;
+    phase = progressionMode === 'deload_recovery' ? 'Deload / Recovery' : 'Threshold Peak';
+    theme = `Week ${nextWeekNumber} - VO2 Max Power & Acidosis Repeats`;
+  } else if (cycleFocus === 'speed_power_focus') {
+    volumeMultiplier = progressionMode === 'deload_recovery' ? 0.70 : 1.02;
+    phase = progressionMode === 'deload_recovery' ? 'Deload / Recovery' : 'Threshold Peak';
+    theme = `Week ${nextWeekNumber} - Alactic Speed & Dive Breakouts`;
+  } else if (cycleFocus === 'technique_focus') {
     volumeMultiplier = 1.02;
-    phase = 'Threshold Peak';
-    theme = `Week ${nextWeekNumber} - Threshold Density & Pacing`;
-  } else if (progressionMode === 'deload_recovery') {
-    volumeMultiplier = 0.78; // -22% volume drop for supercompensation
-    phase = 'Deload / Recovery';
-    theme = `Week ${nextWeekNumber} - Active Recovery & Tech Reset`;
-  } else if (progressionMode === 'taper_speed') {
-    volumeMultiplier = 0.70;
-    phase = 'Taper Phase';
-    theme = `Week ${nextWeekNumber} - Race Speed & Sharpening`;
+    phase = 'Base Phase';
+    theme = `Week ${nextWeekNumber} - Stroke Economy & SWOLF Mastery`;
+  } else {
+    // Default / competition_peak
+    if (progressionMode === 'overload_volume') {
+      volumeMultiplier = 1.08;
+      phase = 'Build Phase';
+      theme = `Week ${nextWeekNumber} - Overload & Endurance`;
+    } else if (progressionMode === 'sharpen_threshold') {
+      volumeMultiplier = 1.02;
+      phase = 'Threshold Peak';
+      theme = `Week ${nextWeekNumber} - Threshold Density & Pacing`;
+    } else if (progressionMode === 'deload_recovery') {
+      volumeMultiplier = 0.78; // -22% volume drop for supercompensation
+      phase = 'Deload / Recovery';
+      theme = `Week ${nextWeekNumber} - Active Recovery & Tech Reset`;
+    } else if (progressionMode === 'taper_speed') {
+      volumeMultiplier = 0.70;
+      phase = 'Taper Phase';
+      theme = `Week ${nextWeekNumber} - Race Speed & Sharpening`;
+    }
   }
 
   const oldSessions = Array.isArray(currentWeek?.sessions) ? currentWeek.sessions : [];

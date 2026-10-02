@@ -29,6 +29,18 @@ service cloud.firestore {
              data.focus is string && data.focus.size() <= 100;
     }
 
+    function isValidUser(data) {
+      return data.uid is string && data.uid.size() <= 128 &&
+             data.displayName is string && data.displayName.size() <= 100 &&
+             data.role in ['admin', 'swimmer'];
+    }
+
+    function isValidSavedWorkout(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 150 &&
+             data.blocks is list;
+    }
+
     // Squad seasons and workouts collection
     match /seasons/{seasonId} {
       allow get, list: if true;
@@ -41,6 +53,20 @@ service cloud.firestore {
       allow get, list: if true;
       allow create, update: if isValidId(drillId) && isValidDrill(request.resource.data);
       allow delete: if isValidId(drillId);
+    }
+
+    // Squad user profiles collection
+    match /users/{userId} {
+      allow get, list: if true;
+      allow create, update: if isValidId(userId) && isValidUser(request.resource.data);
+      allow delete: if isValidId(userId);
+    }
+
+    // Squad saved workouts collection
+    match /saved_workouts/{workoutId} {
+      allow get, list: if true;
+      allow create, update: if isValidId(workoutId) && isValidSavedWorkout(request.resource.data);
+      allow delete: if isValidId(workoutId);
     }
   }
 }

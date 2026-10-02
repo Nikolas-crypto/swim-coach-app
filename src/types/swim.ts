@@ -108,6 +108,46 @@ export interface WeekCycle {
   notes?: string;
 }
 
+export type CycleFocusType = 
+  | 'competition_peak'
+  | 'endurance_focus'
+  | 'threshold_focus'
+  | 'vo2max_focus'
+  | 'speed_power_focus'
+  | 'technique_focus';
+
+export interface CycleFocusBenchmark {
+  metric: string;
+  targetDescription: string;
+  testProtocol: string;
+}
+
+export interface CycleWeekBlueprint {
+  weekNumber: number;
+  theme: string;
+  phase: 'Base Phase' | 'Build Phase' | 'Threshold Peak' | 'Deload / Recovery' | 'Taper Phase' | 'Race Week';
+  targetVolumeMeters: number;
+  focus: string;
+  primaryEnergyZone: IntensityZone;
+  keySessionHighlight: string;
+}
+
+export interface CycleFocusConfig {
+  id: CycleFocusType;
+  name: string;
+  shortLabel: string;
+  badge: string;
+  accentColor: 'emerald' | 'amber' | 'rose' | 'cyan' | 'purple' | 'blue';
+  summary: string;
+  targetObjective: string;
+  physiologicalAdaptation: string;
+  suggestedDurationWeeks: number;
+  weeklyStructureSummary: string;
+  defaultWeeklyVolumeBase: number;
+  benchmarks: CycleFocusBenchmark[];
+  blueprints: CycleWeekBlueprint[];
+}
+
 export interface SeasonPlan {
   id: string;
   name: string;
@@ -118,7 +158,27 @@ export interface SeasonPlan {
   weeklySchedule: SessionScheduleSlot[];
   lanes: LaneConfig[];
   weeks: WeekCycle[];
+  targetSessionVolumeMeters?: number; // e.g. 3000m average per session
+  cycleFocus?: CycleFocusType;
+  cycleConfig?: Partial<CycleFocusConfig>;
   updatedAt?: string;
   updatedBy?: string;
   lastClientId?: string;
 }
+
+export interface SavedWorkoutItem {
+  id: string;
+  name: string;
+  category: 'Endurance' | 'Threshold' | 'Speed' | 'IM / Medley' | 'Recovery' | 'Technique' | 'Test Set' | 'Coach Inspiration';
+  focus: 'Aerobic' | 'Threshold' | 'Speed' | 'Technique' | 'Recovery' | 'Test Set';
+  totalDistance: number;
+  estimatedMinutes: number;
+  blocks: WorkoutBlock[];
+  completedAt?: string;
+  isCompleted?: boolean;
+  notes?: string;
+  tags?: string[];
+  source?: 'completed_session' | 'coach_inspiration' | 'custom_template';
+  originalPlanIndex?: number;
+}
+

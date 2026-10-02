@@ -3,6 +3,9 @@ import {
   getAuth, 
   signInAnonymously, 
   onAuthStateChanged,
+  signInWithPopup,
+  signOut as firebaseSignOut,
+  GoogleAuthProvider,
   User
 } from 'firebase/auth';
 import { 
@@ -25,6 +28,8 @@ const resolvedConfig = {
 const app = initializeApp(resolvedConfig);
 export const db = getFirestore(app, resolvedConfig.firestoreDatabaseId || undefined);
 export const auth = getAuth(app);
+export const googleAuthProvider = new GoogleAuthProvider();
+export { signInWithPopup, firebaseSignOut };
 
 export enum OperationType {
   CREATE = 'create',

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SeasonPlan, SessionScheduleSlot, DayOfWeek } from '../types/swim';
-import { X, Calendar, Target, Clock, Plus, Trash2, CheckCircle2 } from 'lucide-react';
+import { X, Calendar, Target, Clock, Plus, Trash2, CheckCircle2, Dumbbell, Sparkles } from 'lucide-react';
+import { scaleSeasonSessionsToTarget } from '../utils/volumeScaler';
 
 interface SeasonSettingsModalProps {
   season: SeasonPlan;
@@ -24,6 +25,10 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
   const [poolLength, setPoolLength] = useState(season.poolLength);
   const [totalWeeks, setTotalWeeks] = useState(season.totalWeeks);
   const [schedule, setSchedule] = useState<SessionScheduleSlot[]>(season.weeklySchedule);
+  const [targetSessionVolume, setTargetSessionVolume] = useState<number>(
+    season.targetSessionVolumeMeters || 3000
+  );
+  const [shouldRescaleSessions, setShouldRescaleSessions] = useState<boolean>(true);
 
   const handleAddSlot = () => {
     const newSlot: SessionScheduleSlot = {
@@ -47,14 +52,21 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
   };
 
   const handleSave = () => {
-    onSave({
+    let updatedSeason: SeasonPlan = {
       ...season,
       name,
       goal,
       poolLength,
       totalWeeks,
+      targetSessionVolumeMeters: targetSessionVolume,
       weeklySchedule: schedule,
-    });
+    };
+
+    if (shouldRescaleSessions) {
+      updatedSeason = scaleSeasonSessionsToTarget(updatedSeason, targetSessionVolume);
+    }
+
+    onSave(updatedSeason);
     onClose();
   };
 
@@ -146,6 +158,70 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Target Session Volume Calibration */}
+          <div className="bg-slate-950 p-4 rounded-xl border border-cyan-500/20 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <label className="flex items-center space-x-2 text-xs font-bold text-cyan-300 uppercase tracking-wider">
+                  <Dumbbell className="w-4 h-4 text-cyan-400" />
+                  <span>Target Average Session Volume</span>
+                </label>
+                <p className="text-xs text-slate-400 mt-1 max-w-lg">
+                  Calibrate your squad workouts around <strong className="text-white">~3,000m average per session</strong>, with natural variation: longer endurance/aerobic sessions around 3,200–3,500m and shorter recovery/sprint sessions around 2,500–2,800m.
+                </p>
+              </div>
+              <div className="flex items-center space-x-2 shrink-0">
+                <input
+                  type="number"
+                  step="100"
+                  min="1500"
+                  max="6000"
+                  value={targetSessionVolume}
+                  onChange={e => setTargetSessionVolume(Number(e.target.value))}
+                  className="w-24 bg-slate-900 border border-cyan-500/50 focus:border-cyan-400 rounded-lg px-2.5 py-1.5 text-right font-mono font-bold text-white text-sm"
+                />
+                <span className="text-xs text-slate-400 font-bold">{poolLength.slice(-1)}</span>
+              </div>
+            </div>
+
+            {/* Quick Presets */}
+            <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-900">
+              <span className="text-[11px] text-slate-500 font-semibold">Presets:</span>
+              {[
+                { label: 'Shorter (~2,500m)', val: 2500 },
+                { label: 'Standard (~3,000m)', val: 3000 },
+                { label: 'Extended (~3,500m)', val: 3500 },
+                { label: 'High Volume (~4,200m)', val: 4200 },
+              ].map(p => (
+                <button
+                  key={p.val}
+                  type="button"
+                  onClick={() => setTargetSessionVolume(p.val)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition ${
+                    targetSessionVolume === p.val
+                      ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300'
+                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Re-scale existing sessions checkbox */}
+            <label className="flex items-center space-x-2.5 pt-1 text-xs text-slate-300 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={shouldRescaleSessions}
+                onChange={e => setShouldRescaleSessions(e.target.checked)}
+                className="w-4 h-4 rounded border-slate-700 text-cyan-600 focus:ring-cyan-500 bg-slate-900"
+              />
+              <span>
+                Proportionately scale existing season sessions to average <strong className="text-cyan-300">{targetSessionVolume.toLocaleString()}{poolLength.slice(-1)}</strong> (some longer, some shorter)
+              </span>
+            </label>
           </div>
 
           {/* Weekly Practice Schedule Slots */}

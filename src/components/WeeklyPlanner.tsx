@@ -4,7 +4,9 @@ import {
   WorkoutSession, 
   LaneConfig, 
   SessionScheduleSlot, 
-  DayOfWeek 
+  DayOfWeek,
+  SavedWorkoutItem,
+  CycleFocusType 
 } from '../types/swim';
 import { 
   calculateSessionDistance, 
@@ -27,8 +29,12 @@ import {
   Clock, 
   Award,
   Layers,
-  AlertCircle
+  AlertCircle,
+  Bookmark
 } from 'lucide-react';
+import { WorkoutPickerModal } from './WorkoutPickerModal';
+import { SaveWorkoutModal } from './SaveWorkoutModal';
+import { INSPIRATION_WORKOUTS } from '../data/inspirationPlans';
 
 interface WeeklyPlannerProps {
   weeks: WeekCycle[];
@@ -41,6 +47,9 @@ interface WeeklyPlannerProps {
   onAddNextWeek: (newWeek: WeekCycle) => void;
   onOpenSessionInBuilder: (session: WorkoutSession) => void;
   onOpenSettings: () => void;
+  savedWorkouts?: SavedWorkoutItem[];
+  onSaveWorkoutToLibrary?: (workout: SavedWorkoutItem) => void;
+  cycleFocus?: CycleFocusType;
 }
 
 export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
@@ -54,6 +63,9 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
   onAddNextWeek,
   onOpenSessionInBuilder,
   onOpenSettings,
+  savedWorkouts = [],
+  onSaveWorkoutToLibrary,
+  cycleFocus,
 }) => {
   const safeWeeks = Array.isArray(weeks) && weeks.length > 0 ? weeks : [];
   const currentWeek: WeekCycle = safeWeeks.find(w => w.weekNumber === currentWeekNumber) || safeWeeks[0] || {
@@ -70,6 +82,49 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
 
   const [isAutoPopulateModalOpen, setIsAutoPopulateModalOpen] = useState(false);
   const [selectedProgressionMode, setSelectedProgressionMode] = useState<ProgressionMode>('overload_volume');
+
+  // Workout Library & Picker state
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [pickerTargetDay, setPickerTargetDay] = useState<DayOfWeek | undefined>(undefined);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [sessionToSave, setSessionToSave] = useState<WorkoutSession | null>(null);
+
+  const handleOpenPickerForDay = (day: DayOfWeek) => {
+    setPickerTargetDay(day);
+    setIsPickerOpen(true);
+  };
+
+  const handleApplyWorkoutFromPicker = (workout: SavedWorkoutItem) => {
+    const targetDay = pickerTargetDay || 'Monday';
+    const slot = scheduleSlots.find(s => s.day === targetDay);
+    
+    const newSession: WorkoutSession = {
+      id: `w${currentWeek.weekNumber}-s-${Date.now()}`,
+      weekNumber: currentWeek.weekNumber,
+      dayOfWeek: targetDay,
+      scheduledTime: slot ? `${slot.startTime} - ${slot.endTime}` : '06:00 - 07:30',
+      name: `W${currentWeek.weekNumber} ${targetDay}: ${workout.name}`,
+      focus: workout.focus,
+      totalDistance: workout.totalDistance,
+      estimatedMinutes: workout.estimatedMinutes,
+      confirmed: false,
+      blocks: JSON.parse(JSON.stringify(workout.blocks || [])),
+    };
+
+    const updatedSessions = [...(currentWeek.sessions || []), newSession];
+    const newVolume = updatedSessions.reduce((sum, s) => sum + (s.totalDistance || 0), 0);
+
+    onUpdateWeek({
+      ...currentWeek,
+      sessions: updatedSessions,
+      actualVolumeMeters: newVolume,
+    });
+  };
+
+  const handleOpenSaveModalForSession = (session: WorkoutSession) => {
+    setSessionToSave(session);
+    setIsSaveModalOpen(true);
+  };
 
   // Weekly volume target editing
   const [isEditingTargetVolume, setIsEditingTargetVolume] = useState(false);
@@ -110,8 +165,8 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
       scheduledTime: slot ? `${slot.startTime} - ${slot.endTime}` : '06:00 - 07:30',
       name: `W${currentWeek.weekNumber} ${day}: ${slot?.sessionTitle || 'Squad Practice'}`,
       focus: slot?.primaryFocus || 'Aerobic',
-      totalDistance: 3200,
-      estimatedMinutes: 70,
+      totalDistance: 3000,
+      estimatedMinutes: 60,
       confirmed: false,
       blocks: [
         {
@@ -121,13 +176,31 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
           rounds: 1,
           items: [
             {
-              id: `item-${Date.now()}`,
+              id: `item-${Date.now()}-1`,
               reps: 1,
               distance: 400,
               stroke: 'Choice',
               intensity: 'Recovery',
-              description: 'Smooth loosen up',
+              description: 'Smooth loosen up & bilateral breathing',
               equipment: [],
+              sendOffMode: 'lane-scaled',
+            },
+          ],
+        },
+        {
+          id: `b-preset-${Date.now()}`,
+          type: 'preset',
+          title: 'Pre-Set: Drill & Kick',
+          rounds: 1,
+          items: [
+            {
+              id: `item-${Date.now()}-2`,
+              reps: 6,
+              distance: 50,
+              stroke: 'Kick',
+              intensity: 'Aerobic (EN1)',
+              description: 'Streamline flutter kick & hip roll',
+              equipment: ['Kickboard'],
               sendOffMode: 'lane-scaled',
             },
           ],
@@ -139,12 +212,22 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
           rounds: 1,
           items: [
             {
-              id: `item-${Date.now()}-2`,
-              reps: 6,
+              id: `item-${Date.now()}-3`,
+              reps: 5,
               distance: 200,
               stroke: 'Freestyle',
               intensity: 'Threshold (EN2)',
-              description: 'CSS pacing hold',
+              description: 'CSS pacing hold on lane send-off',
+              equipment: [],
+              sendOffMode: 'lane-scaled',
+            },
+            {
+              id: `item-${Date.now()}-4`,
+              reps: 10,
+              distance: 100,
+              stroke: 'Choice',
+              intensity: 'Aerobic (EN1)',
+              description: 'Aerobic cruise descend by rounds',
               equipment: [],
               sendOffMode: 'lane-scaled',
             },
@@ -157,12 +240,12 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
           rounds: 1,
           items: [
             {
-              id: `item-${Date.now()}-3`,
+              id: `item-${Date.now()}-5`,
               reps: 1,
-              distance: 200,
+              distance: 300,
               stroke: 'Choice',
               intensity: 'Recovery',
-              description: 'Easy recovery',
+              description: 'Easy flush & deep exhalation',
               equipment: [],
               sendOffMode: 'lane-scaled',
             },
@@ -211,7 +294,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
   // Auto-populate trigger
   const handleExecuteAutoPopulate = () => {
     const nextWeekNumber = currentWeek.weekNumber + 1;
-    const generatedWeek = autoPopulateNextWeek(currentWeek, nextWeekNumber, selectedProgressionMode);
+    const generatedWeek = autoPopulateNextWeek(currentWeek, nextWeekNumber, selectedProgressionMode, cycleFocus);
     onAddNextWeek(generatedWeek);
     setIsAutoPopulateModalOpen(false);
     onSelectWeek(nextWeekNumber);
@@ -255,6 +338,11 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                 }`}>
                   {currentWeek.isConfirmed ? '✓ Cycle Confirmed' : 'Draft Cycle'}
                 </span>
+                {cycleFocus && (
+                  <span className="text-[11px] px-2.5 py-0.5 rounded-full font-bold border border-cyan-500/40 bg-cyan-950/60 text-cyan-300">
+                    Cycle Focus: {cycleFocus.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </span>
+                )}
               </div>
               <h2 className="text-2xl font-black text-white flex items-center space-x-2">
                 <span>{currentWeek.theme}</span>
@@ -471,28 +559,50 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                       </span>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleAddSessionToDay(day)}
-                      className="p-1.5 bg-slate-800 hover:bg-cyan-600 text-slate-300 hover:text-white rounded-lg text-xs transition"
-                      title={`Add session to ${day}`}
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center space-x-1">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenPickerForDay(day)}
+                        className="p-1.5 bg-slate-800 hover:bg-amber-600 text-slate-300 hover:text-white rounded-lg text-xs transition flex items-center space-x-1"
+                        title={`Pick from Base Inspiration Plans or Workout Library for ${day}`}
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleAddSessionToDay(day)}
+                        className="p-1.5 bg-slate-800 hover:bg-cyan-600 text-slate-300 hover:text-white rounded-lg text-xs transition"
+                        title={`Add blank session to ${day}`}
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Sessions in this day */}
                   <div className="space-y-3">
                     {daySessions.length === 0 ? (
-                      <div className="py-8 text-center text-xs text-slate-500 border border-dashed border-slate-800/80 rounded-xl">
+                      <div className="py-7 text-center text-xs text-slate-500 border border-dashed border-slate-800/80 rounded-xl space-y-1">
                         <span>Rest & Recovery Day</span>
-                        <button
-                          type="button"
-                          onClick={() => handleAddSessionToDay(day)}
-                          className="block mx-auto mt-2 text-cyan-400 hover:text-cyan-300 font-semibold"
-                        >
-                          + Schedule Practice
-                        </button>
+                        <div className="flex items-center justify-center space-x-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => handleAddSessionToDay(day)}
+                            className="text-cyan-400 hover:text-cyan-300 font-semibold"
+                          >
+                            + Blank
+                          </button>
+                          <span>•</span>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenPickerForDay(day)}
+                            className="text-amber-400 hover:text-amber-300 font-semibold flex items-center space-x-1"
+                          >
+                            <Sparkles className="w-3 h-3 text-amber-400" />
+                            <span>From Library</span>
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       daySessions.map((session) => {
@@ -544,6 +654,14 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                               </span>
 
                               <div className="flex items-center space-x-1">
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenSaveModalForSession(session)}
+                                  className="p-1.5 text-slate-500 hover:text-cyan-400 hover:bg-slate-800 rounded transition"
+                                  title="Save this completed session into your squad workout library"
+                                >
+                                  <Bookmark className="w-3 h-3" />
+                                </button>
                                 <button
                                   type="button"
                                   onClick={() => handleDuplicateSession(session)}
@@ -690,6 +808,33 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Workout & Base Plan Picker Modal */}
+      <WorkoutPickerModal
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        onSelectWorkout={handleApplyWorkoutFromPicker}
+        savedWorkouts={savedWorkouts.length > 0 ? savedWorkouts : INSPIRATION_WORKOUTS}
+        targetDay={pickerTargetDay}
+        weekNumber={currentWeek.weekNumber}
+      />
+
+      {/* Save Workout to Library Modal */}
+      {sessionToSave && (
+        <SaveWorkoutModal
+          session={sessionToSave}
+          isOpen={isSaveModalOpen}
+          onClose={() => {
+            setIsSaveModalOpen(false);
+            setSessionToSave(null);
+          }}
+          onSave={(workout) => {
+            if (onSaveWorkoutToLibrary) {
+              onSaveWorkoutToLibrary(workout);
+            }
+          }}
+        />
       )}
     </div>
   );

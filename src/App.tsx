@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   SeasonPlan, 
   WorkoutSession, 
   WeekCycle, 
   DrillLibraryItem, 
-  LaneConfig 
+  LaneConfig,
+  SavedWorkoutItem,
+  CycleFocusType 
 } from './types/swim';
+import { AppUser } from './types/auth';
 import { 
   INITIAL_SEASON, 
   INITIAL_DRILLS,
@@ -15,11 +18,14 @@ import { Navbar, ActiveTab } from './components/Navbar';
 import { WeeklyPlanner } from './components/WeeklyPlanner';
 import { WorkoutBuilder } from './components/WorkoutBuilder';
 import { SeasonProgression } from './components/SeasonProgression';
+import { WorkoutLibraryView } from './components/WorkoutLibraryView';
 import { LaneManager } from './components/LaneManager';
 import { PoolDeckWhiteboard } from './components/PoolDeckWhiteboard';
 import { SeasonSettingsModal } from './components/SeasonSettingsModal';
 import { ShareModal } from './components/ShareModal';
 import { SquadLoginGate } from './components/SquadLoginGate';
+import { SwimmerScheduleView } from './components/SwimmerScheduleView';
+import { applyCycleFocusToSeason } from './data/cycleFocusPresets';
 import { 
   initAuth, 
   testConnection 
@@ -29,21 +35,32 @@ import {
   persistSeasonToCloud, 
   SyncStatus 
 } from './services/seasonSync';
+import { 
+  getStoredUser, 
+  saveStoredUser, 
+  logoutUser 
+} from './services/authService';
+import { 
+  getStoredWorkouts, 
+  saveWorkoutToLibrary, 
+  deleteWorkoutFromLibrary, 
+  subscribeToSavedWorkouts 
+} from './services/workoutLibraryService';
 import { normalizeSeason } from './utils/normalizeSeason';
-import { Waves, Sparkles, RefreshCw, CloudCheck, Radio } from 'lucide-react';
+import { Waves, Sparkles, RefreshCw, Radio, Shield, User as UserIcon } from 'lucide-react';
 
 const STORAGE_KEY_SEASON = 'swim_coach_season_v2';
 const STORAGE_KEY_DRILLS = 'swim_coach_drills_v2';
-const STORAGE_KEY_AUTH = 'swim_coach_auth_v1';
 
 export default function App() {
-  // Passcode gate state
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(STORAGE_KEY_AUTH) === 'cambosquad_granted';
-    } catch {
-      return false;
-    }
+  // User Authentication State (Admin vs Swimmer)
+  const [currentUser, setCurrentUser] = useState<AppUser | null>(() => {
+    return getStoredUser();
+  });
+
+  // Saved Workouts & Inspiration base plans library
+  const [savedWorkouts, setSavedWorkouts] = useState<SavedWorkoutItem[]>(() => {
+    return getStoredWorkouts();
   });
 
   // Load initial state from localStorage or seed
@@ -84,7 +101,7 @@ export default function App() {
   useEffect(() => {
     testConnection();
 
-    // Automatically establish anonymous auth so any device can view and edit immediately
+    // Automatically establish auth connection so any device can view and edit immediately
     const unsubscribeAuth = initAuth(() => {});
 
     const unsubscribeSeason = subscribeToActiveSeason(
@@ -125,11 +142,63 @@ export default function App() {
       }
     );
 
+    const unsubscribeWorkouts = subscribeToSavedWorkouts((cloudWorkouts) => {
+      setSavedWorkouts(cloudWorkouts);
+    });
+
     return () => {
       unsubscribeAuth();
       unsubscribeSeason();
+      unsubscribeWorkouts();
     };
   }, []);
+
+  // Handlers for Workout Library
+  const handleSaveWorkoutToLibrary = async (workout: SavedWorkoutItem) => {
+    if (currentUser?.role !== 'admin') return;
+    const saved = await saveWorkoutToLibrary(workout);
+    setSavedWorkouts(prev => {
+      const idx = prev.findIndex(w => w.id === saved.id);
+      if (idx >= 0) {
+        const copy = [...prev];
+        copy[idx] = saved;
+        return copy;
+      }
+      return [saved, ...prev];
+    });
+  };
+
+  const handleDeleteWorkoutFromLibrary = async (id: string) => {
+    if (currentUser?.role !== 'admin') return;
+    await deleteWorkoutFromLibrary(id);
+    setSavedWorkouts(prev => prev.filter(w => w.id !== id));
+  };
+
+  const handleChangeCycleFocus = (focusType: CycleFocusType, weeksCount?: number) => {
+    if (currentUser?.role !== 'admin') return;
+    const updatedSeason = applyCycleFocusToSeason(season, focusType, weeksCount);
+    updateSeasonAndPersist(updatedSeason);
+    setCloudNotification(`Cycle focus updated: ${focusType.replace('_', ' ').toUpperCase()}`);
+    setTimeout(() => setCloudNotification(null), 3500);
+  };
+
+  const handleAddSessionToWeek = (weekNumber: number, session: WorkoutSession) => {
+    if (currentUser?.role !== 'admin') return;
+    const week = season.weeks.find(w => w.weekNumber === weekNumber);
+    if (!week) return;
+    const updatedSessions = [...(week.sessions || []), session];
+    const newVolume = updatedSessions.reduce((sum, s) => sum + (s.totalDistance || 0), 0);
+    const updatedWeek: WeekCycle = {
+      ...week,
+      sessions: updatedSessions,
+      actualVolumeMeters: newVolume,
+    };
+    handleUpdateWeek(updatedWeek);
+    setCurrentWeekNumber(weekNumber);
+    setActiveTab('planner');
+    setCloudNotification(`Session added to Week ${weekNumber} (${session.dayOfWeek})`);
+    setTimeout(() => setCloudNotification(null), 3000);
+  };
 
   // Sync drill library to localStorage
   useEffect(() => {
@@ -140,8 +209,18 @@ export default function App() {
     }
   }, [drillLibrary]);
 
+  // If user is a swimmer, enforce that they only view the current week and cannot edit
+  const isSwimmer = currentUser?.role === 'swimmer';
+  const effectiveCurrentWeekNumber = isSwimmer ? (season.currentWeekNumber || 1) : currentWeekNumber;
+
   // Central function to update season both locally and to Cloud Firestore
+  // STRICT PERMISSION GATE: Only admin users can mutate season data
   const updateSeasonAndPersist = async (updatedSeason: SeasonPlan) => {
+    if (currentUser?.role !== 'admin') {
+      console.warn('Unauthorized write attempt: Swimmer user cannot make edits.');
+      return;
+    }
+
     setSeason(updatedSeason);
     try {
       localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(updatedSeason));
@@ -160,10 +239,12 @@ export default function App() {
   };
 
   // Current active week
-  const activeWeek = season.weeks.find(w => w.weekNumber === currentWeekNumber) || season.weeks[0];
+  const activeWeek = season.weeks.find(w => w.weekNumber === effectiveCurrentWeekNumber) || season.weeks[0];
 
-  // Handlers
+  // Handlers (strictly admin guarded)
   const handleUpdateWeek = (updatedWeek: WeekCycle) => {
+    if (currentUser?.role !== 'admin') return;
+
     const weekExists = season.weeks.some(w => w.weekNumber === updatedWeek.weekNumber);
     const updatedWeeks = weekExists
       ? season.weeks.map(w => w.weekNumber === updatedWeek.weekNumber ? updatedWeek : w)
@@ -177,6 +258,8 @@ export default function App() {
   };
 
   const handleAddNextWeek = (newWeek: WeekCycle) => {
+    if (currentUser?.role !== 'admin') return;
+
     const existingIdx = season.weeks.findIndex(w => w.weekNumber === newWeek.weekNumber);
     let updatedWeeks: WeekCycle[];
     if (existingIdx >= 0) {
@@ -200,6 +283,8 @@ export default function App() {
   };
 
   const handleSaveSessionFromBuilder = (updatedSession: WorkoutSession) => {
+    if (currentUser?.role !== 'admin') return;
+
     const targetWeek = season.weeks.find(w => w.weekNumber === updatedSession.weekNumber);
     let updatedWeeks: WeekCycle[];
 
@@ -244,11 +329,13 @@ export default function App() {
   };
 
   const handleOpenSessionInBuilder = (session: WorkoutSession) => {
+    if (currentUser?.role !== 'admin') return;
     setActiveSession(session);
     setActiveTab('builder');
   };
 
   const handleUpdateLanes = (updatedLanes: LaneConfig[]) => {
+    if (currentUser?.role !== 'admin') return;
     const updatedSeason: SeasonPlan = {
       ...season,
       lanes: updatedLanes,
@@ -257,10 +344,12 @@ export default function App() {
   };
 
   const handleAddCustomDrill = (newDrill: DrillLibraryItem) => {
+    if (currentUser?.role !== 'admin') return;
     setDrillLibrary(prev => [newDrill, ...prev]);
   };
 
   const handleChangePoolLength = (length: '25m' | '50m' | '25y') => {
+    if (currentUser?.role !== 'admin') return;
     const updatedSeason: SeasonPlan = {
       ...season,
       poolLength: length,
@@ -269,6 +358,7 @@ export default function App() {
   };
 
   const handleResetToDefaults = async () => {
+    if (currentUser?.role !== 'admin') return;
     if (window.confirm('Reset squad data to initial championship template across all devices?')) {
       const resetPlan = {
         ...INITIAL_SEASON,
@@ -281,27 +371,49 @@ export default function App() {
     }
   };
 
-  const handleUnlock = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY_AUTH, 'cambosquad_granted');
-    } catch (e) {
-      console.error('Storage error', e);
+  // Role switching helper for quick previewing / testing
+  const handleSwitchRole = () => {
+    if (!currentUser) return;
+    if (currentUser.role === 'admin') {
+      const swimmerUser: AppUser = {
+        ...currentUser,
+        role: 'swimmer',
+        displayName: 'Sarah M. (Swimmer Mode)',
+      };
+      saveStoredUser(swimmerUser);
+      setCurrentUser(swimmerUser);
+      setActiveTab('planner');
+    } else {
+      // Prompt or switch back to admin
+      const adminUser: AppUser = {
+        ...currentUser,
+        role: 'admin',
+        displayName: 'Coach Nikolas',
+      };
+      saveStoredUser(adminUser);
+      setCurrentUser(adminUser);
     }
-    setIsAuthenticated(true);
   };
 
-  const handleLock = () => {
-    try {
-      localStorage.removeItem(STORAGE_KEY_AUTH);
-    } catch (e) {
-      console.error('Storage error', e);
-    }
-    setIsAuthenticated(false);
+  const handleLogout = async () => {
+    await logoutUser();
+    setCurrentUser(null);
   };
 
-  // If passcode not entered, show passcode gate screen
-  if (!isAuthenticated) {
-    return <SquadLoginGate onUnlock={handleUnlock} />;
+  // If user is not authenticated, show Squad Authentication Portal
+  if (!currentUser) {
+    return (
+      <SquadLoginGate 
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          if (user.role === 'swimmer') {
+            setCurrentWeekNumber(season.currentWeekNumber || 1);
+            setActiveTab('planner');
+          }
+        }} 
+        lanes={season.lanes}
+      />
+    );
   }
 
   return (
@@ -310,14 +422,27 @@ export default function App() {
       <Navbar
         season={season}
         activeTab={activeTab}
-        onSelectTab={setActiveTab}
-        onOpenSettings={() => setIsSettingsModalOpen(true)}
-        onOpenShare={() => setIsShareModalOpen(true)}
+        onSelectTab={(tab) => {
+          // If swimmer, only allow planner tab (current week schedule)
+          if (isSwimmer) {
+            setActiveTab('planner');
+          } else {
+            setActiveTab(tab);
+          }
+        }}
+        onOpenSettings={() => {
+          if (!isSwimmer) setIsSettingsModalOpen(true);
+        }}
+        onOpenShare={() => {
+          if (!isSwimmer) setIsShareModalOpen(true);
+        }}
         poolLength={season.poolLength}
         onChangePoolLength={handleChangePoolLength}
         syncStatus={syncStatus}
         lastSyncedAt={lastSyncedAt}
-        onLockApp={handleLock}
+        user={currentUser}
+        onSwitchRole={handleSwitchRole}
+        onLogout={handleLogout}
       />
 
       {/* Real-time Cloud Update Toast Indicator */}
@@ -330,87 +455,119 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {activeTab === 'planner' && (
-          <WeeklyPlanner
-            weeks={season.weeks}
-            currentWeekNumber={currentWeekNumber}
-            lanes={season.lanes}
-            scheduleSlots={season.weeklySchedule}
-            poolLength={season.poolLength}
-            onSelectWeek={setCurrentWeekNumber}
-            onUpdateWeek={handleUpdateWeek}
-            onAddNextWeek={handleAddNextWeek}
-            onOpenSessionInBuilder={handleOpenSessionInBuilder}
-            onOpenSettings={() => setIsSettingsModalOpen(true)}
-          />
-        )}
-
-        {activeTab === 'builder' && (
-          <WorkoutBuilder
-            session={activeSession}
-            lanes={season.lanes}
-            drillLibrary={drillLibrary}
-            onSaveSession={handleSaveSessionFromBuilder}
-            onAddCustomDrill={handleAddCustomDrill}
-            poolLength={season.poolLength}
-            onBackToPlanner={() => setActiveTab('planner')}
-          />
-        )}
-
-        {activeTab === 'progression' && (
-          <SeasonProgression
-            season={season}
-            onSelectWeek={(weekNum) => {
-              setCurrentWeekNumber(weekNum);
-              setActiveTab('planner');
-            }}
-            onUpdateWeekVolumeTarget={(weekNum, newTarget) => {
-              const weekExists = season.weeks.some(w => w.weekNumber === weekNum);
-              let updatedWeeks: WeekCycle[];
-              if (weekExists) {
-                updatedWeeks = season.weeks.map(w =>
-                  w.weekNumber === weekNum ? { ...w, targetVolumeMeters: newTarget } : w
-                );
-              } else {
-                const targetMacro = SEASON_MACROCYCLE_TARGETS.find(m => m.weekNumber === weekNum);
-                const newWeekCycle: WeekCycle = {
-                  weekNumber: weekNum,
-                  theme: targetMacro?.theme || `Week ${weekNum}`,
-                  phase: targetMacro?.phase || 'Build Phase',
-                  targetVolumeMeters: newTarget,
-                  actualVolumeMeters: 0,
-                  sessions: [],
-                  isConfirmed: false,
-                };
-                updatedWeeks = [...season.weeks, newWeekCycle].sort((a, b) => a.weekNumber - b.weekNumber);
-              }
-              updateSeasonAndPersist({
-                ...season,
-                weeks: updatedWeeks,
-              });
-            }}
-          />
-        )}
-
-        {activeTab === 'lanes' && (
-          <LaneManager
-            lanes={season.lanes}
-            onUpdateLanes={handleUpdateLanes}
-            poolLength={season.poolLength}
-          />
-        )}
-
-        {activeTab === 'whiteboard' && (
-          <PoolDeckWhiteboard
-            sessions={activeWeek?.sessions || []}
-            selectedSessionId={activeSession.id}
-            onSelectSession={(id) => {
-              const s = activeWeek?.sessions.find(x => x.id === id);
-              if (s) setActiveSession(s);
-            }}
+        {/* SWIMMER USER VIEW: Only sees the schedule of the current week, strictly read-only */}
+        {isSwimmer ? (
+          <SwimmerScheduleView
+            currentWeek={activeWeek}
             lanes={season.lanes}
             poolLength={season.poolLength}
+            user={currentUser}
           />
+        ) : (
+          /* ADMIN USER VIEW: All functionalities as exist at the moment */
+          <>
+            {activeTab === 'planner' && (
+              <WeeklyPlanner
+                weeks={season.weeks}
+                currentWeekNumber={currentWeekNumber}
+                lanes={season.lanes}
+                scheduleSlots={season.weeklySchedule}
+                poolLength={season.poolLength}
+                onSelectWeek={setCurrentWeekNumber}
+                onUpdateWeek={handleUpdateWeek}
+                onAddNextWeek={handleAddNextWeek}
+                onOpenSessionInBuilder={handleOpenSessionInBuilder}
+                onOpenSettings={() => setIsSettingsModalOpen(true)}
+                savedWorkouts={savedWorkouts}
+                onSaveWorkoutToLibrary={handleSaveWorkoutToLibrary}
+                cycleFocus={season.cycleFocus}
+              />
+            )}
+
+            {activeTab === 'builder' && (
+              <WorkoutBuilder
+                session={activeSession}
+                lanes={season.lanes}
+                drillLibrary={drillLibrary}
+                onSaveSession={handleSaveSessionFromBuilder}
+                onAddCustomDrill={handleAddCustomDrill}
+                poolLength={season.poolLength}
+                onBackToPlanner={() => setActiveTab('planner')}
+                savedWorkouts={savedWorkouts}
+                onSaveWorkoutToLibrary={handleSaveWorkoutToLibrary}
+                onDeleteWorkoutFromLibrary={handleDeleteWorkoutFromLibrary}
+              />
+            )}
+
+            {activeTab === 'progression' && (
+              <SeasonProgression
+                season={season}
+                onSelectWeek={(weekNum) => {
+                  setCurrentWeekNumber(weekNum);
+                  setActiveTab('planner');
+                }}
+                onChangeCycleFocus={handleChangeCycleFocus}
+                onUpdateWeekVolumeTarget={(weekNum, newTarget) => {
+                  const weekExists = season.weeks.some(w => w.weekNumber === weekNum);
+                  let updatedWeeks: WeekCycle[];
+                  if (weekExists) {
+                    updatedWeeks = season.weeks.map(w =>
+                      w.weekNumber === weekNum ? { ...w, targetVolumeMeters: newTarget } : w
+                    );
+                  } else {
+                    const targetMacro = SEASON_MACROCYCLE_TARGETS.find(m => m.weekNumber === weekNum);
+                    const newWeekCycle: WeekCycle = {
+                      weekNumber: weekNum,
+                      theme: targetMacro?.theme || `Week ${weekNum}`,
+                      phase: targetMacro?.phase || 'Build Phase',
+                      targetVolumeMeters: newTarget,
+                      actualVolumeMeters: 0,
+                      sessions: [],
+                      isConfirmed: false,
+                    };
+                    updatedWeeks = [...season.weeks, newWeekCycle].sort((a, b) => a.weekNumber - b.weekNumber);
+                  }
+                  updateSeasonAndPersist({
+                    ...season,
+                    weeks: updatedWeeks,
+                  });
+                }}
+              />
+            )}
+
+            {activeTab === 'library' && (
+              <WorkoutLibraryView
+                savedWorkouts={savedWorkouts}
+                season={season}
+                onOpenSessionInBuilder={handleOpenSessionInBuilder}
+                onAddSessionToWeek={handleAddSessionToWeek}
+                onDeleteWorkout={handleDeleteWorkoutFromLibrary}
+                onSaveWorkout={handleSaveWorkoutToLibrary}
+              />
+            )}
+
+            {activeTab === 'lanes' && (
+              <LaneManager
+                lanes={season.lanes}
+                onUpdateLanes={handleUpdateLanes}
+                poolLength={season.poolLength}
+              />
+            )}
+
+            {activeTab === 'whiteboard' && (
+              <PoolDeckWhiteboard
+                sessions={activeWeek?.sessions || []}
+                selectedSessionId={activeSession.id}
+                onSelectSession={(id) => {
+                  const s = activeWeek?.sessions.find(x => x.id === id);
+                  if (s) setActiveSession(s);
+                }}
+                lanes={season.lanes}
+                poolLength={season.poolLength}
+                onSaveWorkoutToLibrary={handleSaveWorkoutToLibrary}
+              />
+            )}
+          </>
         )}
       </main>
 
@@ -418,45 +575,55 @@ export default function App() {
       <footer className="mt-auto border-t border-slate-900 bg-slate-950/80 py-4 no-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
           <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400" />
+            <span className={`w-2 h-2 rounded-full ${isSwimmer ? 'bg-emerald-400' : 'bg-cyan-400'}`} />
             <span className="font-semibold text-slate-400">Swim Coach</span>
             <span>• Squad Pace Scaling & Macrocycle Periodization Engine</span>
           </div>
 
           <div className="flex items-center space-x-4">
-            <button
-              onClick={handleResetToDefaults}
-              className="text-slate-500 hover:text-cyan-400 transition flex items-center space-x-1"
-            >
-              <RefreshCw className="w-3 h-3" />
-              <span>Reset Defaults</span>
-            </button>
+            {!isSwimmer ? (
+              <button
+                onClick={handleResetToDefaults}
+                className="text-slate-500 hover:text-cyan-400 transition flex items-center space-x-1 cursor-pointer"
+              >
+                <RefreshCw className="w-3 h-3" />
+                <span>Reset Defaults</span>
+              </button>
+            ) : (
+              <span className="text-emerald-400/90 font-medium flex items-center space-x-1">
+                <Shield className="w-3 h-3" />
+                <span>Swimmer Portal (Read-Only)</span>
+              </span>
+            )}
             <span>{season?.poolLength || '25m'} Pool</span>
             <span>{season?.lanes?.length || 0} Lanes Configured</span>
           </div>
         </div>
       </footer>
 
-      {/* Season Settings Modal */}
-      <SeasonSettingsModal
-        season={season}
-        isOpen={isSettingsModalOpen}
-        onClose={() => setIsSettingsModalOpen(false)}
-        onSave={(updated) => updateSeasonAndPersist(updated)}
-      />
+      {/* Admin Modals (Only rendered for Admin) */}
+      {!isSwimmer && (
+        <>
+          <SeasonSettingsModal
+            season={season}
+            isOpen={isSettingsModalOpen}
+            onClose={() => setIsSettingsModalOpen(false)}
+            onSave={(updated) => updateSeasonAndPersist(updated)}
+          />
 
-      {/* Share & Web Access Modal */}
-      <ShareModal
-        isOpen={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
-        season={season}
-        onImportSeason={(imported) => {
-          updateSeasonAndPersist(imported);
-          if (imported.weeks?.[0]?.sessions?.[0]) {
-            setActiveSession(imported.weeks[0].sessions[0]);
-          }
-        }}
-      />
+          <ShareModal
+            isOpen={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+            season={season}
+            onImportSeason={(imported) => {
+              updateSeasonAndPersist(imported);
+              if (imported.weeks?.[0]?.sessions?.[0]) {
+                setActiveSession(imported.weeks[0].sessions[0]);
+              }
+            }}
+          />
+        </>
+      )}
     </div>
   );
 }

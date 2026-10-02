@@ -35,6 +35,43 @@
         "suggestedDistance": { "type": "number" }
       },
       "required": ["id", "name", "category", "focus"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Squad user account with authentication role",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["admin", "swimmer"] },
+        "swimmerName": { "type": "string", "maxLength": 100 },
+        "assignedLane": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "lastLoginAt": { "type": "string" }
+      },
+      "required": ["uid", "displayName", "role"]
+    },
+    "SavedWorkout": {
+      "title": "SavedWorkout",
+      "description": "Saved and completed workouts in squad library",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 150 },
+        "category": { "type": "string", "maxLength": 50 },
+        "focus": { "type": "string", "maxLength": 50 },
+        "totalDistance": { "type": "number" },
+        "estimatedMinutes": { "type": "number" },
+        "blocks": { "type": "array" },
+        "completedAt": { "type": "string" },
+        "isCompleted": { "type": "boolean" },
+        "notes": { "type": "string", "maxLength": 500 },
+        "tags": { "type": "array" },
+        "source": { "type": "string" },
+        "originalPlanIndex": { "type": "number" }
+      },
+      "required": ["id", "name", "totalDistance", "blocks"]
     }
   },
   "firestore": {
@@ -45,6 +82,14 @@
     "/drills/{drillId}": {
       "schema": { "$ref": "#/entities/Drill" },
       "description": "Custom drills added to team library"
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles and squad role permissions"
+    },
+    "/saved_workouts/{workoutId}": {
+      "schema": { "$ref": "#/entities/SavedWorkout" },
+      "description": "Saved and completed squad workouts library"
     }
   }
 }

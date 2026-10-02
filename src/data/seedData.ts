@@ -357,10 +357,10 @@ export const INITIAL_WEEKS: WeekCycle[] = [
     weekNumber: 1,
     theme: 'Week 1 - Squad Baseline & Aerobic Capacity',
     phase: 'Base Phase',
-    targetVolumeMeters: 22000,
-    actualVolumeMeters: 22400,
+    targetVolumeMeters: 18000,
+    actualVolumeMeters: 18200,
     isConfirmed: true,
-    notes: 'Setting lane benchmarks and baseline CSS paces.',
+    notes: 'Setting lane benchmarks and baseline CSS paces at ~3,000m average session volume.',
     sessions: [
       {
         id: 'w1-session-1',
@@ -369,8 +369,8 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         scheduledTime: '06:00 - 07:30',
         name: 'W1 Monday: Aerobic Capacity & Streamline Legs',
         focus: 'Aerobic',
-        totalDistance: 4100,
-        estimatedMinutes: 75,
+        totalDistance: 3000,
+        estimatedMinutes: 60,
         confirmed: true,
         blocks: [
           {
@@ -391,7 +391,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
               },
               {
                 id: 'w1-s1-i2',
-                reps: 4,
+                reps: 2,
                 distance: 100,
                 stroke: 'IM',
                 intensity: 'Aerobic (EN1)',
@@ -409,7 +409,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
             items: [
               {
                 id: 'w1-s1-i3',
-                reps: 8,
+                reps: 6,
                 distance: 50,
                 stroke: 'Kick',
                 intensity: 'Threshold (EN2)',
@@ -423,7 +423,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
             id: 'w1-s1-b3',
             type: 'main',
             title: 'Main Set: Aerobic Engine Overload',
-            rounds: 2,
+            rounds: 1,
             items: [
               {
                 id: 'w1-s1-i4',
@@ -445,6 +445,16 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 equipment: ['Pull Buoy', 'Paddles'],
                 sendOffMode: 'lane-scaled',
               },
+              {
+                id: 'w1-s1-i5b',
+                reps: 6,
+                distance: 100,
+                stroke: 'Freestyle',
+                intensity: 'Aerobic (EN1)',
+                description: 'Aerobic cruise with high elbows',
+                equipment: [],
+                sendOffMode: 'lane-scaled',
+              }
             ],
           },
           {
@@ -474,8 +484,8 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         scheduledTime: '17:30 - 19:00',
         name: 'W1 Tuesday: Threshold (CSS) Broken Ladders',
         focus: 'Threshold',
-        totalDistance: 4200,
-        estimatedMinutes: 80,
+        totalDistance: 3200,
+        estimatedMinutes: 65,
         confirmed: true,
         blocks: [
           {
@@ -487,10 +497,10 @@ export const INITIAL_WEEKS: WeekCycle[] = [
               {
                 id: 'w1-s2-i1',
                 reps: 1,
-                distance: 500,
+                distance: 400,
                 stroke: 'Choice',
                 intensity: 'Recovery',
-                description: '200 Free / 100 Back / 100 Breast / 100 Kick',
+                description: '200 Free / 100 Back / 100 Breast',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -504,7 +514,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
             items: [
               {
                 id: 'w1-s2-i2',
-                reps: 6,
+                reps: 4,
                 distance: 300,
                 stroke: 'Freestyle',
                 intensity: 'Threshold (EN2)',
@@ -514,14 +524,24 @@ export const INITIAL_WEEKS: WeekCycle[] = [
               },
               {
                 id: 'w1-s2-i3',
-                reps: 6,
+                reps: 8,
                 distance: 100,
                 stroke: 'IM',
-                intensity: 'VO2Max (EN3)',
+                intensity: 'Threshold (EN2)',
                 description: 'Fast transitions, strong breast-to-free turn',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
+              {
+                id: 'w1-s2-i3b',
+                reps: 10,
+                distance: 50,
+                stroke: 'Choice',
+                intensity: 'Aerobic (EN1)',
+                description: 'Kick / Swim alternating by 50',
+                equipment: ['Kickboard'],
+                sendOffMode: 'lane-scaled',
+              }
             ],
           },
           {
@@ -551,8 +571,8 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         scheduledTime: '06:00 - 07:30',
         name: 'W1 Wednesday: Medley Stroke Technique & Drills',
         focus: 'Technique',
-        totalDistance: 3600,
-        estimatedMinutes: 70,
+        totalDistance: 2800,
+        estimatedMinutes: 55,
         confirmed: true,
         blocks: [
           {
@@ -577,7 +597,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
             id: 'w1-s3-b2',
             type: 'preset',
             title: 'Technique Drill Circuit',
-            rounds: 2,
+            rounds: 1,
             items: [
               {
                 id: 'w1-s3-i2',
@@ -604,7 +624,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s3-b3',
             type: 'main',
-            title: 'Main Set: 4x200 IM Technical Efficiency',
+            title: 'Main Set: IM Technical Efficiency',
             rounds: 1,
             items: [
               {
@@ -617,6 +637,26 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
+              {
+                id: 'w1-s3-i4b',
+                reps: 8,
+                distance: 100,
+                stroke: 'Choice',
+                intensity: 'Aerobic (EN1)',
+                description: '50 Drill / 50 Perfect Swim holding low stroke count',
+                equipment: [],
+                sendOffMode: 'lane-scaled',
+              },
+              {
+                id: 'w1-s3-i4c',
+                reps: 4,
+                distance: 50,
+                stroke: 'Kick',
+                intensity: 'Recovery',
+                description: 'Easy kick on back without board',
+                equipment: [],
+                sendOffMode: 'lane-scaled',
+              }
             ],
           },
           {
@@ -646,8 +686,8 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         scheduledTime: '17:30 - 19:00',
         name: 'W1 Thursday: VO2Max Capacity & Lactate Tolerance',
         focus: 'Speed',
-        totalDistance: 4000,
-        estimatedMinutes: 75,
+        totalDistance: 3100,
+        estimatedMinutes: 60,
         confirmed: true,
         blocks: [
           {
@@ -672,11 +712,11 @@ export const INITIAL_WEEKS: WeekCycle[] = [
             id: 'w1-s4-b2',
             type: 'main',
             title: 'Main Set: Redline VO2Max Repeats',
-            rounds: 2,
+            rounds: 1,
             items: [
               {
                 id: 'w1-s4-i2',
-                reps: 6,
+                reps: 12,
                 distance: 100,
                 stroke: 'Freestyle',
                 intensity: 'VO2Max (EN3)',
@@ -686,7 +726,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
               },
               {
                 id: 'w1-s4-i3',
-                reps: 4,
+                reps: 8,
                 distance: 50,
                 stroke: 'Kick',
                 intensity: 'Sprint (SP)',
@@ -694,6 +734,16 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 equipment: ['Fins'],
                 sendOffMode: 'lane-scaled',
               },
+              {
+                id: 'w1-s4-i3b',
+                reps: 8,
+                distance: 100,
+                stroke: 'Pull',
+                intensity: 'Aerobic (EN1)',
+                description: 'Aerobic flush with pull buoy and paddles',
+                equipment: ['Pull Buoy', 'Paddles'],
+                sendOffMode: 'lane-scaled',
+              }
             ],
           },
           {
@@ -723,8 +773,8 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         scheduledTime: '06:00 - 07:30',
         name: 'W1 Friday: Sprint Explosiveness & Starts/Turns',
         focus: 'Speed',
-        totalDistance: 3200,
-        estimatedMinutes: 65,
+        totalDistance: 2600,
+        estimatedMinutes: 50,
         confirmed: true,
         blocks: [
           {
@@ -764,7 +814,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
               },
               {
                 id: 'w1-s5-i3',
-                reps: 6,
+                reps: 8,
                 distance: 50,
                 stroke: 'Freestyle',
                 intensity: 'Sprint (SP)',
@@ -773,6 +823,16 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 sendOffMode: 'fixed-interval',
                 fixedInterval: '1:30',
               },
+              {
+                id: 'w1-s5-i3b',
+                reps: 12,
+                distance: 100,
+                stroke: 'Choice',
+                intensity: 'Aerobic (EN1)',
+                description: 'Smooth aerobic pacing',
+                equipment: [],
+                sendOffMode: 'lane-scaled',
+              }
             ],
           },
           {
@@ -784,7 +844,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
               {
                 id: 'w1-s5-i4',
                 reps: 1,
-                distance: 400,
+                distance: 300,
                 stroke: 'Choice',
                 intensity: 'Recovery',
                 description: 'Active recovery with pull buoy',
@@ -800,10 +860,10 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         weekNumber: 1,
         dayOfWeek: 'Saturday',
         scheduledTime: '07:00 - 09:00',
-        name: 'W1 Saturday: 50m Olympic Pool Aerobic Monster',
+        name: 'W1 Saturday: 50m Olympic Pool Aerobic Endurance',
         focus: 'Threshold',
-        totalDistance: 5300,
-        estimatedMinutes: 105,
+        totalDistance: 3500,
+        estimatedMinutes: 70,
         confirmed: true,
         blocks: [
           {
@@ -815,10 +875,10 @@ export const INITIAL_WEEKS: WeekCycle[] = [
               {
                 id: 'w1-s6-i1',
                 reps: 1,
-                distance: 800,
+                distance: 500,
                 stroke: 'Freestyle',
                 intensity: 'Aerobic (EN1)',
-                description: 'Long course feel: 200 Free / 200 Pull / 200 Kick / 200 IM Drill',
+                description: 'Long course feel: 200 Free / 100 Pull / 100 Kick / 100 IM Drill',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -827,13 +887,13 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s6-b2',
             type: 'main',
-            title: 'Main Set: The 3000m Aerobic Ladder',
+            title: 'Main Set: The Aerobic Ladder',
             rounds: 1,
             items: [
               {
                 id: 'w1-s6-i2',
                 reps: 1,
-                distance: 800,
+                distance: 600,
                 stroke: 'Freestyle',
                 intensity: 'Aerobic (EN1)',
                 description: 'Paced @ base + 12s, steady heart rate',
@@ -844,10 +904,10 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 id: 'w1-s6-i3',
                 reps: 2,
                 distance: 400,
-                stroke: 'Freestyle',
+                stroke: 'Pull',
                 intensity: 'Aerobic (EN1)',
-                description: 'Descend 1 to 2',
-                equipment: [],
+                description: 'With paddles & buoy, hold stroke count under 38 per 50m',
+                equipment: ['Pull Buoy', 'Paddles'],
                 sendOffMode: 'lane-scaled',
               },
               {
@@ -862,12 +922,12 @@ export const INITIAL_WEEKS: WeekCycle[] = [
               },
               {
                 id: 'w1-s6-i5',
-                reps: 6,
+                reps: 5,
                 distance: 100,
-                stroke: 'Pull',
+                stroke: 'Kick',
                 intensity: 'Threshold (EN2)',
-                description: 'With paddles, hold stroke count under 38 per 50m',
-                equipment: ['Pull Buoy', 'Paddles'],
+                description: 'Steady kick split pacing with kickboard',
+                equipment: ['Kickboard'],
                 sendOffMode: 'lane-scaled',
               },
             ],
@@ -881,7 +941,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
               {
                 id: 'w1-s6-i6',
                 reps: 1,
-                distance: 400,
+                distance: 300,
                 stroke: 'Choice',
                 intensity: 'Recovery',
                 description: 'Loosen arms, stretches on deck',
@@ -896,7 +956,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
   },
 ];
 
-// Helper to generate full 12-week macrocycle targets for visualization
+// Helper to generate full 12-week macrocycle targets for visualization (scaled to ~3,000m/session base)
 export const SEASON_MACROCYCLE_TARGETS: {
   weekNumber: number;
   theme: string;
@@ -904,18 +964,18 @@ export const SEASON_MACROCYCLE_TARGETS: {
   targetVolumeMeters: number;
   focus: string;
 }[] = [
-  { weekNumber: 1, theme: 'Baseline & Aerobic Base', phase: 'Base Phase', targetVolumeMeters: 22000, focus: 'CSS Benchmarks' },
-  { weekNumber: 2, theme: 'Progressive Overload 1', phase: 'Build Phase', targetVolumeMeters: 23800, focus: 'Volume + CSS Ladders' },
-  { weekNumber: 3, theme: 'Threshold Expansion', phase: 'Build Phase', targetVolumeMeters: 25500, focus: 'EN2 Threshold Sets' },
-  { weekNumber: 4, theme: 'Active Recovery & Test', phase: 'Deload / Recovery', targetVolumeMeters: 18000, focus: 'Deload & 400m CSS Test' },
-  { weekNumber: 5, theme: 'VO2Max Power Build', phase: 'Build Phase', targetVolumeMeters: 26500, focus: 'Aerobic Power + Kick' },
-  { weekNumber: 6, theme: 'Peak Aerobic Volume', phase: 'Build Phase', targetVolumeMeters: 28000, focus: 'Highest Volume of Season' },
-  { weekNumber: 7, theme: 'Threshold Density', phase: 'Threshold Peak', targetVolumeMeters: 27000, focus: 'Lactate Shuttling' },
-  { weekNumber: 8, theme: 'Mid-Season Deload', phase: 'Deload / Recovery', targetVolumeMeters: 19500, focus: 'Technique & Stroke Refinement' },
-  { weekNumber: 9, theme: 'Race Pace Specificity', phase: 'Threshold Peak', targetVolumeMeters: 25000, focus: 'Broken 200s & Race Pace' },
-  { weekNumber: 10, theme: 'Taper Phase 1 - Volume Drop', phase: 'Taper Phase', targetVolumeMeters: 20000, focus: '-25% Volume, High Speed' },
-  { weekNumber: 11, theme: 'Taper Phase 2 - Power & Rest', phase: 'Taper Phase', targetVolumeMeters: 15000, focus: 'Starts, Relays & Speed' },
-  { weekNumber: 12, theme: 'Championship Peak Week', phase: 'Race Week', targetVolumeMeters: 10500, focus: 'Championship Meet!' },
+  { weekNumber: 1, theme: 'Baseline & Aerobic Base', phase: 'Base Phase', targetVolumeMeters: 18000, focus: 'CSS Benchmarks' },
+  { weekNumber: 2, theme: 'Progressive Overload 1', phase: 'Build Phase', targetVolumeMeters: 19000, focus: 'Volume + CSS Ladders' },
+  { weekNumber: 3, theme: 'Threshold Expansion', phase: 'Build Phase', targetVolumeMeters: 20000, focus: 'EN2 Threshold Sets' },
+  { weekNumber: 4, theme: 'Active Recovery & Test', phase: 'Deload / Recovery', targetVolumeMeters: 14500, focus: 'Deload & 400m CSS Test' },
+  { weekNumber: 5, theme: 'VO2Max Power Build', phase: 'Build Phase', targetVolumeMeters: 20500, focus: 'Aerobic Power + Kick' },
+  { weekNumber: 6, theme: 'Peak Aerobic Volume', phase: 'Build Phase', targetVolumeMeters: 21500, focus: 'Highest Volume of Season' },
+  { weekNumber: 7, theme: 'Threshold Density', phase: 'Threshold Peak', targetVolumeMeters: 20000, focus: 'Lactate Shuttling' },
+  { weekNumber: 8, theme: 'Mid-Season Deload', phase: 'Deload / Recovery', targetVolumeMeters: 15000, focus: 'Technique & Stroke Refinement' },
+  { weekNumber: 9, theme: 'Race Pace Specificity', phase: 'Threshold Peak', targetVolumeMeters: 19000, focus: 'Broken 200s & Race Pace' },
+  { weekNumber: 10, theme: 'Taper Phase 1 - Volume Drop', phase: 'Taper Phase', targetVolumeMeters: 15500, focus: '-25% Volume, High Speed' },
+  { weekNumber: 11, theme: 'Taper Phase 2 - Power & Rest', phase: 'Taper Phase', targetVolumeMeters: 12000, focus: 'Starts, Relays & Speed' },
+  { weekNumber: 12, theme: 'Championship Peak Week', phase: 'Race Week', targetVolumeMeters: 9000, focus: 'Championship Meet!' },
 ];
 
 export const INITIAL_SEASON: SeasonPlan = {
@@ -925,6 +985,7 @@ export const INITIAL_SEASON: SeasonPlan = {
   poolLength: '25m',
   totalWeeks: 12,
   currentWeekNumber: 1,
+  targetSessionVolumeMeters: 3000,
   weeklySchedule: INITIAL_SCHEDULE,
   lanes: INITIAL_LANES,
   weeks: INITIAL_WEEKS,
