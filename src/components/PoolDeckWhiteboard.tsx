@@ -15,6 +15,14 @@ import {
   Bookmark
 } from 'lucide-react';
 import { SaveWorkoutModal } from './SaveWorkoutModal';
+import { 
+  translateStroke, 
+  translateIntensity, 
+  translateEquipment, 
+  translateBlockType,
+  translateCycleFocus,
+  formatDayGerman 
+} from '../utils/germanTranslations';
 
 interface PoolDeckWhiteboardProps {
   sessions: WorkoutSession[];
@@ -40,7 +48,6 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
   // Pace clock state (0 to 59 seconds loop)
   const [clockSeconds, setClockSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(false);
 
   useEffect(() => {
     let interval: any = null;
@@ -63,7 +70,7 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
   if (!currentSession) {
     return (
       <div className="p-8 text-center text-slate-400">
-        No session selected.
+        Keine Trainingseinheit ausgewählt.
       </div>
     );
   }
@@ -77,30 +84,30 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
           <div>
             <div className="flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-1">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-              <span>Poolside Whiteboard & Digital Pace Clock</span>
+              <span>Beckenrand-Whiteboard & Digitale Pace-Uhr</span>
             </div>
             <h2 className="text-2xl font-black text-white tracking-tight">
               {currentSession.name}
             </h2>
             <div className="flex items-center space-x-3 text-xs text-slate-400 mt-1">
-              <span>{currentSession.dayOfWeek} • {currentSession.scheduledTime}</span>
+              <span>{formatDayGerman(currentSession.dayOfWeek)} • {currentSession.scheduledTime}</span>
               <span>•</span>
               <span className="font-bold text-cyan-300">{currentSession.totalDistance.toLocaleString()}{poolLength.slice(-1)}</span>
               <span>•</span>
-              <span>{currentSession.estimatedMinutes} min duration</span>
+              <span>{currentSession.estimatedMinutes} Min Dauer</span>
             </div>
 
             {/* Switch Session Dropdown */}
             <div className="mt-3 flex items-center space-x-2">
-              <span className="text-xs text-slate-400 font-semibold">Select Practice:</span>
+              <span className="text-xs text-slate-400 font-semibold">Einheit wählen:</span>
               <select
                 value={currentSession.id}
                 onChange={e => onSelectSession(e.target.value)}
-                className="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-cyan-300 font-bold outline-none"
+                className="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-cyan-300 font-bold outline-none cursor-pointer"
               >
                 {sessions.map(s => (
                   <option key={s.id} value={s.id}>
-                    {s.dayOfWeek}: {s.name} ({s.totalDistance}m)
+                    {formatDayGerman(s.dayOfWeek)}: {s.name} ({s.totalDistance}m)
                   </option>
                 ))}
               </select>
@@ -112,13 +119,13 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
             {/* Visual Digital Display */}
             <div className="text-center px-4 py-2 bg-black/80 rounded-xl border border-cyan-900 shadow-2xl min-w-[140px]">
               <div className="text-[10px] uppercase font-bold text-cyan-500/80 tracking-widest mb-0.5">
-                SWIM PACE CLOCK
+                SCHWIMM-PACE-UHR
               </div>
               <div className="font-pace text-5xl font-black text-amber-400 tracking-wider">
                 {clockSeconds < 10 ? `0${clockSeconds}` : clockSeconds}
               </div>
               <div className="text-[9px] font-mono text-slate-500 mt-0.5">
-                SEC • CONTINUOUS SWEEP
+                SEK • DURCHLAUFEND
               </div>
             </div>
 
@@ -128,7 +135,7 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsRunning(!isRunning)}
-                  className={`p-2.5 rounded-xl font-bold text-xs flex items-center space-x-1.5 transition ${
+                  className={`p-2.5 rounded-xl font-bold text-xs flex items-center space-x-1.5 transition cursor-pointer ${
                     isRunning 
                       ? 'bg-amber-600 hover:bg-amber-500 text-white' 
                       : 'bg-emerald-600 hover:bg-emerald-500 text-white'
@@ -141,8 +148,8 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
                 <button
                   type="button"
                   onClick={handleResetClock}
-                  className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition"
-                  title="Reset clock to :00"
+                  className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition cursor-pointer"
+                  title="Uhr auf :00 zurücksetzen"
                 >
                   <RotateCcw className="w-4 h-4" />
                 </button>
@@ -152,20 +159,20 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsSaveModalOpen(true)}
-                  className="flex-1 px-3 py-1.5 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 transition"
-                  title="Save this completed session into your squad workout library"
+                  className="flex-1 px-3 py-1.5 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 transition cursor-pointer"
+                  title="Diese absolvierte Einheit in der Vorlagen-Bibliothek speichern"
                 >
                   <Bookmark className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Save to Library</span>
+                  <span>In Bibliothek</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handlePrint}
-                  className="flex-1 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition"
+                  className="flex-1 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition cursor-pointer"
                 >
                   <Printer className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Print Sheet</span>
+                  <span>Drucken</span>
                 </button>
               </div>
             </div>
@@ -182,18 +189,18 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
               {currentSession.name}
             </h1>
             <p className="text-xs text-slate-400 mt-1">
-              Focus: <span className="text-cyan-300 font-bold">{currentSession.focus}</span> | Total Volume: <span className="font-bold">{currentSession.totalDistance}{poolLength.slice(-1)}</span> | Estimated Time: {currentSession.estimatedMinutes} min
+              Schwerpunkt: <span className="text-cyan-300 font-bold">{translateCycleFocus(currentSession.focus)}</span> | Gesamtstrecke: <span className="font-bold">{currentSession.totalDistance}{poolLength.slice(-1)}</span> | Geschätzte Dauer: {currentSession.estimatedMinutes} Min
             </p>
           </div>
           <div className="text-right text-xs text-slate-400 font-mono">
-            {poolLength} Course
+            {poolLength === '25m' ? 'Kurzbahn (25m)' : poolLength === '50m' ? 'Langbahn (50m)' : '25 Yards (25y)'}
           </div>
         </div>
 
         {/* Multi-Lane Columns Header Banner */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-2 pb-2 border-b border-slate-800">
           <div className="md:col-span-4 text-xs font-bold uppercase tracking-wider text-slate-400">
-            Set Drill / Exercise
+            Serie / Übungsform
           </div>
           <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
             {lanes.map(l => (
@@ -207,8 +214,8 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
                 >
                   {l.laneNumber}
                 </div>
-                <div className="text-[11px] font-bold text-white truncate">{l.name.replace(/Lane \d+: /, '')}</div>
-                <div className="text-[10px] font-mono text-cyan-400">Base {l.basePace100mSeconds}s</div>
+                <div className="text-[11px] font-bold text-white truncate">{l.name.replace(/Lane \d+: /, '').replace(/Bahn \d+: /, '')}</div>
+                <div className="text-[10px] font-mono text-cyan-400">Basis {l.basePace100mSeconds}s</div>
               </div>
             ))}
           </div>
@@ -226,7 +233,7 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
                   block.type === 'secondary' ? 'bg-blue-500' : 'bg-purple-500'
                 }`} />
                 <h3 className="text-sm font-black text-white uppercase tracking-wider">
-                  {block.title} {block.rounds > 1 ? `(${block.rounds} Rounds)` : ''}
+                  {block.title} {block.rounds > 1 ? `(${block.rounds} Runden)` : ''}
                 </h3>
               </div>
 
@@ -240,10 +247,10 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
                     <div className="md:col-span-4 space-y-1">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-bold text-white">
-                          {item.reps} × {item.distance}m {item.stroke}
+                          {item.reps} × {item.distance}m {translateStroke(item.stroke)}
                         </span>
                         <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-900 text-amber-300 font-semibold border border-slate-800">
-                          {item.intensity}
+                          {translateIntensity(item.intensity)}
                         </span>
                       </div>
 
@@ -257,7 +264,7 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
                         <div className="flex flex-wrap gap-1">
                           {(item.equipment || []).map(eq => (
                             <span key={eq} className="text-[9px] px-1 py-0.2 rounded bg-slate-900 text-slate-400">
-                              {eq}
+                              {translateEquipment(eq)}
                             </span>
                           ))}
                         </div>
@@ -283,10 +290,10 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
                               @{sendOff.sendOffStr}
                             </div>
                             <div className="text-[10px] text-slate-400 font-mono">
-                              Swim: {sendOff.swimTimeStr}
+                              Ziel: {sendOff.swimTimeStr}
                             </div>
                             <div className="text-[9px] text-slate-500">
-                              +{sendOff.restSec}s rest
+                              +{sendOff.restSec}s Pause
                             </div>
                           </div>
                         );
@@ -317,7 +324,7 @@ export const PoolDeckWhiteboard: React.FC<PoolDeckWhiteboardProps> = ({
       {savedSuccessToast && (
         <div className="fixed bottom-6 right-6 z-50 bg-slate-900 border border-cyan-500/50 text-cyan-300 px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-2 text-xs font-bold animate-in fade-in duration-300">
           <Bookmark className="w-4 h-4 text-cyan-400" />
-          <span>Saved to Workout Library!</span>
+          <span>In Trainingsbibliothek gespeichert!</span>
         </div>
       )}
     </div>

@@ -89,13 +89,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               <Share2 className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-white">Share & Web Access</h2>
-              <p className="text-xs text-slate-400">Make Swim Coach accessible to swimmers, staff, and other coaches</p>
+              <h2 className="text-lg font-black text-white">Teilen & Web-Zugriff</h2>
+              <p className="text-xs text-slate-400">Mache den Schwimmtrainer für Athleten, Trainerteam und Eltern zugänglich</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -105,38 +105,38 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         <div className="flex border-b border-slate-800 bg-slate-950/40 px-5 pt-2">
           <button
             onClick={() => setActiveTab('link')}
-            className={`px-4 py-2.5 text-xs font-bold border-b-2 transition flex items-center space-x-2 ${
+            className={`px-4 py-2.5 text-xs font-bold border-b-2 transition flex items-center space-x-2 cursor-pointer ${
               activeTab === 'link'
                 ? 'border-cyan-400 text-cyan-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
             <Globe className="w-3.5 h-3.5" />
-            <span>Direct Web Link</span>
+            <span>Direkter Web-Link</span>
           </button>
 
           <button
             onClick={() => setActiveTab('export')}
-            className={`px-4 py-2.5 text-xs font-bold border-b-2 transition flex items-center space-x-2 ${
+            className={`px-4 py-2.5 text-xs font-bold border-b-2 transition flex items-center space-x-2 cursor-pointer ${
               activeTab === 'export'
                 ? 'border-cyan-400 text-cyan-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Export & Sync Data</span>
+            <span>Export & Daten-Backup</span>
           </button>
 
           <button
             onClick={() => setActiveTab('hosting')}
-            className={`px-4 py-2.5 text-xs font-bold border-b-2 transition flex items-center space-x-2 ${
+            className={`px-4 py-2.5 text-xs font-bold border-b-2 transition flex items-center space-x-2 cursor-pointer ${
               activeTab === 'hosting'
                 ? 'border-cyan-400 text-cyan-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
             <Server className="w-3.5 h-3.5" />
-            <span>Custom Domain & Deployment</span>
+            <span>Eigene Domain & Bereitstellung</span>
           </button>
         </div>
 
@@ -147,7 +147,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               {/* Live Web Link Box */}
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
                 <label className="text-xs font-bold text-slate-300 block">
-                  Your Web Application URL:
+                  Deine Web-App-Adresse (URL):
                 </label>
                 <div className="flex items-center space-x-2">
                   <input
@@ -158,14 +158,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   />
                   <button
                     onClick={handleCopyLink}
-                    className="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1.5 transition shrink-0"
+                    className="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1.5 transition shrink-0 cursor-pointer"
                   >
                     {copiedUrl ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedUrl ? 'Copied!' : 'Copy Link'}</span>
+                    <span>{copiedUrl ? 'Kopiert!' : 'Link kopieren'}</span>
                   </button>
                 </div>
                 <p className="text-[11px] text-slate-400">
-                  Anyone with this URL can open and interact with the application on desktop, tablet, or phone.
+                  Jeder mit dieser URL kann die Anwendung auf Computer, Tablet oder Smartphone aufrufen.
                 </p>
               </div>
 
@@ -173,29 +173,29 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               <div className="bg-cyan-950/30 border border-cyan-500/20 rounded-xl p-4 space-y-3">
                 <h4 className="text-xs font-bold text-cyan-300 uppercase tracking-wider flex items-center space-x-1.5">
                   <ShieldCheck className="w-4 h-4 text-cyan-400" />
-                  <span>How to Share from Google AI Studio</span>
+                  <span>Freigabe über Google AI Studio</span>
                 </h4>
                 <ol className="text-xs text-slate-300 space-y-2 list-decimal list-inside pl-1 leading-relaxed">
                   <li>
-                    Look at the <strong>top-right header of Google AI Studio</strong>.
+                    Sieh oben rechts in die Leiste von <strong>Google AI Studio</strong>.
                   </li>
                   <li>
-                    Click the <strong>"Share"</strong> button next to the app controls.
+                    Klicke auf den Button <strong>"Share"</strong> neben den App-Steuerelementen.
                   </li>
                   <li>
-                    Set the permission to <strong>"Anyone with the link can view"</strong> or add specific collaborator emails.
+                    Setze die Berechtigung auf <strong>"Anyone with the link can view"</strong> oder füge E-Mails hinzu.
                   </li>
                   <li>
-                    Copy the public shared link and send it to your assistant coaches, swimmers, or team parents!
+                    Kopiere den öffentlichen Link und teile ihn mit Trainern, Schwimmern oder Eltern!
                   </li>
                 </ol>
               </div>
 
               {/* Mobile / Deck Whiteboard Usage Tip */}
               <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-4 text-xs text-slate-400 space-y-1">
-                <span className="font-bold text-slate-200 block">Poolside Tablet Tip:</span>
+                <span className="font-bold text-slate-200 block">Tipp fürs Beckenrand-Tablet:</span>
                 <p>
-                  Coaches can open this URL on an iPad or water-resistant tablet at the pool deck and use the <strong>"Poolside Whiteboard"</strong> tab with live digital pace clock during training.
+                  Trainer können diese URL auf einem iPad oder wasserdichten Tablet am Beckenrand öffnen und den Reiter <strong>"Beckenrand-Whiteboard"</strong> mit laufender digitaler Pace-Uhr während des Trainings nutzen.
                 </p>
               </div>
             </div>
@@ -205,25 +205,25 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             <div className="space-y-5">
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-                  Download Squad & Season Backup
+                  Kader- & Saison-Backup herunterladen
                 </h4>
                 <p className="text-xs text-slate-400">
-                  Export your current season plan, microcycles, lane CSS paces, rosters, and custom drill library as a JSON file.
+                  Exportiere deinen aktuellen Saisonplan, Mikrozyklen, Bahnen-CSS-Zeiten, Kaderlisten und Übungsbibliothek als JSON-Datei.
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
                   <button
                     onClick={handleExportJson}
-                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1.5 transition"
+                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1.5 transition cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span>Download Season (.json)</span>
+                    <span>Saisonplan (.json) herunterladen</span>
                   </button>
                   <button
                     onClick={handleCopyJson}
-                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-lg flex items-center space-x-1.5 transition"
+                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-lg flex items-center space-x-1.5 transition cursor-pointer"
                   >
                     {copiedJson ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedJson ? 'Copied Raw JSON' : 'Copy JSON'}</span>
+                    <span>{copiedJson ? 'JSON kopiert' : 'JSON kopieren'}</span>
                   </button>
                 </div>
               </div>
@@ -231,14 +231,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               {/* Import Section */}
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-                  Import Squad & Season File
+                  Kader- & Saison-Datei importieren
                 </h4>
                 <p className="text-xs text-slate-400">
-                  Load workouts, macrocycles, and lane configurations created by another coach or restored from a previous backup.
+                  Lade Einheiten, Makrozyklen und Bahnenkonfigurationen, die von einem anderen Trainer erstellt oder aus einem vorherigen Backup gesichert wurden.
                 </p>
                 <label className="inline-flex items-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs rounded-lg cursor-pointer transition">
                   <Upload className="w-3.5 h-3.5" />
-                  <span>Choose JSON File to Import</span>
+                  <span>JSON-Datei zum Importieren wählen</span>
                   <input
                     type="file"
                     accept=".json"
@@ -254,26 +254,26 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
                 <h4 className="font-bold text-white uppercase tracking-wider text-xs">
-                  Deploying as an Independent Website
+                  Als eigenständige Website bereitstellen
                 </h4>
                 <p className="text-slate-400">
-                  This app is built with standard <strong>React + Vite + TypeScript</strong>. It requires no heavy backend and compiles into lightweight static HTML, JavaScript, and CSS.
+                  Diese App basiert auf modernem <strong>React + Vite + TypeScript</strong>. Sie erfordert kein schweres Backend und kompiliert in blitzschnelles statisches HTML, JavaScript und CSS.
                 </p>
               </div>
 
               <div className="space-y-3">
-                <h5 className="font-bold text-cyan-300">Option 1: Deploy to Vercel / Netlify / Cloudflare Pages</h5>
+                <h5 className="font-bold text-cyan-300">Option 1: Bereitstellung auf Vercel / Netlify / Cloudflare Pages</h5>
                 <ol className="list-decimal list-inside space-y-1.5 text-slate-400 pl-1">
-                  <li>Export or commit the code to a GitHub repository.</li>
-                  <li>Connect the repo to <strong>Vercel</strong>, <strong>Netlify</strong>, or <strong>Cloudflare Pages</strong>.</li>
+                  <li>Code in ein GitHub-Repository übertragen.</li>
+                  <li>Repository mit <strong>Vercel</strong>, <strong>Netlify</strong> oder <strong>Cloudflare Pages</strong> verknüpfen.</li>
                   <li>Build Command: <code className="bg-slate-950 px-1.5 py-0.5 rounded text-cyan-300">npm run build</code></li>
                   <li>Publish Directory: <code className="bg-slate-950 px-1.5 py-0.5 rounded text-cyan-300">dist</code></li>
-                  <li>Your app will be live on your custom domain (e.g. <code className="text-white">swim.yourclub.com</code>).</li>
+                  <li>Deine App ist unter deiner eigenen Domain erreichbar (z.B. <code className="text-white">schwimmen.deinverein.de</code>).</li>
                 </ol>
               </div>
 
               <div className="space-y-2 pt-2 border-t border-slate-800">
-                <h5 className="font-bold text-cyan-300">Option 2: Deploy to Firebase Hosting</h5>
+                <h5 className="font-bold text-cyan-300">Option 2: Bereitstellung über Firebase Hosting</h5>
                 <pre className="bg-slate-950 p-3 rounded-lg text-slate-300 font-mono text-[11px] overflow-x-auto">
 {`npm run build
 firebase init hosting
@@ -288,9 +288,9 @@ firebase deploy --only hosting`}
         <div className="p-4 border-t border-slate-800 bg-slate-950/80 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition"
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer"
           >
-            Close
+            Schließen
           </button>
         </div>
       </div>

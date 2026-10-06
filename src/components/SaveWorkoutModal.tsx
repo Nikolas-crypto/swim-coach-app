@@ -11,6 +11,7 @@ import {
   FileText, 
   Sparkles 
 } from 'lucide-react';
+import { formatDayGerman } from '../utils/germanTranslations';
 
 interface SaveWorkoutModalProps {
   session: WorkoutSession;
@@ -25,11 +26,11 @@ export const SaveWorkoutModal: React.FC<SaveWorkoutModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const [name, setName] = useState(session.name || 'Completed Workout');
+  const [name, setName] = useState(session.name || 'Absolviertes Training');
   const [category, setCategory] = useState<SavedWorkoutItem['category']>('Threshold');
   const [isCompleted, setIsCompleted] = useState(true);
   const [notes, setNotes] = useState('');
-  const [tagsInput, setTagsInput] = useState('Squad Set, High Intensity');
+  const [tagsInput, setTagsInput] = useState('Kadertraining, Hohe Intensität');
 
   if (!isOpen) return null;
 
@@ -45,7 +46,7 @@ export const SaveWorkoutModal: React.FC<SaveWorkoutModalProps> = ({
 
     const savedWorkout: SavedWorkoutItem = {
       id: `saved-${Date.now()}`,
-      name: name.trim() || 'Saved Workout',
+      name: name.trim() || 'Gespeichertes Training',
       category,
       focus: session.focus,
       totalDistance: totalDist,
@@ -77,30 +78,30 @@ export const SaveWorkoutModal: React.FC<SaveWorkoutModalProps> = ({
             <Bookmark className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-black text-white tracking-tight">Save Workout to Library</h2>
-            <p className="text-xs text-slate-400">Save this completed session or template for future squad microcycles</p>
+            <h2 className="text-xl font-black text-white tracking-tight">Training in Bibliothek speichern</h2>
+            <p className="text-xs text-slate-400">Speichere diese absolvierte Einheit oder Vorlage für künftige Kader-Mikrozyklen</p>
           </div>
         </div>
 
         {/* Distance & Blocks Summary */}
         <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-3.5 mb-5 flex items-center justify-between text-xs">
           <div>
-            <span className="text-slate-400">Session: </span>
-            <span className="font-bold text-white">{session.dayOfWeek} (Week {session.weekNumber})</span>
+            <span className="text-slate-400">Einheit: </span>
+            <span className="font-bold text-white">{formatDayGerman(session.dayOfWeek)} (Woche {session.weekNumber})</span>
           </div>
           <div className="flex items-center space-x-3">
             <span className="font-mono font-extrabold text-cyan-400">{totalDist.toLocaleString()}m</span>
             <span className="text-slate-500">•</span>
-            <span className="text-slate-300 font-semibold">{estMins} mins</span>
+            <span className="text-slate-300 font-semibold">{estMins} Min</span>
             <span className="text-slate-500">•</span>
-            <span className="text-slate-400 font-semibold">{session.blocks?.length || 0} blocks</span>
+            <span className="text-slate-400 font-semibold">{session.blocks?.length || 0} Serien</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-              Workout Title in Library
+              Titel des Trainings in der Bibliothek
             </label>
             <input
               type="text"
@@ -114,27 +115,27 @@ export const SaveWorkoutModal: React.FC<SaveWorkoutModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-                Category
+                Kategorie
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as SavedWorkoutItem['category'])}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
               >
-                <option value="Threshold">Threshold Peak</option>
-                <option value="Endurance">Aerobic / Endurance</option>
-                <option value="Speed">Sprint & Speed</option>
-                <option value="IM / Medley">IM / Medley</option>
-                <option value="Technique">Technique & Drill</option>
-                <option value="Recovery">Recovery / Deload</option>
-                <option value="Test Set">CSS Test Set</option>
-                <option value="Coach Inspiration">Coach Inspiration</option>
+                <option value="Threshold">Schwellenbereich (CSS / ANS)</option>
+                <option value="Endurance">Grundlagenausdauer (GA1)</option>
+                <option value="Speed">Schnelligkeit & Sprint</option>
+                <option value="IM / Medley">Lagen</option>
+                <option value="Technique">Technik & Rumpf</option>
+                <option value="Recovery">Regeneration & Kompensation</option>
+                <option value="Test Set">CSS-Leistungstest</option>
+                <option value="Coach Inspiration">Trainer-Inspiration</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-                Completed Status
+                Status
               </label>
               <label className="flex items-center space-x-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 cursor-pointer">
                 <input
@@ -143,19 +144,19 @@ export const SaveWorkoutModal: React.FC<SaveWorkoutModalProps> = ({
                   onChange={(e) => setIsCompleted(e.target.checked)}
                   className="rounded text-cyan-500 focus:ring-cyan-500/30"
                 />
-                <span className="text-xs font-bold text-emerald-400">Mark as Completed</span>
+                <span className="text-xs font-bold text-emerald-400">Als absolviert markieren</span>
               </label>
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-              Coach Notes & Set Performance
+              Trainerhinweise & Serien-Feedback
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="e.g. Swimmers held pace within 1 second of CSS. Great turn breakouts off breaststroke..."
+              placeholder="z.B. Alle Schwimmer hielten die CSS auf unter 1s Abweichung. Starke Tauchphasen nach Brustwenden..."
               rows={2}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
             />
@@ -163,13 +164,13 @@ export const SaveWorkoutModal: React.FC<SaveWorkoutModalProps> = ({
 
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-              Tags (comma separated)
+              Schlagwörter / Tags (kommagetrennt)
             </label>
             <input
               type="text"
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
-              placeholder="e.g. Fins, Pull Buoy, 100er, German Base"
+              placeholder="z.B. Flossen, Pullbuoy, 100er, Meisterschaft"
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
             />
           </div>
@@ -180,14 +181,14 @@ export const SaveWorkoutModal: React.FC<SaveWorkoutModalProps> = ({
               onClick={onClose}
               className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition"
             >
-              Cancel
+              Abbrechen
             </button>
             <button
               type="submit"
               className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-black shadow-lg shadow-cyan-950/40 transition flex items-center space-x-1.5"
             >
               <Bookmark className="w-3.5 h-3.5" />
-              <span>Save to Workout Library</span>
+              <span>In Trainingsbibliothek speichern</span>
             </button>
           </div>
         </form>

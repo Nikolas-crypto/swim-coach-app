@@ -59,45 +59,45 @@ export const Navbar: React.FC<NavbarProps> = ({
   const adminTabs: { id: ActiveTab; label: string; icon: React.ReactNode; badge?: string }[] = [
     {
       id: 'planner',
-      label: 'Weekly Planner',
+      label: 'Wochenplaner',
       icon: <Calendar className="w-4 h-4" />,
     },
     {
       id: 'builder',
-      label: 'Workout Builder',
+      label: 'Trainings-Editor',
       icon: <Dumbbell className="w-4 h-4" />,
-      badge: 'Drag & Drop',
+      badge: 'Baukasten',
     },
     {
       id: 'progression',
-      label: 'Season Progression',
+      label: 'Saisonverlauf',
       icon: <TrendingUp className="w-4 h-4" />,
     },
     {
       id: 'lanes',
-      label: 'Lane Rosters & Paces',
+      label: 'Bahnen & Kader',
       icon: <Gauge className="w-4 h-4" />,
-      badge: `${season?.lanes?.length || 0} Lanes`,
+      badge: `${season?.lanes?.length || 0} Bahnen`,
     },
     {
       id: 'whiteboard',
-      label: 'Poolside Whiteboard',
+      label: 'Beckenrand-Whiteboard',
       icon: <Clipboard className="w-4 h-4" />,
     },
     {
       id: 'library',
-      label: 'Workout Library',
+      label: 'Trainingsbibliothek',
       icon: <Bookmark className="w-4 h-4" />,
-      badge: 'Saved & Base',
+      badge: 'Vorlagen',
     },
   ];
 
   const swimmerTabs: { id: ActiveTab; label: string; icon: React.ReactNode; badge?: string }[] = [
     {
       id: 'planner',
-      label: `Week ${season?.currentWeekNumber || 1} Schedule`,
+      label: `Woche ${season?.currentWeekNumber || 1} Trainingsplan`,
       icon: <Calendar className="w-4 h-4" />,
-      badge: 'Current Week Only',
+      badge: 'Aktuelle Woche',
     },
   ];
 
@@ -130,14 +130,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                     ? 'bg-cyan-950 text-cyan-300 border-cyan-800'
                     : 'bg-emerald-950 text-emerald-300 border-emerald-800'
                 }`}>
-                  {isAdmin ? 'ADMIN SQUAD' : 'SWIMMER PORTAL'}
+                  {isAdmin ? 'TRAINER-BEREICH' : 'ATHLETEN-PORTAL'}
                 </span>
               </div>
               <div className="text-xs text-slate-400 truncate max-w-[180px] sm:max-w-xs flex items-center space-x-1">
-                <span className="truncate">{season?.name || 'Championship Squad'}</span>
+                <span className="truncate">{season?.name || 'Wettkampfkader'}</span>
                 {!isAdmin && (
                   <span className="text-[11px] text-emerald-400 font-medium">
-                    • Week {season?.currentWeekNumber || 1}
+                    • Woche {season?.currentWeekNumber || 1}
                   </span>
                 )}
               </div>
@@ -183,30 +183,30 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold shadow-inner"
               title={
                 syncStatus === 'synced'
-                  ? `Real-time cloud database connected. Last synced at ${lastSyncedAt ? lastSyncedAt.toLocaleTimeString() : 'just now'}. Changes sync across all devices.`
+                  ? `Cloud-Datenbank verbunden. Zuletzt synchronisiert: ${lastSyncedAt ? lastSyncedAt.toLocaleTimeString('de-DE') : 'soeben'}. Änderungen werden auf allen Geräten aktualisiert.`
                   : syncStatus === 'saving'
-                  ? 'Saving changes to cloud Firestore...'
+                  ? 'Speichere Änderungen in der Cloud...'
                   : syncStatus === 'error'
-                  ? 'Cloud sync issue. Edits cached locally.'
-                  : 'Connecting to Cloud Firestore...'
+                  ? 'Synchronisierungsfehler. Änderungen lokal zwischengespeichert.'
+                  : 'Verbinde mit Cloud-Datenbank...'
               }
             >
               {syncStatus === 'connected' && (
                 <>
                   <RefreshCw className="w-3 h-3 text-cyan-400 animate-spin" />
-                  <span className="text-[11px] text-cyan-400 font-bold">Connecting...</span>
+                  <span className="text-[11px] text-cyan-400 font-bold">Verbinde...</span>
                 </>
               )}
               {syncStatus === 'synced' && (
                 <>
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[11px] text-emerald-400 font-bold">Cloud Synced</span>
+                  <span className="text-[11px] text-emerald-400 font-bold">Synchronisiert</span>
                 </>
               )}
               {syncStatus === 'saving' && (
                 <>
                   <RefreshCw className="w-3 h-3 text-amber-400 animate-spin" />
-                  <span className="text-[11px] text-amber-400 font-bold">Syncing...</span>
+                  <span className="text-[11px] text-amber-400 font-bold">Speichert...</span>
                 </>
               )}
               {syncStatus === 'error' && (
@@ -229,7 +229,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         ? 'bg-cyan-500 text-slate-950'
                         : 'text-slate-400 hover:text-white'
                     }`}
-                    title={`${len === '25m' ? 'Short Course Meters' : len === '50m' ? 'Long Course Meters' : 'Short Course Yards'}`}
+                    title={`${len === '25m' ? '25m Kurzbahn (SCM)' : len === '50m' ? '50m Langbahn (LCM)' : '25y Kurzbahn Yards (SCY)'}`}
                   >
                     {len}
                   </button>
@@ -237,7 +237,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             ) : (
               <span className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-xs font-extrabold text-cyan-300">
-                {poolLength} Pool
+                {poolLength === '25m' ? '25m Kurzbahn' : poolLength === '50m' ? '50m Langbahn' : '25y Yardbahn'}
               </span>
             )}
 
@@ -247,16 +247,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   onClick={onOpenShare}
                   className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition flex items-center space-x-1.5 cursor-pointer shadow-sm shadow-cyan-950"
-                  title="Share app web link or export squad plans"
+                  title="App-Link teilen oder Trainingspläne exportieren"
                 >
                   <Share2 className="w-3.5 h-3.5 text-cyan-400" />
-                  <span className="hidden sm:inline">Share</span>
+                  <span className="hidden sm:inline">Teilen</span>
                 </button>
 
                 <button
                   onClick={onOpenSettings}
                   className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-800 transition cursor-pointer"
-                  title="Season Goals & Training Schedule Setup"
+                  title="Saisonziele & Trainingszeiten einrichten"
                 >
                   <Settings className="w-4 h-4" />
                 </button>
@@ -270,7 +270,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   ? 'bg-cyan-950/60 border-cyan-500/40 text-cyan-300' 
                   : 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
               }`}
-              title={isAdmin ? 'Logged in as Admin (Full Control)' : 'Logged in as Swimmer (Current Week Only)'}
+              title={isAdmin ? 'Angemeldet als Trainer (Voller Zugriff)' : 'Angemeldet als Schwimmer (Nur Ansicht der aktuellen Woche)'}
             >
               {isAdmin ? (
                 <Crown className="w-3.5 h-3.5 text-amber-300" />
@@ -278,7 +278,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <UserIcon className="w-3.5 h-3.5 text-emerald-300" />
               )}
               <span className="hidden sm:inline max-w-[100px] truncate">
-                {user.displayName || (isAdmin ? 'Admin' : 'Swimmer')}
+                {user.displayName || (isAdmin ? 'Trainer' : 'Schwimmer')}
               </span>
             </div>
 
@@ -287,10 +287,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onSwitchRole}
                 className="hidden sm:flex items-center space-x-1 px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[11px] text-slate-400 hover:text-white border border-slate-800 transition cursor-pointer"
-                title={isAdmin ? "Switch to Swimmer View to test swimmer perspective" : "Switch to Admin / Coach Mode"}
+                title={isAdmin ? "Zur Athleten-Ansicht wechseln, um Schwimmer-Perspektive zu testen" : "Zum Trainer-Modus wechseln"}
               >
                 <Eye className="w-3 h-3 text-cyan-400" />
-                <span>{isAdmin ? "Swimmer View" : "Admin Mode"}</span>
+                <span>{isAdmin ? "Athleten-Ansicht" : "Trainer-Modus"}</span>
               </button>
             )}
 
@@ -298,7 +298,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onLogout}
               className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-rose-400 border border-slate-800 transition cursor-pointer"
-              title="Sign Out / Lock Portal"
+              title="Abmelden / Portal sperren"
             >
               <LogOut className="w-4 h-4" />
             </button>

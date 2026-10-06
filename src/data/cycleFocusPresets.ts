@@ -10,518 +10,518 @@ import { INSPIRATION_WORKOUTS, convertInspirationToSession } from './inspiration
 export const CYCLE_FOCUS_PRESETS: Record<CycleFocusType, CycleFocusConfig> = {
   endurance_focus: {
     id: 'endurance_focus',
-    name: 'Endurance & Aerobic Engine Block',
-    shortLabel: 'Endurance Cycle',
-    badge: 'Aerobic Base (EN1/EN2)',
+    name: 'Ausdauer- & Grundlagenausdauerblock (GA1/GA2)',
+    shortLabel: 'Ausdauer-Zyklus',
+    badge: 'Aerobe Basis (GA1/GA2)',
     accentColor: 'emerald',
-    summary: 'Focuses exclusively on expanding mitochondrial density, stroke economy, and continuous aerobic power without premature tapering.',
-    targetObjective: 'Elevate weekly mileage sustainably, build deep aerobic capillary networks, and condition kick & pull endurance for 400m+ events.',
-    physiologicalAdaptation: 'Mitochondrial biogenesis, elevated stroke volume, increased glycogen storage, and lactate buffering under aerobic steady state.',
+    summary: 'Konzentriert sich auf den Ausbau der mitochondrialen Dichte, der Bewegungseffizienz und der kontinuierlichen aeroben Leistungsfähigkeit ohne verfrühtes Tapering.',
+    targetObjective: 'Nachhaltige Steigerung der wöchentlichen Kilometerleistung, Aufbau tiefer aerober Kapillarnetzwerke und Kräftigung der Beinkraft für 400m+ Strecken.',
+    physiologicalAdaptation: 'Mitochondrien-Biogenese, vergrößertes Schlagvolumen des Herzens, optimierte Glykogenspeicherung und Laktatabbau im aeroben Gleichgewicht.',
     suggestedDurationWeeks: 8,
-    weeklyStructureSummary: '3 loading weeks : 1 regeneration week ratio. High percentage of aerobic steady-state ladders (300m-800m sets), pull-buoy endurance, and aerobic kick conditioning.',
+    weeklyStructureSummary: 'Verhältnis von 3 Belastungswochen : 1 Regenerationswoche. Hoher Anteil an aeroben Dauertreppen (300m–800m), Pullbuoy-Ausdauer und Beinschlagserien.',
     defaultWeeklyVolumeBase: 19500,
     benchmarks: [
       {
-        metric: 'Critical Swim Speed (CSS)',
-        targetDescription: 'Establish steady baseline CSS via 400m & 200m time trials.',
-        testProtocol: '400m Free for time + 15 min active recovery + 200m Free for time.'
+        metric: 'Kritische Schwimmgeschwindigkeit (CSS)',
+        targetDescription: 'Ermittlung der verlässlichen Basis-CSS über 400m & 200m Zeitschwimmen.',
+        testProtocol: '400m Kraul auf Zeit + 15 Min. aktive Pause + 200m Kraul auf Zeit.'
       },
       {
-        metric: 'Aerobic Heart Rate Drift',
-        targetDescription: 'Hold sub-145 bpm at CSS + 6s over 3000m total continuous work.',
-        testProtocol: '3x1000m or 6x500m on send-off with 20s rest, monitoring stroke count and HR.'
+        metric: 'Aerobe Herzfrequenz-Stabilität',
+        targetDescription: 'Herzfrequenz unter 145 bpm bei CSS + 6s über 3000m Gesamtarbeit halten.',
+        testProtocol: '3x1000m oder 6x500m mit 20s Pause, Überwachung von Zugzahl und Puls.'
       },
       {
-        metric: 'Kick Aerobic Capacity',
-        targetDescription: 'Complete 10x100m kick holding consistent splits within 5 seconds.',
-        testProtocol: '10x100m Kick with board on send-off base + 25s.'
+        metric: 'Beinschlag-Grundlagenausdauer',
+        targetDescription: '10x100m Beine mit Abweichungen unter 5 Sekunden absolvieren.',
+        testProtocol: '10x100m Beine mit Brett auf Abgang Basis + 25s.'
       }
     ],
     blueprints: [
       {
         weekNumber: 1,
-        theme: 'Aerobic Foundation & Stroke Count Benchmark',
+        theme: 'Aerobe Grundlage & Zugzahl-Benchmark',
         phase: 'Base Phase',
         targetVolumeMeters: 18000,
-        focus: 'Aerobic Baseline & SWOLF Check',
+        focus: 'Aerobe Basis & SWOLF-Kontrolle',
         primaryEnergyZone: 'Aerobic (EN1)',
-        keySessionHighlight: '5x300m Free descending 1-5 + 6x50m kick holding tempo'
+        keySessionHighlight: '5x300m Kraul 1-5 steigernd + 6x50m Beine mit konstantem Tempo'
       },
       {
         weekNumber: 2,
-        theme: 'Progressive Aerobic Mileage & Distance per Stroke',
+        theme: 'Progressive aerobe Kilometer & Gleitweite pro Zug',
         phase: 'Build Phase',
         targetVolumeMeters: 19500,
-        focus: 'Volume Overload & DPS',
+        focus: 'Umfangsaufbau & Zuglänge',
         primaryEnergyZone: 'Aerobic (EN1)',
-        keySessionHighlight: '2400m Aerobic Ladder (600-400-300-200) @ Base + 10s'
+        keySessionHighlight: '2400m Aerobe Pyramide (600-400-300-200) @ Basis + 10s'
       },
       {
         weekNumber: 3,
-        theme: 'Endurance Peak & Pull Overload',
+        theme: 'Ausdauerspitze & Armzug-Überlastung',
         phase: 'Build Phase',
         targetVolumeMeters: 21000,
-        focus: 'Volume Peak 1 & Pull Endurance',
+        focus: 'Umfangsspitze 1 & Zugausdauer',
         primaryEnergyZone: 'Aerobic (EN1)',
-        keySessionHighlight: '6x300m Pull with paddles on 4:15 + 4x150m Be/Ge/Be kick/swim'
+        keySessionHighlight: '6x300m Arme mit Paddles auf 4:15 + 4x150m Be/Ge/Be Beine/Schwimmen'
       },
       {
         weekNumber: 4,
-        theme: 'Mid-Block Aerobic Test & Active Flush',
+        theme: 'Zwischenzyklus-Erholung & Laktat-Spülung',
         phase: 'Deload / Recovery',
         targetVolumeMeters: 15000,
-        focus: 'Mid-Cycle 400m/200m CSS Re-Test',
+        focus: 'Zyklus-Halbzeit 400m/200m CSS-Test',
         primaryEnergyZone: 'Recovery',
-        keySessionHighlight: 'Official CSS Benchmark Test (400m + 200m TT) + 1000m flush'
+        keySessionHighlight: 'Offizieller CSS-Test (400m + 200m) + 1000m aktives Ausschwimmen'
       },
       {
         weekNumber: 5,
-        theme: 'Extended Aerobic Volume & Long-Course Simulation',
+        theme: 'Erweiterter aerober Umfang & Langbahn-Simulation',
         phase: 'Build Phase',
         targetVolumeMeters: 20500,
-        focus: 'Sustained Pacing at CSS + 4s',
+        focus: 'Konstantes Pacing auf CSS + 4s',
         primaryEnergyZone: 'Aerobic (EN1)',
-        keySessionHighlight: '10x200m Free on steady interval (even pacing within 1.5s)'
+        keySessionHighlight: '10x200m Kraul auf festem Abgang (Split-Schwankung max. 1.5s)'
       },
       {
         weekNumber: 6,
-        theme: 'Maximum Aerobic Overload & Medley Endurance',
+        theme: 'Maximaler aerober Umfang & Lagen-Ausdauer',
         phase: 'Build Phase',
         targetVolumeMeters: 22000,
-        focus: 'Cycle Highest Volume & IM Balance',
+        focus: 'Höchster Saisonumfang & Lagen-Balance',
         primaryEnergyZone: 'Aerobic (EN1)',
-        keySessionHighlight: '4x(300m Free + 150m IM + 100m Kick) total 3.6km session'
+        keySessionHighlight: '4x(300m Kraul + 150m Lagen + 100m Beine) – 3.6km Einheit'
       },
       {
         weekNumber: 7,
-        theme: 'Endurance Consolidation & Threshold Bridge',
+        theme: 'Ausdauerkonsolidierung & Schwellenbrücke',
         phase: 'Build Phase',
         targetVolumeMeters: 19500,
-        focus: 'Sub-Threshold Density',
+        focus: 'Untere Schwellendichte',
         primaryEnergyZone: 'Aerobic (EN1)',
-        keySessionHighlight: '6x300m negative split (first 150 easy, second 150 hard)'
+        keySessionHighlight: '6x300m Negative Split (erste 150m locker, zweite 150m forciert)'
       },
       {
         weekNumber: 8,
-        theme: 'Cycle Culmination & 30-Minute Aerobic Test',
+        theme: 'Zyklusabschluss & 30-Minuten-Dauertest',
         phase: 'Threshold Peak',
         targetVolumeMeters: 16500,
-        focus: 'T-30 Distance Swim Benchmark',
+        focus: 'T-30 Dauerschwimm-Leistungstest',
         primaryEnergyZone: 'Threshold (EN2)',
-        keySessionHighlight: '30-minute continuous swim test for total distance & stroke efficiency'
+        keySessionHighlight: '30-Minuten-Dauertest auf Gesamtmeter und Zugeffizienz'
       }
     ]
   },
 
   threshold_focus: {
     id: 'threshold_focus',
-    name: 'Threshold & Critical Swim Speed (CSS) Mastery',
-    shortLabel: 'Threshold Cycle',
-    badge: 'Anaerobic Threshold (EN2)',
+    name: 'Schwellen- & CSS-Entwicklungsblock (GA2/ANS)',
+    shortLabel: 'Schwellen-Zyklus',
+    badge: 'Anaerobe Schwelle (GA2)',
     accentColor: 'amber',
-    summary: 'Focuses entirely on shifting the lactate inflection curve rightward, improving lactate clearance rate, and holding race pace under high systemic acidosis.',
-    targetObjective: 'Drop squad CSS pace by 2-4 seconds per 100m through dense interval repeats, descend ladders, and tight send-off recovery periods.',
-    physiologicalAdaptation: 'Lactate shuttling via monocarboxylate transporters (MCT1/4), improved muscular buffer capacity, and mental resilience under burning legs/forearms.',
+    summary: 'Verschiebung der individuellen anaeroben Schwelle nach rechts, Erhöhung der Laktat-Eliminationsrate und Beibehaltung des Renntempos unter Azidose.',
+    targetObjective: 'Senkung der CSS-Durchschnittszeit des Kaders um 2–4 Sekunden pro 100m durch dichte Intervallserien, negative Splits und straffe Pausengestaltung.',
+    physiologicalAdaptation: 'Laktat-Shuttling über Monocarboxylat-Transporter (MCT1/4), Ausbau der muskulären Pufferkapazität und mentale Härte bei brennender Muskulatur.',
     suggestedDurationWeeks: 8,
-    weeklyStructureSummary: '3 targeted threshold sessions per week: (1) CSS interval repetition, (2) descend/negative split pacing, (3) lactate clearance active recovery bridge.',
+    weeklyStructureSummary: '3 gezielte Schwelleneinheiten pro Woche: (1) CSS-Intervallwiederholungen, (2) Negative-Split-Pacing, (3) Laktatabbau-Erholungsbrücke.',
     defaultWeeklyVolumeBase: 18000,
     benchmarks: [
       {
-        metric: 'CSS Send-Off Interval',
-        targetDescription: 'Hold 15x100m on base CSS + 5s send-off with under 5s rest.',
-        testProtocol: '15x100m Freestyle holding within 1.0s of current CSS.'
+        metric: 'CSS-Abgangsintervall',
+        targetDescription: '15x100m auf Basis-CSS + 5s Abgang mit unter 5s Pause halten.',
+        testProtocol: '15x100m Kraul innerhalb von 1.0s der aktuellen CSS geschwommen.'
       },
       {
-        metric: 'Lactate Clearance Broken 400',
-        targetDescription: 'Execute broken 400 (4x100 with 10s rest) faster than single 400 PR.',
-        testProtocol: '4x100m @ CSS - 2s on 10s rest + 200m active easy.'
+        metric: 'Laktattoleranz Teilstrecke 400m',
+        targetDescription: 'Gebrochene 400m (4x100m mit 10s Pause) schneller als Einzelbestzeit schwimmen.',
+        testProtocol: '4x100m @ CSS - 2s mit 10s Pause + 200m aktives Lockerschwimmen.'
       },
       {
-        metric: 'Descend 200s Target',
-        targetDescription: 'Descend 5x200m from Aerobic Base to All-Out Threshold.',
-        testProtocol: '5x200m Free on base + 20s, descending 1 to 5.'
+        metric: 'Stufenserien 200m',
+        targetDescription: '5x200m von Grundlagenausdauer bis All-Out-Schwelle steigern.',
+        testProtocol: '5x200m Kraul auf Basis + 20s, 1 bis 5 steigernd.'
       }
     ],
     blueprints: [
       {
         weekNumber: 1,
-        theme: 'CSS Calibration & Send-Off Synchronization',
+        theme: 'CSS-Kalibrierung & Synchronisation der Abgangszeiten',
         phase: 'Base Phase',
         targetVolumeMeters: 17500,
-        focus: 'Lane Base Paces & Send-Off Checks',
+        focus: 'Bahnen-Basiszeiten & Abgangsüberprüfung',
         primaryEnergyZone: 'Threshold (EN2)',
-        keySessionHighlight: '10x100m @ CSS on lane-scaled send-off (5-8s rest target)'
+        keySessionHighlight: '10x100m @ CSS auf bahnenskalierter Abgangszeit (5–8s Zielpause)'
       },
       {
         weekNumber: 2,
-        theme: 'Threshold Density & Short Rest Clusters',
+        theme: 'Schwellendichte & Kurzpausen-Cluster',
         phase: 'Build Phase',
         targetVolumeMeters: 18500,
-        focus: 'Lactate Steady State',
+        focus: 'Laktat-Gleichgewichtszustand (Steady State)',
         primaryEnergyZone: 'Threshold (EN2)',
-        keySessionHighlight: '3x(4x100m CSS) on 1:25 with 1 min between sets'
+        keySessionHighlight: '3x(4x100m CSS) auf 1:25 mit 1 Min. Serienpause'
       },
       {
         weekNumber: 3,
-        theme: 'Descending Ladders & Negative Splits',
+        theme: 'Stufenleitern & Negative Splits',
         phase: 'Build Phase',
         targetVolumeMeters: 19500,
-        focus: 'Pacing Discipline Under Fatigue',
+        focus: 'Pacing-Disziplin unter Ermüdung',
         primaryEnergyZone: 'Threshold (EN2)',
         keySessionHighlight: '3x(200m CSS + 2x100m CSS-1s + 4x50m CSS-2s)'
       },
       {
         weekNumber: 4,
-        theme: 'Deload & Lactate Clearance Flush',
+        theme: 'Entlastung & Laktat-Ausspülung',
         phase: 'Deload / Recovery',
         targetVolumeMeters: 14000,
-        focus: 'Flush Lactate & Technical Realignment',
+        focus: 'Laktatabbau & technische Neujustierung',
         primaryEnergyZone: 'Recovery',
-        keySessionHighlight: 'Technical drills + 6x100m easy pull buoy with snorkel'
+        keySessionHighlight: 'Technikübungen + 6x100m lockeres Ziehen mit Schnorchel'
       },
       {
         weekNumber: 5,
-        theme: 'Threshold Volume Peak & Extended Sets',
+        theme: 'Schwellenvolumen-Spitze & lange Intervalle',
         phase: 'Threshold Peak',
         targetVolumeMeters: 20000,
-        focus: 'Longer Threshold Intervals (300s & 400s)',
+        focus: 'Längere Schwellenintervalle (300m & 400m)',
         primaryEnergyZone: 'Threshold (EN2)',
-        keySessionHighlight: '4x400m at CSS pace with only 15s rest'
+        keySessionHighlight: '4x400m auf CSS-Tempo mit nur 15s Pause'
       },
       {
         weekNumber: 6,
-        theme: 'Lactate Tolerance & Pace Sharpness',
+        theme: 'Laktattoleranz & Tempohärte',
         phase: 'Threshold Peak',
         targetVolumeMeters: 19500,
-        focus: 'CSS Minus 1 Second Target',
+        focus: 'Ziel: CSS minus 1 Sekunde',
         primaryEnergyZone: 'Threshold (EN2)',
-        keySessionHighlight: '16x100m alternating: odd @ CSS, even @ CSS - 2s'
+        keySessionHighlight: '16x100m im Wechsel: ungerade @ CSS, gerade @ CSS - 2s'
       },
       {
         weekNumber: 7,
-        theme: 'Over-Under Lactate Shuttling Sets',
+        theme: 'Over-Under Laktat-Kompensationsserien',
         phase: 'Threshold Peak',
         targetVolumeMeters: 18500,
-        focus: 'Aerobic/Anaerobic Boundary Oscillation',
+        focus: 'Wechselspiel aerober/anaerober Grenzbereich',
         primaryEnergyZone: 'Threshold (EN2)',
-        keySessionHighlight: '6x200m (50m Sprint / 150m CSS hold) continuous'
+        keySessionHighlight: '6x200m (50m Sprint / 150m CSS-Halten) kontinuierlich'
       },
       {
         weekNumber: 8,
-        theme: 'Cycle Benchmark Challenge & Re-Testing',
+        theme: 'Zyklus-Challenge & Re-Test der Kader-CSS',
         phase: 'Threshold Peak',
         targetVolumeMeters: 16000,
-        focus: 'Official Squad CSS Re-Test',
+        focus: 'Offizieller CSS-Re-Test des Kaders',
         primaryEnergyZone: 'Threshold (EN2)',
-        keySessionHighlight: 'Re-test 400m + 200m TT and celebrate pace gains'
+        keySessionHighlight: 'Re-Test 400m + 200m Zeitschwimmen und Tempogewinne vergleichen'
       }
     ]
   },
 
   vo2max_focus: {
     id: 'vo2max_focus',
-    name: 'VO2 Max & Aerobic Power Overload',
-    shortLabel: 'VO2 Max Cycle',
-    badge: 'Aerobic Power (EN3)',
+    name: 'VO2max & Aerobe Spitzenleistungsblock',
+    shortLabel: 'VO2max-Zyklus',
+    badge: 'Aerobe Spitzenleistung (WSA)',
     accentColor: 'rose',
-    summary: 'Focuses exclusively on pushing maximum oxygen uptake (VO2 max), cardiac output stroke volume, and holding high stroke rates under acute acidosis.',
-    targetObjective: 'Maximize cardiovascular output through high-intensity 50m to 150m repeats at 90-95% max effort with disciplined 1:1 or 1:1.5 work-to-rest intervals.',
-    physiologicalAdaptation: 'Maximum rate of oxygen consumption, left-ventricular cardiac stroke volume expansion, high-rate motor unit recruitment.',
+    summary: 'Ausbau der maximalen Sauerstoffaufnahme (VO2max), Vergrößerung des Herz-Schlagvolumens und Halten hoher Schlagfrequenzen unter anaerober Beanspruchung.',
+    targetObjective: 'Maximierung des Herz-Kreislauf-Outputs durch intensive 50m bis 150m Wiederholungen bei 90–95% Maximalleistung mit disziplinierten 1:1 oder 1:1.5 Belastungs-Pausen-Verhältnissen.',
+    physiologicalAdaptation: 'Maximale Sauerstoffaufnahmerate, Vergrößerung des linksventrikulären Herzschlagvolumens, Rekrutierung schneller motorischer Einheiten.',
     suggestedDurationWeeks: 6,
-    weeklyStructureSummary: '2-3 high-intensity VO2 Max sessions per week balanced by deep aerobic recovery and technique flushes. Shorter overall weekly volume with acute intensity density.',
+    weeklyStructureSummary: '2–3 hochintensive VO2max-Einheiten pro Woche, ergänzt durch tiefe aerobe Regeneration und Technikeinheiten. Reduzierter Gesamtwochenumfang bei akuter Intensitätsdichte.',
     defaultWeeklyVolumeBase: 16500,
     benchmarks: [
       {
-        metric: '100m VO2 Max Repeat Velocity',
-        targetDescription: 'Hold 8x100m @ 92-95% max velocity on 2:00 send-off.',
-        testProtocol: '8x100m Free all-out average pace recording.'
+        metric: '100m VO2max Wiederholungsgeschwindigkeit',
+        targetDescription: '8x100m bei 92–95% Maximalgeschwindigkeit auf 2:00 Abgang halten.',
+        testProtocol: '8x100m Kraul All-Out Durchschnittszeit dokumentieren.'
       },
       {
-        metric: 'Underwater Power Breakout',
-        targetDescription: 'Complete 6x50m with 15m legal underwater kick and explosive breakout.',
-        testProtocol: '6x50m Butterfly/Free with fins on 1:15.'
+        metric: 'Unterwasser-Power-Breakout',
+        targetDescription: '6x50m mit 15m legalem Unterwasser-Kick und explosivem Auftauchen.',
+        testProtocol: '6x50m Delphin/Kraul mit Flossen auf 1:15 Abgang.'
       },
       {
-        metric: 'Acidosis Stroke Rate Retention',
-        targetDescription: 'Maintain stroke rate above 38 strokes/min across final 50m of broken 200.',
-        testProtocol: '4x50m on 10s rest with stroke rate tempo trainer.'
+        metric: 'Zugfrequenz-Konstanz bei Übersäuerung',
+        targetDescription: 'Zugfrequenz über 38 Zügen/Min. auf den letzten 50m einer gebrochenen 200m halten.',
+        testProtocol: '4x50m mit 10s Pause unter Einsatz des Tempo Trainers.'
       }
     ],
     blueprints: [
       {
         weekNumber: 1,
-        theme: 'Aerobic Power Primer & Heart Rate Spike',
+        theme: 'Aerobe Leistungsaktivierung & Herzfrequenz-Spitzen',
         phase: 'Base Phase',
         targetVolumeMeters: 16000,
-        focus: 'Heart Rate Max Testing & 50m Power',
+        focus: 'Maximalpuls-Aktivierung & 50m Schnellkraft',
         primaryEnergyZone: 'VO2Max (EN3)',
-        keySessionHighlight: '12x50m @ VO2 max on 1:05 (1:1 work-rest ratio)'
+        keySessionHighlight: '12x50m @ VO2max auf 1:05 (1:1 Belastungs-Pausen-Verhältnis)'
       },
       {
         weekNumber: 2,
-        theme: '100m Repeat Overload & Acidosis Inoculation',
+        theme: '100m Wiederholungsüberlastung & Laktattoleranz',
         phase: 'Build Phase',
         targetVolumeMeters: 17000,
-        focus: 'High Oxygen Uptake Retention',
+        focus: 'Hohe Sauerstoffaufnahme unter Belastung',
         primaryEnergyZone: 'VO2Max (EN3)',
-        keySessionHighlight: '8x100m @ 92% effort on 2:15 with 30s rest'
+        keySessionHighlight: '8x100m @ 92% Leistung auf 2:15 mit 30s Pause'
       },
       {
         weekNumber: 3,
-        theme: 'Broken 200s & High Stroke Rate Density',
+        theme: 'Gebrochene 200m & Hohe Schlagfrequenz',
         phase: 'Build Phase',
         targetVolumeMeters: 17500,
-        focus: 'Race Pace Broken Repeats',
+        focus: 'Renntempo auf Teilstrecken',
         primaryEnergyZone: 'VO2Max (EN3)',
-        keySessionHighlight: '3x [4x50m on :10 rest] holding 200m race split velocity'
+        keySessionHighlight: '3x [4x50m mit :10 Pause] im 200m Renntempo'
       },
       {
         weekNumber: 4,
-        theme: 'Active Recovery & Underwater Tauchen Reset',
+        theme: 'Aktive Erholung & Strecktauchen-Reset',
         phase: 'Deload / Recovery',
         targetVolumeMeters: 13000,
-        focus: 'Deload, Lung Capacity & Technique',
+        focus: 'Entlastung, Lungenvolumen & Technik',
         primaryEnergyZone: 'Recovery',
-        keySessionHighlight: 'Tauchen breakouts, streamline efficiency & 2000m recovery'
+        keySessionHighlight: 'Tauchphasen, Streamline-Effizienz & 2000m lockeres Schwimmen'
       },
       {
         weekNumber: 5,
-        theme: 'Maximum Aerobic Power Peak (75m & 100m Clusters)',
+        theme: 'Maximale aerobe Leistungsspitze (75m & 100m)',
         phase: 'Threshold Peak',
         targetVolumeMeters: 18000,
-        focus: 'Peak Cardiac Output Stimulation',
+        focus: 'Spitzenreiz für das Herz-Kreislauf-System',
         primaryEnergyZone: 'VO2Max (EN3)',
-        keySessionHighlight: '6x75m max effort on 1:45 + 4x100m fast pull with paddles'
+        keySessionHighlight: '6x75m Vollgas auf 1:45 + 4x100m zügiges Ziehen mit Paddles'
       },
       {
         weekNumber: 6,
-        theme: 'Cycle Power Test & 8x100 Benchmark Trial',
+        theme: 'Leistungstest & 8x100 Benchmark-Prüfung',
         phase: 'Threshold Peak',
         targetVolumeMeters: 15000,
-        focus: 'Benchmark 8x100m VO2 Max Test',
+        focus: 'Offizieller 8x100m VO2max Leistungstest',
         primaryEnergyZone: 'VO2Max (EN3)',
-        keySessionHighlight: 'Official 8x100m all-out benchmark recording & team rankings'
+        keySessionHighlight: 'Offizielle 8x100m All-Out Zeitnahme & Kader-Ranking'
       }
     ]
   },
 
   speed_power_focus: {
     id: 'speed_power_focus',
-    name: 'Speed, Starts & Neuromuscular Power',
-    shortLabel: 'Speed & Power Cycle',
-    badge: 'Anaerobic Sprint (SP)',
+    name: 'Schnelligkeit, Starts & Neuromuskuläre Power',
+    shortLabel: 'Sprint- & Kraftzyklus',
+    badge: 'Anaerober Sprint (SP)',
     accentColor: 'purple',
-    summary: 'Focuses entirely on maximum velocity, block reaction time, 15m underwater breakout speed, and ATP-CP power output.',
-    targetObjective: 'Develop explosive speed for 50m and 100m events with full phosphagen system recovery intervals (1:4 to 1:6 work-to-rest ratio).',
-    physiologicalAdaptation: 'Fast-twitch motor unit recruitment (Type IIx fibers), rate of force development (RFD), and ATP-PC replenishment speed.',
+    summary: 'Maximalgeschwindigkeit, Reaktionszeit am Startblock, 15m-Auftauchgeschwindigkeit und explosive ATP-CP-Leistungsentfaltung.',
+    targetObjective: 'Explosivkraft für 50m und 100m Sprintstrecken mit vollständigen Phosphagensystem-Erholungszeiten (1:4 bis 1:6 Belastungs-Pausen-Verhältnis).',
+    physiologicalAdaptation: 'Rekrutierung schneller Muskelfasern (Typ IIx), Steigerung der Kraftbildungsgeschwindigkeit (RFD) und Regeneration der ATP-Speicher.',
     suggestedDurationWeeks: 6,
-    weeklyStructureSummary: 'High quality over quantity. Explosive 15-25m sprints from the blocks, parachute resistance, fin assisted overspeed, generous rest intervals.',
+    weeklyStructureSummary: 'Qualität vor Quantität. Explosive 15–25m Sprints vom Block, Widerstandsschwimmen mit Fallschirm, Übergeschwindigkeit mit Flossen, großzügige Pausen.',
     defaultWeeklyVolumeBase: 15000,
     benchmarks: [
       {
-        metric: '15m Underwater Breakout Time',
-        targetDescription: 'Clock under 5.8s from start dive to 15m breakout buoy.',
-        testProtocol: 'Block dive sprints with electronic timing/stopwatch to 15m mark.'
+        metric: '15m Unterwasser-Auftauchzeit',
+        targetDescription: 'Unter 5,8s vom Startsprung bis zur 15m-Auftauchboje erzielen.',
+        testProtocol: 'Startsprünge vom Block mit elektronischer Zeitmessung/Stoppuhr bei 15m.'
       },
       {
-        metric: '25m Max Velocity Dive',
-        targetDescription: 'Personal best 25m dive split with stroke count under 12.',
-        testProtocol: '6x25m all-out dives from blocks with 2:30 full rest.'
+        metric: '25m Höchstgeschwindigkeit mit Start',
+        targetDescription: 'Persönliche Bestzeit auf 25m mit Startsprung und unter 12 Armzügen.',
+        testProtocol: '6x25m All-Out vom Startblock mit je 2:30 Min. voller Erholungspause.'
       },
       {
-        metric: 'Relay Takeoff Reaction',
-        targetDescription: 'Clean legal relay reaction time between +0.08s and +0.22s.',
-        testProtocol: '10 relay exchange trials on 50m sprints.'
+        metric: 'Staffelwechsel-Reaktionszeit',
+        targetDescription: 'Regelkonforme Staffelwechselzeit zwischen +0,08s und +0,22s.',
+        testProtocol: '10 Staffelwechsel-Versuche bei 50m Sprintabstimmung.'
       }
     ],
     blueprints: [
       {
         weekNumber: 1,
-        theme: 'Block Mechanics & 15m Dive Breakouts',
+        theme: 'Startblock-Mechanik & 15m Eintauchphasen',
         phase: 'Base Phase',
         targetVolumeMeters: 14500,
-        focus: 'Block Footwork & Angle of Entry',
+        focus: 'Fußpositionierung & optimaler Eintauchwinkel',
         primaryEnergyZone: 'Sprint (SP)',
-        keySessionHighlight: '10x25m dive starts with fins, 15m max underwater kick'
+        keySessionHighlight: '10x25m Startsprünge mit Flossen, 15m maximaler Delphinkick'
       },
       {
         weekNumber: 2,
-        theme: 'Power Resistance & Assisted Overspeed',
+        theme: 'Widerstandskraft & Übergeschwindigkeit',
         phase: 'Build Phase',
         targetVolumeMeters: 15500,
-        focus: 'Parachute Drags & Fin Sprints',
+        focus: 'Bremsschirme & Flossensprints',
         primaryEnergyZone: 'Sprint (SP)',
-        keySessionHighlight: '6x25m with parachutes + 6x25m assisted fin overspeed'
+        keySessionHighlight: '6x25m mit Bremsschirm + 6x25m Flossen-Übergeschwindigkeit'
       },
       {
         weekNumber: 3,
-        theme: 'Turn Exit Acceleration & Push-Off Velocity',
+        theme: 'Wendenbeschleunigung & Abstoßpower',
         phase: 'Build Phase',
         targetVolumeMeters: 16000,
-        focus: 'Flip Turn Speed & Push Force',
+        focus: 'Rollwendenschnelligkeit & Wandabstoß',
         primaryEnergyZone: 'Sprint (SP)',
-        keySessionHighlight: '12x50m fast in/fast out around the turn flags'
+        keySessionHighlight: '12x50m schnell rein / schnell raus an den Wendenfähnchen'
       },
       {
         weekNumber: 4,
-        theme: 'Deload & Neuromuscular Tuning',
+        theme: 'Entlastung & neuromuskuläre Frische',
         phase: 'Deload / Recovery',
         targetVolumeMeters: 12000,
-        focus: 'Nervous System Recovery & Mobility',
+        focus: 'Erholung des Nervensystems & Beweglichkeit',
         primaryEnergyZone: 'Recovery',
-        keySessionHighlight: 'Light mobility, streamline drills, easy 2000m recovery'
+        keySessionHighlight: 'Leichte Mobilität, Gleitübungen, 2000m lockeres Schwimmen'
       },
       {
         weekNumber: 5,
-        theme: 'Anaerobic Lactic Acidosis Peak',
+        theme: 'Laktazide Stehvermögensspitze',
         phase: 'Threshold Peak',
         targetVolumeMeters: 15500,
-        focus: 'Holding Speed Over Last 15m',
+        focus: 'Geschwindigkeit auf den letzten 15m halten',
         primaryEnergyZone: 'Sprint (SP)',
-        keySessionHighlight: '6x50m max all-out from blocks on 3:00 rest'
+        keySessionHighlight: '6x50m maximal All-Out vom Block mit 3:00 Min. Pause'
       },
       {
         weekNumber: 6,
-        theme: 'Speed Showdown & Relay Battles',
+        theme: 'Sprint-Showdown & Staffel-Duelle',
         phase: 'Race Week',
         targetVolumeMeters: 13000,
-        focus: 'Sprint Shootout & Timed Trials',
+        focus: 'Sprint-Ausscheidungsrennen & Zeitschwimmen',
         primaryEnergyZone: 'Sprint (SP)',
-        keySessionHighlight: 'Squad 50m elimination shootouts & 4x50 medley relays'
+        keySessionHighlight: 'Kader-Ausscheidungsrennen auf 50m & 4x50m Lagenstaffeln'
       }
     ]
   },
 
   technique_focus: {
     id: 'technique_focus',
-    name: 'Technique, Mechanics & Stroke Economy',
-    shortLabel: 'Technique Cycle',
-    badge: 'Efficiency & SWOLF',
+    name: 'Technik, Biomechanik & Bewegungseffizienz',
+    shortLabel: 'Technik-Zyklus',
+    badge: 'Effizienz & SWOLF',
     accentColor: 'cyan',
-    summary: 'Focuses entirely on motor learning, reducing hydrodynamic drag, perfecting EVF (early vertical forearm), and optimizing distance per stroke.',
-    targetObjective: 'Eliminate technical stroke leakage, lower SWOLF scores squad-wide, and build bulletproof mechanics before high-intensity loads.',
-    physiologicalAdaptation: 'Neuromuscular coordination, stroke rate to stroke length optimization, enhanced feel for water (sculling/EVF).',
+    summary: 'Motorisches Lernen, Reduzierung des hydrodynamischen Formwiderstands, Perfektionierung des frühen vertikalen Unterarms (EVF) und Maximierung der Gleitstrecke pro Zug.',
+    targetObjective: 'Beseitigung technischer Kraftverluste, Senkung der SWOLF-Werte im gesamten Kader und saubere Bewegungsmuster vor harten Belastungsphasen.',
+    physiologicalAdaptation: 'Neuromuskuläre Koordination, Optimierung von Frequenz zu Zuglänge, gesteigertes Wassergefühl (Sculling / EVF).',
     suggestedDurationWeeks: 6,
-    weeklyStructureSummary: 'High drill concentration (40%+ of daily volume), video playback sets, snorkel alignment work, sculling, and varied stroke tempo trainers.',
+    weeklyStructureSummary: 'Hohe Dichte an Technikübungen (40%+ des Tagesumfangs), Videoanalysen, Schnorchelübungen für Wasserlage, Sculling und Tempo Trainer.',
     defaultWeeklyVolumeBase: 16000,
     benchmarks: [
       {
-        metric: 'SWOLF Score (Time + Strokes)',
-        targetDescription: 'Drop 50m SWOLF score by at least 3 points across primary stroke.',
-        testProtocol: '8x50m continuous counting strokes + official split time.'
+        metric: 'SWOLF-Wert (Zeit + Zugzahl)',
+        targetDescription: 'SWOLF-Wert auf 50m in der Hauptlage um mindestens 3 Punkte senken.',
+        testProtocol: '8x50m mit genauer Zählung der Armzüge + offizieller Zeitmessung.'
       },
       {
-        metric: 'Distance Per Stroke (DPS)',
-        targetDescription: 'Cover 50m freestyle in under 26 strokes with steady kick.',
-        testProtocol: '4x50m DPS test holding maximum distance per pull cycle.'
+        metric: 'Gleitweite pro Zug (DPS)',
+        targetDescription: '50m Kraul in unter 26 Zügen mit konstantem 2er-Beinschlag bewältigen.',
+        testProtocol: '4x50m DPS-Test zur maximalen Vortriebsausbeute je Armzug.'
       },
       {
-        metric: 'Sculling & EVF Feel',
-        targetDescription: 'Scull 4x25m head-first with unbroken propulsion and high elbows.',
-        testProtocol: 'Front, middle, and dog-paddle scull sequence.'
+        metric: 'Sculling & Wassergefühl (EVF)',
+        targetDescription: '4x25m Wriggen kopfvoran mit unterbrechungsfreiem Vortrieb und hohem Ellbogen.',
+        testProtocol: 'Wriggen in vorderer, mittlerer und hinterer Zugphase.'
       }
     ],
     blueprints: [
       {
         weekNumber: 1,
-        theme: 'Streamline Posture & Front-Quadrant Balance',
+        theme: 'Streamline-Körperhaltung & Front-Quadrant-Balance',
         phase: 'Base Phase',
         targetVolumeMeters: 15000,
-        focus: 'Head Position & Spine Alignment',
+        focus: 'Kopfposition & gerade Wirbelsäulenachse',
         primaryEnergyZone: 'Recovery',
-        keySessionHighlight: 'Catch-up drills, zipper drills & snorkel balance sets'
+        keySessionHighlight: 'Abschlag-Kraul, Reißverschluss-Übung & Schnorchel-Wasserlage'
       },
       {
         weekNumber: 2,
-        theme: 'Catch Mechanics & Early Vertical Forearm (EVF)',
+        theme: 'Wasserfassen & Früher vertikaler Unterarm (EVF)',
         phase: 'Build Phase',
         targetVolumeMeters: 16000,
-        focus: 'Forearm Engagement (Fist & Scull)',
+        focus: 'Unterarm-Druckfläche (Faust & Wriggen)',
         primaryEnergyZone: 'Aerobic (EN1)',
-        keySessionHighlight: '6x50m Fist drill into open-hand feel + sculling progression'
+        keySessionHighlight: '6x50m Faustschwimmen im Übergang zu offener Hand + Wriggserie'
       },
       {
         weekNumber: 3,
-        theme: 'Rotational Power & Side Kick Streamlines',
+        theme: 'Rotationspower & Seitenlage-Streamlines',
         phase: 'Build Phase',
         targetVolumeMeters: 17000,
-        focus: 'Hip-Driven Rotation (6-1-6 & 6-3-6)',
+        focus: 'Hüftgetriebene Rumpfrotation (6-1-6 & 6-3-6)',
         primaryEnergyZone: 'Aerobic (EN1)',
-        keySessionHighlight: '8x50m 6-1-6 drill with fins, focus on sharp hip whip'
+        keySessionHighlight: '8x50m 6-1-6 Rotationsübung mit Flossen, Fokus auf schnellen Hüftimpuls'
       },
       {
         weekNumber: 4,
-        theme: 'Active Recovery & Medley Stroke Balance',
+        theme: 'Aktive Erholung & Lagen-Harmonisierung',
         phase: 'Deload / Recovery',
         targetVolumeMeters: 12500,
-        focus: 'Breaststroke & Butterfly Timing',
+        focus: 'Timing für Brust & Delphin',
         primaryEnergyZone: 'Recovery',
-        keySessionHighlight: 'Breaststroke kick glide drills + 1-fly/2-free transition sets'
+        keySessionHighlight: 'Brustbeinschlag-Gleitserien + Übergangsübungen 1x Delphin / 2x Kraul'
       },
       {
         weekNumber: 5,
-        theme: 'SWOLF Pacing & Efficiency Ladders',
+        theme: 'SWOLF-Pacing & Effizienzleitern',
         phase: 'Build Phase',
         targetVolumeMeters: 16500,
-        focus: 'Holding Low Stroke Count at Speed',
+        focus: 'Geringe Zugzahl auch bei höherem Tempo halten',
         primaryEnergyZone: 'Aerobic (EN1)',
-        keySessionHighlight: '8x50m Descend 1-4 holding exact same stroke count'
+        keySessionHighlight: '8x50m 1-4 steigernd bei exakt gleichbleibender Zugzahl'
       },
       {
         weekNumber: 6,
-        theme: 'Technical Graduation & SWOLF Benchmark Re-Test',
+        theme: 'Technik-Abschluss & SWOLF-Re-Test',
         phase: 'Threshold Peak',
         targetVolumeMeters: 14500,
-        focus: 'Official SWOLF & Video Analysis Check',
+        focus: 'Offizielle SWOLF-Endprüfung & Videoanalyse',
         primaryEnergyZone: 'Threshold (EN2)',
-        keySessionHighlight: '50m SWOLF final testing and stroke metric analysis'
+        keySessionHighlight: '50m SWOLF-Abschlusstest und Analyse der Zuglängenkennwerte'
       }
     ]
   },
 
   competition_peak: {
     id: 'competition_peak',
-    name: 'Competition Peaking & Championship Taper',
-    shortLabel: 'Competition Cycle',
-    badge: 'Linear Periodization',
+    name: 'Wettkampf-Periodisierung & Meisterschafts-Taper',
+    shortLabel: 'Wettkampf-Zyklus',
+    badge: 'Lineare Periodisierung',
     accentColor: 'blue',
-    summary: 'The classic 12-week championship periodization model transitioning methodically from Aerobic Base to Threshold, VO2 Max, Taper, and Race Week.',
-    targetObjective: 'Achieve peak supercompensation and personal records at the targeted championship meet at the culmination of Week 12.',
-    physiologicalAdaptation: 'Sequential conditioning of all bioenergetic pathways ending in muscle glycogen supercompensation and maximal neuromuscular freshness.',
+    summary: 'Klassisches 12-Wochen-Periodisierungsmodell: Gezielter Übergang von Grundlagenausdauer zu Schwellendichte, VO2max, Tapering und Meisterschaftswoche.',
+    targetObjective: 'Maximale Superkompensation und persönliche Bestzeiten beim Saisonhöhepunkt in Woche 12 erzielen.',
+    physiologicalAdaptation: 'Stufenweises Durchlaufen aller bioenergetischen Funktionssysteme mit Glykogenspeicher-Maximierung und optimaler Frische.',
     suggestedDurationWeeks: 12,
-    weeklyStructureSummary: 'Traditional progressive macrocycle: 4w Base -> 3w Threshold Peak -> 2w Race Specificity -> 2w Progressive Taper -> 1w Championship Meet.',
+    weeklyStructureSummary: 'Traditioneller Makrozyklus: 4W Basis -> 3W Schwellenspitze -> 2W Wettkampftempo -> 2W progressives Tapering -> 1W Meisterschaft.',
     defaultWeeklyVolumeBase: 18000,
     benchmarks: [
       {
-        metric: 'Championship Qualifying Standard',
-        targetDescription: 'Achieve state or national qualifying cuts on targeted events.',
-        testProtocol: 'Official championship timed finals.'
+        metric: 'Meisterschafts-Pflichtzeiten',
+        targetDescription: 'Erreichen der Qualifikationsnormen für Landes- oder Bundesmeisterschaften.',
+        testProtocol: 'Offizielle Meisterschafts-Finalläufe auf Zeit.'
       },
       {
-        metric: 'Taper Freshness Index',
-        targetDescription: 'Feel explosive on race week dive sprints with low heart rate recovery.',
-        testProtocol: 'Daily RPE checks, water feel sculls, and broken 50s.'
+        metric: 'Tapering-Frische-Index',
+        targetDescription: 'Explosives Wassergefühl bei Startsprüngen mit schneller Pulsberuhigung.',
+        testProtocol: 'Tägliche Belastungseinstufung, Wassergefühl-Sculls und gebrochene 50m.'
       }
     ],
     blueprints: [
-      { weekNumber: 1, theme: 'Baseline & Aerobic Base', phase: 'Base Phase', targetVolumeMeters: 18000, focus: 'CSS Benchmarks', primaryEnergyZone: 'Aerobic (EN1)', keySessionHighlight: 'CSS 400/200 Baseline Test' },
-      { weekNumber: 2, theme: 'Progressive Overload 1', phase: 'Build Phase', targetVolumeMeters: 19000, focus: 'Volume + CSS Ladders', primaryEnergyZone: 'Aerobic (EN1)', keySessionHighlight: 'Aerobic Ladder & Pull Sets' },
-      { weekNumber: 3, theme: 'Threshold Expansion', phase: 'Build Phase', targetVolumeMeters: 20000, focus: 'EN2 Threshold Sets', primaryEnergyZone: 'Threshold (EN2)', keySessionHighlight: 'Dense CSS 100s with short rest' },
-      { weekNumber: 4, theme: 'Active Recovery & Test', phase: 'Deload / Recovery', targetVolumeMeters: 14500, focus: 'Deload & 400m CSS Test', primaryEnergyZone: 'Recovery', keySessionHighlight: 'CSS Re-Test & Aerobic Flush' },
-      { weekNumber: 5, theme: 'VO2Max Power Build', phase: 'Build Phase', targetVolumeMeters: 20500, focus: 'Aerobic Power + Kick', primaryEnergyZone: 'VO2Max (EN3)', keySessionHighlight: 'Broken 200s & VO2 max power' },
-      { weekNumber: 6, theme: 'Peak Aerobic Volume', phase: 'Build Phase', targetVolumeMeters: 21500, focus: 'Highest Volume of Season', primaryEnergyZone: 'Aerobic (EN1)', keySessionHighlight: 'Aerobic ladder session' },
-      { weekNumber: 7, theme: 'Threshold Density', phase: 'Threshold Peak', targetVolumeMeters: 20000, focus: 'Lactate Shuttling', primaryEnergyZone: 'Threshold (EN2)', keySessionHighlight: 'Over-Under 200s & negative splits' },
-      { weekNumber: 8, theme: 'Mid-Season Deload', phase: 'Deload / Recovery', targetVolumeMeters: 15000, focus: 'Technique & Stroke Refinement', primaryEnergyZone: 'Recovery', keySessionHighlight: 'SWOLF check & technical tuneup' },
-      { weekNumber: 9, theme: 'Race Pace Specificity', phase: 'Threshold Peak', targetVolumeMeters: 19000, focus: 'Broken 200s & Race Pace', primaryEnergyZone: 'Threshold (EN2)', keySessionHighlight: 'Broken race simulations' },
-      { weekNumber: 10, theme: 'Taper Phase 1 - Volume Drop', phase: 'Taper Phase', targetVolumeMeters: 15500, focus: '-25% Volume, High Speed', primaryEnergyZone: 'Sprint (SP)', keySessionHighlight: 'Explosive breakouts & speed bursts' },
-      { weekNumber: 11, theme: 'Taper Phase 2 - Power & Rest', phase: 'Taper Phase', targetVolumeMeters: 12000, focus: 'Starts, Relays & Speed', primaryEnergyZone: 'Sprint (SP)', keySessionHighlight: 'Dive starts & relay takeoffs' },
-      { weekNumber: 12, theme: 'Championship Peak Week', phase: 'Race Week', targetVolumeMeters: 9000, focus: 'Championship Meet!', primaryEnergyZone: 'Sprint (SP)', keySessionHighlight: 'Championship Meet Day!' }
+      { weekNumber: 1, theme: 'Grundlagen & Aerobe Basis', phase: 'Base Phase', targetVolumeMeters: 18000, focus: 'CSS-Leistungstest', primaryEnergyZone: 'Aerobic (EN1)', keySessionHighlight: 'CSS 400m/200m Basistest' },
+      { weekNumber: 2, theme: 'Progressiver Aufbau 1', phase: 'Build Phase', targetVolumeMeters: 19000, focus: 'Umfang & CSS-Treppen', primaryEnergyZone: 'Aerobic (EN1)', keySessionHighlight: 'Aerobe Leiter & Armzugserien' },
+      { weekNumber: 3, theme: 'Schwellenerweiterung', phase: 'Build Phase', targetVolumeMeters: 20000, focus: 'GA2-Schwellensätze', primaryEnergyZone: 'Threshold (EN2)', keySessionHighlight: 'Dichte CSS-100er mit kurzer Pause' },
+      { weekNumber: 4, theme: 'Aktive Erholung & Test', phase: 'Deload / Recovery', targetVolumeMeters: 14500, focus: 'Entlastung & 400m CSS-Test', primaryEnergyZone: 'Recovery', keySessionHighlight: 'CSS Re-Test & Laktatspülung' },
+      { weekNumber: 5, theme: 'VO2max Kraftaufbau', phase: 'Build Phase', targetVolumeMeters: 20500, focus: 'Aerobe Spitzenleistung & Beine', primaryEnergyZone: 'VO2Max (EN3)', keySessionHighlight: 'Gebrochene 200m & aerobe Power' },
+      { weekNumber: 6, theme: 'Maximaler Saisonumfang', phase: 'Build Phase', targetVolumeMeters: 21500, focus: 'Höchster Trainingsumfang', primaryEnergyZone: 'Aerobic (EN1)', keySessionHighlight: 'Ausdauerleiter Langstrecke' },
+      { weekNumber: 7, theme: 'Schwellendichte & Laktat', phase: 'Threshold Peak', targetVolumeMeters: 20000, focus: 'Laktat-Kompensation', primaryEnergyZone: 'Threshold (EN2)', keySessionHighlight: 'Over-Under 200er & negative Splits' },
+      { weekNumber: 8, theme: 'Zwischenerholung & Technik', phase: 'Deload / Recovery', targetVolumeMeters: 15000, focus: 'Technikfeinschliff & SWOLF', primaryEnergyZone: 'Recovery', keySessionHighlight: 'SWOLF-Check & Technik-Feinabstimmung' },
+      { weekNumber: 9, theme: 'Wettkampfspezifisches Tempo', phase: 'Threshold Peak', targetVolumeMeters: 19000, focus: 'Teilstreckentraining & Renntempo', primaryEnergyZone: 'Threshold (EN2)', keySessionHighlight: 'Gebrochene Rennsimulationen' },
+      { weekNumber: 10, theme: 'Tapering 1 – Umfangreduktion', phase: 'Taper Phase', targetVolumeMeters: 15500, focus: '-25% Umfang, hohe Schnelligkeit', primaryEnergyZone: 'Sprint (SP)', keySessionHighlight: 'Explosive Auftauchphasen & Tempospitzen' },
+      { weekNumber: 11, theme: 'Tapering 2 – Frische & Power', phase: 'Taper Phase', targetVolumeMeters: 12000, focus: 'Startsprünge, Staffeln & Sprint', primaryEnergyZone: 'Sprint (SP)', keySessionHighlight: 'Startsprünge & Staffelübergaben' },
+      { weekNumber: 12, theme: 'Meisterschafts-Höhepunkt', phase: 'Race Week', targetVolumeMeters: 9000, focus: 'Wettkampfwoche – Bestzeiten!', primaryEnergyZone: 'Sprint (SP)', keySessionHighlight: 'Meisterschaftstag – Alles geben!' }
     ]
   }
 };
 
 /**
- * Reconfigures a season plan's macrocycle to match a chosen cycle focus
+ * Konfiguriert den Makrozyklus eines Saisonplans entsprechend dem gewählten Zyklus-Schwerpunkt
  */
 export function applyCycleFocusToSeason(
   season: SeasonPlan,
@@ -531,30 +531,23 @@ export function applyCycleFocusToSeason(
   const preset = CYCLE_FOCUS_PRESETS[focusType] || CYCLE_FOCUS_PRESETS.competition_peak;
   const numWeeks = weeksCount || preset.suggestedDurationWeeks || season.totalWeeks || 8;
 
-  // Build new or updated weeks matching the blueprints
   const newWeeks: WeekCycle[] = [];
 
   for (let w = 1; w <= numWeeks; w++) {
-    // Check if blueprint exists for this week number, or cycle/interpolate
     const bpIndex = (w - 1) % preset.blueprints.length;
     const bp = preset.blueprints[bpIndex];
 
-    // Find existing week data if any to preserve custom sessions
     const existingWeek = (season.weeks || []).find(ew => ew.weekNumber === w);
-
     let weekSessions: WorkoutSession[] = [];
 
     if (existingWeek && existingWeek.sessions && existingWeek.sessions.length > 0) {
-      // Keep existing sessions but update theme and target volume
       weekSessions = existingWeek.sessions.map(s => ({
         ...s,
         weekNumber: w,
       }));
     } else {
-      // Generate default sessions for this week based on schedule slots and inspiration plans
       const schedule = season.weeklySchedule || [];
       weekSessions = schedule.map((slot, sIdx) => {
-        // Pick an inspiration plan matching the primary energy zone / focus
         let matchedInspiration = INSPIRATION_WORKOUTS.find(iw => {
           if (focusType === 'endurance_focus') return iw.totalDistance >= 4000 || iw.focus === 'Aerobic';
           if (focusType === 'threshold_focus') return iw.focus === 'Threshold';
@@ -580,7 +573,7 @@ export function applyCycleFocusToSeason(
       actualVolumeMeters: actualVol,
       sessions: weekSessions,
       isConfirmed: existingWeek ? existingWeek.isConfirmed : (w === 1),
-      notes: `${preset.name} - ${bp.focus}. Key Highlight: ${bp.keySessionHighlight}`
+      notes: `${preset.name} – ${bp.focus}. Kern-Schwerpunkt: ${bp.keySessionHighlight}`
     });
   }
 

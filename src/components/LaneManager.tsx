@@ -16,6 +16,7 @@ import {
   X,
   Info
 } from 'lucide-react';
+import { formatStrokeGerman, formatIntensityGerman } from '../utils/germanTranslations';
 
 interface LaneManagerProps {
   lanes: LaneConfig[];
@@ -59,12 +60,12 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
     const newLane: LaneConfig = {
       id: `lane-${Date.now()}`,
       laneNumber: nextNumber,
-      name: `Lane ${nextNumber}: Squad Group`,
+      name: `Bahn ${nextNumber}: Leistungsgruppe`,
       color: PRESET_COLORS[colorIndex],
       basePace100mSeconds: newBase,
       swimmers: [],
       maxSwimmers: 8,
-      notes: `${formatSecondsToTime(newBase)} base CSS pace.`,
+      notes: `${formatSecondsToTime(newBase)} Basis-CSS Abgangszeit.`,
     };
 
     const updated = [...(lanes || []), newLane];
@@ -120,11 +121,11 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
           <div>
             <div className="flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-1">
               <Gauge className="w-4 h-4" />
-              <span>Squad Speed Differentiation & Multi-Lane Pacing</span>
+              <span>Kader-Geschwindigkeitsdifferenzierung & Mehrbahnen-Pacing</span>
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tight">Lane Rosters & 100m Base Intervals</h2>
+            <h2 className="text-2xl font-black text-white tracking-tight">Bahnen-Kader & 100m Basiszeiten (CSS)</h2>
             <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-              Configure each lane's Critical Swim Speed (CSS / 100m base interval). The app automatically adjusts send-off cycles, work-to-rest ratios, and target splits across all workouts.
+              Konfiguriere die kritische Schwimmgeschwindigkeit (CSS / 100m Basisabgang) jeder Bahn. Die App passt Abgangszeiten, Belastungs-Pausen-Verhältnisse und Zwischenzeiten automatisch über alle Einheiten an.
             </p>
           </div>
 
@@ -134,7 +135,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
               className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-cyan-500/20 transition cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Add Pool Lane</span>
+              <span>Bahn hinzufügen</span>
             </button>
           </div>
         </div>
@@ -142,8 +143,8 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
         {/* Lane Float Graphic Banner */}
         <div className="mt-6 pt-4 border-t border-slate-800">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-2 font-semibold">
-            <span>Pool Deck Layout ({poolLength} Course - {lanes?.length || 0} Active Lanes)</span>
-            <span>Total Squad Swimmers: {(lanes || []).reduce((acc, l) => acc + (l?.swimmers?.length || 0), 0)}</span>
+            <span>Beckenbelegung ({poolLength} - {lanes?.length || 0} aktive Bahnen)</span>
+            <span>Kaderschwimmer gesamt: {(lanes || []).reduce((acc, l) => acc + (l?.swimmers?.length || 0), 0)}</span>
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
@@ -175,11 +176,11 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                     </span>
                   </div>
                   <div className="text-xs font-semibold text-white mt-1.5 truncate">
-                    {lane.name.replace(/Lane \d+: /, '')}
+                    {lane.name.replace(/Bahn \d+: |Lane \d+: /, '')}
                   </div>
                   <div className="text-[11px] text-slate-400 flex items-center space-x-1 mt-1">
                     <Users className="w-3 h-3 text-slate-500" />
-                    <span>{lane?.swimmers?.length || 0} swimmers</span>
+                    <span>{lane?.swimmers?.length || 0} Schwimmer</span>
                   </div>
                 </button>
               );
@@ -203,8 +204,8 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                     {selectedLane.laneNumber}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white">Lane {selectedLane.laneNumber} Profile</h3>
-                    <p className="text-xs text-slate-400">Configure base interval & swimmer assignments</p>
+                    <h3 className="text-sm font-bold text-white">Profil Bahn {selectedLane.laneNumber}</h3>
+                    <p className="text-xs text-slate-400">Basiszeit & Schwimmerzuordnung einrichten</p>
                   </div>
                 </div>
 
@@ -212,7 +213,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                   <button
                     onClick={() => handleDeleteLane(selectedLane.id)}
                     className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded-lg transition"
-                    title="Delete lane"
+                    title="Bahn löschen"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -222,13 +223,13 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
               <div className="space-y-4 text-xs">
                 {/* Lane Name */}
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Lane Title / Group</label>
+                  <label className="block text-slate-400 font-semibold mb-1">Bahnenname / Leistungsgruppe</label>
                   <input
                     type="text"
                     value={selectedLane.name}
                     onChange={e => handleUpdateLane(selectedLane.id, { name: e.target.value })}
                     className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-lg px-3 py-2 text-white font-medium outline-none"
-                    placeholder="e.g. Senior A / Distance"
+                    placeholder="z.B. Leistungsgruppe A / Langstrecke"
                   />
                 </div>
 
@@ -237,10 +238,10 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                   <div className="flex items-center justify-between mb-1">
                     <label className="text-cyan-300 font-bold uppercase tracking-wider flex items-center space-x-1">
                       <Timer className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>100m Base Pace (CSS / Threshold)</span>
+                      <span>100m Basiszeit (CSS / Schwelle)</span>
                     </label>
                     <span className="text-[11px] text-slate-400">
-                      Seconds: <span className="text-white font-mono">{selectedLane.basePace100mSeconds}s</span>
+                      Sekunden: <span className="text-white font-mono">{selectedLane.basePace100mSeconds}s</span>
                     </span>
                   </div>
 
@@ -299,13 +300,13 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                     </button>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-1">
-                    Universal yardstick: The baseline time this lane completes a steady 100m effort on.
+                    Universeller Maßstab: Die Basiszeit, auf der diese Bahn eine gleichmäßige 100m-Belastung schwimmt.
                   </p>
                 </div>
 
                 {/* Lane Color */}
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1.5">Lane Rope / Marker Color</label>
+                  <label className="block text-slate-400 font-semibold mb-1.5">Leinenfarbe / Markierung</label>
                   <div className="flex items-center space-x-2">
                     {PRESET_COLORS.map(c => (
                       <button
@@ -326,7 +327,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-slate-300 font-semibold flex items-center space-x-1.5">
                       <Users className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Swimmer Roster ({selectedLane?.swimmers?.length || 0} athletes)</span>
+                      <span>Kader-Zuordnung ({selectedLane?.swimmers?.length || 0} Athleten)</span>
                     </label>
                   </div>
 
@@ -336,7 +337,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                       value={newSwimmerName}
                       onChange={e => setNewSwimmerName(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleAddSwimmer(selectedLane.id)}
-                      placeholder="Add swimmer name..."
+                      placeholder="Schwimmer hinzufügen..."
                       className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs outline-none"
                     />
                     <button
@@ -345,13 +346,13 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                       className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg text-xs flex items-center space-x-1"
                     >
                       <UserPlus className="w-3 h-3" />
-                      <span>Add</span>
+                      <span>Hinzufügen</span>
                     </button>
                   </div>
 
                   <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-slate-950/60 rounded-lg border border-slate-800/80">
                     {(selectedLane?.swimmers?.length || 0) === 0 ? (
-                      <span className="text-[11px] text-slate-500 italic p-1">No swimmers assigned yet</span>
+                      <span className="text-[11px] text-slate-500 italic p-1">Noch keine Schwimmer zugewiesen</span>
                     ) : (
                       (selectedLane?.swimmers || []).map((swimmer, idx) => (
                         <span
@@ -374,12 +375,12 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
 
                 {/* Notes */}
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Coaching Notes</label>
+                  <label className="block text-slate-400 font-semibold mb-1">Trainerhinweise & Besonderheiten</label>
                   <input
                     type="text"
                     value={selectedLane.notes || ''}
                     onChange={e => handleUpdateLane(selectedLane.id, { notes: e.target.value })}
-                    placeholder="Focus cues, target stroke, qualification goals..."
+                    placeholder="z.B. Technische Schwerpunkte, Hauptlagen, Pflichtzeiten..."
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs outline-none"
                   />
                 </div>
@@ -394,10 +395,10 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center space-x-2">
                     <Sparkles className="w-4 h-4 text-cyan-400" />
-                    <span>Auto-Calculated Send-Off Intervals for Lane {selectedLane.laneNumber}</span>
+                    <span>Automatisch berechnete Abgangszeiten für Bahn {selectedLane.laneNumber}</span>
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Calculated for base pace <span className="font-mono text-cyan-300 font-bold">{formatSecondsToTime(selectedLane.basePace100mSeconds)}/100m</span>
+                    Berechnet für Basiszeit <span className="font-mono text-cyan-300 font-bold">{formatSecondsToTime(selectedLane.basePace100mSeconds)}/100m</span>
                   </p>
                 </div>
 
@@ -409,7 +410,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                     className="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-white text-xs font-semibold"
                   >
                     {[25, 50, 75, 100, 150, 200, 300, 400, 800].map(d => (
-                      <option key={d} value={d}>{d}{poolLength.slice(-1)} Rep</option>
+                      <option key={d} value={d}>{d}{poolLength.slice(-1)} Wdh.</option>
                     ))}
                   </select>
 
@@ -420,7 +421,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                     className="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-cyan-300 text-xs font-semibold"
                   >
                     {['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly', 'IM', 'Kick', 'Pull'].map(s => (
-                      <option key={s} value={s}>{s}</option>
+                      <option key={s} value={s}>{formatStrokeGerman(s as StrokeType)}</option>
                     ))}
                   </select>
                 </div>
@@ -431,11 +432,11 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400">
-                      <th className="py-2.5 px-3">Energy Zone</th>
-                      <th className="py-2.5 px-3">Target Swim Time</th>
-                      <th className="py-2.5 px-3 text-cyan-400">Send-Off Interval</th>
-                      <th className="py-2.5 px-3">Rest Margin</th>
-                      <th className="py-2.5 px-3">Heart Rate / Purpose</th>
+                      <th className="py-2.5 px-3">Intensitätsbereich</th>
+                      <th className="py-2.5 px-3">Ziel-Schwimmzeit</th>
+                      <th className="py-2.5 px-3 text-cyan-400">Abgangszeit</th>
+                      <th className="py-2.5 px-3">Pausenzeit</th>
+                      <th className="py-2.5 px-3">Herzfrequenz / Trainingszweck</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60 font-medium">
@@ -448,26 +449,26 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                       );
 
                       let zoneBadgeColor = 'text-cyan-400 bg-cyan-950/60 border-cyan-800';
-                      let purpose = 'Aerobic capillary base';
+                      let purpose = 'Aerobe Kapillaren & Grundlagenausdauer';
                       if (zone === 'Recovery') {
                         zoneBadgeColor = 'text-emerald-400 bg-emerald-950/60 border-emerald-800';
-                        purpose = 'Lactate clearance & tech';
+                        purpose = 'Laktatabbau & aktive Erholung';
                       } else if (zone === 'Threshold (EN2)') {
                         zoneBadgeColor = 'text-amber-400 bg-amber-950/60 border-amber-800';
-                        purpose = 'CSS Anaerobic threshold';
+                        purpose = 'CSS / Anaerobe Schwelle';
                       } else if (zone === 'VO2Max (EN3)') {
                         zoneBadgeColor = 'text-red-400 bg-red-950/60 border-red-800';
-                        purpose = 'Max aerobic power & pain';
+                        purpose = 'Maximale Sauerstoffaufnahme (WSA)';
                       } else if (zone === 'Sprint (SP)') {
                         zoneBadgeColor = 'text-purple-400 bg-purple-950/60 border-purple-800';
-                        purpose = 'Alactic speed & explosive dive';
+                        purpose = 'Alaktazide Höchstgeschwindigkeit & Startsprung';
                       }
 
                       return (
                         <tr key={zone} className="hover:bg-slate-800/40 transition">
                           <td className="py-3 px-3">
                             <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold border ${zoneBadgeColor}`}>
-                              {zone}
+                              {formatIntensityGerman(zone)}
                             </span>
                           </td>
                           <td className="py-3 px-3 font-mono text-slate-200">
@@ -479,7 +480,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                             </span>
                           </td>
                           <td className="py-3 px-3 text-slate-400 font-mono">
-                            ~{paceInfo.restSec}s rest
+                            ~{paceInfo.restSec}s Pause
                           </td>
                           <td className="py-3 px-3 text-slate-400 text-[11px]">
                             {purpose}
@@ -495,7 +496,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
               <div className="mt-5 pt-4 border-t border-slate-800">
                 <div className="flex items-center space-x-2 text-xs font-semibold text-slate-300 mb-2">
                   <Info className="w-4 h-4 text-cyan-400" />
-                  <span>Cross-Squad Send-Off Comparison for: {previewDistance}m {previewStroke} (Threshold EN2)</span>
+                  <span>Kader-Bahnenvergleich für: {previewDistance}m {formatStrokeGerman(previewStroke)} (Schwellenbereich GA2)</span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 text-xs">
@@ -513,7 +514,7 @@ export const LaneManager: React.FC<LaneManagerProps> = ({
                           @{lPace.sendOffStr}
                         </div>
                         <div className="text-[10px] text-slate-400 font-mono">
-                          Swim: {lPace.swimTimeStr}
+                          Zeit: {lPace.swimTimeStr}
                         </div>
                       </div>
                     );

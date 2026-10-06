@@ -171,46 +171,46 @@ export function autoPopulateNextWeek(
   // Determine progression factors
   let volumeMultiplier = 1.06; // standard +6% to +8%
   let phase: WeekCycle['phase'] = 'Build Phase';
-  let theme = `Week ${nextWeekNumber} - Progressive Build`;
+  let theme = `Woche ${nextWeekNumber} – Progressiver Aufbau`;
 
   if (cycleFocus === 'endurance_focus') {
     volumeMultiplier = progressionMode === 'deload_recovery' ? 0.82 : 1.09;
     phase = progressionMode === 'deload_recovery' ? 'Deload / Recovery' : 'Build Phase';
-    theme = `Week ${nextWeekNumber} - Aerobic Mileage & Pull Engine`;
+    theme = `Woche ${nextWeekNumber} – Aerobe Kilometer & Zugkraft`;
   } else if (cycleFocus === 'threshold_focus') {
     volumeMultiplier = progressionMode === 'deload_recovery' ? 0.80 : 1.03;
     phase = progressionMode === 'deload_recovery' ? 'Deload / Recovery' : 'Threshold Peak';
-    theme = `Week ${nextWeekNumber} - CSS Density & Lactate Shuttling`;
+    theme = `Woche ${nextWeekNumber} – CSS-Schwellendichte & Laktatpuffer`;
   } else if (cycleFocus === 'vo2max_focus') {
     volumeMultiplier = progressionMode === 'deload_recovery' ? 0.75 : 1.04;
     phase = progressionMode === 'deload_recovery' ? 'Deload / Recovery' : 'Threshold Peak';
-    theme = `Week ${nextWeekNumber} - VO2 Max Power & Acidosis Repeats`;
+    theme = `Woche ${nextWeekNumber} – VO2max-Leistung & Stehvermögen`;
   } else if (cycleFocus === 'speed_power_focus') {
     volumeMultiplier = progressionMode === 'deload_recovery' ? 0.70 : 1.02;
     phase = progressionMode === 'deload_recovery' ? 'Deload / Recovery' : 'Threshold Peak';
-    theme = `Week ${nextWeekNumber} - Alactic Speed & Dive Breakouts`;
+    theme = `Woche ${nextWeekNumber} – Schnelligkeit & Startblock-Power`;
   } else if (cycleFocus === 'technique_focus') {
     volumeMultiplier = 1.02;
     phase = 'Base Phase';
-    theme = `Week ${nextWeekNumber} - Stroke Economy & SWOLF Mastery`;
+    theme = `Woche ${nextWeekNumber} – Bewegungseffizienz & SWOLF-Feinschliff`;
   } else {
     // Default / competition_peak
     if (progressionMode === 'overload_volume') {
       volumeMultiplier = 1.08;
       phase = 'Build Phase';
-      theme = `Week ${nextWeekNumber} - Overload & Endurance`;
+      theme = `Woche ${nextWeekNumber} – Umfangsaufbau & Grundlagenausdauer`;
     } else if (progressionMode === 'sharpen_threshold') {
       volumeMultiplier = 1.02;
       phase = 'Threshold Peak';
-      theme = `Week ${nextWeekNumber} - Threshold Density & Pacing`;
+      theme = `Woche ${nextWeekNumber} – Schwellendichte & Wettkampfpacing`;
     } else if (progressionMode === 'deload_recovery') {
       volumeMultiplier = 0.78; // -22% volume drop for supercompensation
       phase = 'Deload / Recovery';
-      theme = `Week ${nextWeekNumber} - Active Recovery & Tech Reset`;
+      theme = `Woche ${nextWeekNumber} – Aktive Erholung & Rumpfstabilisation`;
     } else if (progressionMode === 'taper_speed') {
       volumeMultiplier = 0.70;
       phase = 'Taper Phase';
-      theme = `Week ${nextWeekNumber} - Race Speed & Sharpening`;
+      theme = `Woche ${nextWeekNumber} – Wettkampfschnelligkeit & Tapering`;
     }
   }
 
@@ -234,18 +234,18 @@ export function autoPopulateNextWeek(
             } else {
               newReps = Math.round(item.reps * 1.15);
             }
-            newDesc = item.description ? `${item.description} (+1 rep progression)` : '+1 rep progression';
+            newDesc = item.description ? `${item.description} (+1 Wdh. Progression)` : '+1 Wdh. Progression';
           } else if (progressionMode === 'sharpen_threshold') {
             // Higher intensity, tighten interval or shift focus
-            newDesc = `${item.description || 'Pace focus'} (Descend to CSS -2s)`;
+            newDesc = `${item.description || 'Pacing-Fokus'} (Steigern auf CSS -2s)`;
           } else if (progressionMode === 'deload_recovery') {
             // Cut reps by 25%
             newReps = Math.max(2, Math.round(item.reps * 0.75));
-            newDesc = `${item.description || ''} (Smooth technical speed)`;
+            newDesc = `${item.description || ''} (Lockerer technischer Vortrieb)`;
           } else if (progressionMode === 'taper_speed') {
             // Cut reps by 40%, high quality speed
             newReps = Math.max(2, Math.round(item.reps * 0.6));
-            newDesc = `${item.description || ''} (Race pace breakout!)`;
+            newDesc = `${item.description || ''} (Wettkampftempo & Tauchphase!)`;
           }
         } else if (block.type === 'preset' && progressionMode === 'overload_volume') {
           // slight preset bump
@@ -299,6 +299,6 @@ export function autoPopulateNextWeek(
     actualVolumeMeters: actualVolume,
     sessions: newSessions,
     isConfirmed: false,
-    notes: `Auto-generated from Week ${currentWeek.weekNumber} using ${progressionMode.replace('_', ' ')} progression.`,
+    notes: `Automatisch aus Woche ${currentWeek.weekNumber} mit Progressionsmuster generiert.`,
   };
 }

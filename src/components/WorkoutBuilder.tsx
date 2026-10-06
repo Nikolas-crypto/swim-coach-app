@@ -46,6 +46,17 @@ import {
 } from 'lucide-react';
 import { SaveWorkoutModal } from './SaveWorkoutModal';
 import { INSPIRATION_WORKOUTS } from '../data/inspirationPlans';
+import { 
+  formatDayGerman, 
+  formatStrokeGerman, 
+  formatIntensityGerman, 
+  formatIntensityShortGerman, 
+  formatEquipmentGerman, 
+  formatFocusGerman,
+  formatBlockTypeGerman,
+  GERMAN_STROKES,
+  GERMAN_EQUIPMENT
+} from '../utils/germanTranslations';
 
 interface WorkoutBuilderProps {
   session: WorkoutSession;
@@ -478,14 +489,14 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                   type="button"
                   onClick={onBackToPlanner}
                   className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center space-x-1.5 transition cursor-pointer"
-                  title="Return to weekly schedule matrix"
+                  title="Zurück zum Wochenplaner"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Weekly Planner</span>
+                  <span>Wochenplaner</span>
                 </button>
               )}
               <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-950 text-cyan-400 border border-cyan-800">
-                Week {currentSession.weekNumber} • {currentSession.dayOfWeek}
+                Woche {currentSession.weekNumber} • {formatDayGerman(currentSession.dayOfWeek)}
               </span>
               <div className="flex items-center space-x-1 bg-slate-950 px-2 py-0.5 rounded-lg border border-slate-800 text-xs">
                 <Clock className="w-3 h-3 text-cyan-400" />
@@ -495,11 +506,11 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                   onChange={e => handleUpdateSession({ scheduledTime: e.target.value })}
                   placeholder="06:00 - 07:30"
                   className="bg-transparent text-slate-300 font-semibold text-xs outline-none w-28 text-center"
-                  title="Click to edit practice scheduled time"
+                  title="Trainingszeit bearbeiten"
                 />
               </div>
               <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
-                {poolLength} Course
+                {poolLength === '25m' ? '25m Kurzbahn' : poolLength === '50m' ? '50m Langbahn' : '25y Yardbahn'}
               </span>
               
               {/* Real-time sync badge */}
@@ -507,12 +518,12 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                 {saveStatus === 'saving' ? (
                   <>
                     <RefreshCw className="w-3 h-3 text-amber-400 animate-spin" />
-                    <span className="text-amber-400 font-semibold">Auto-saving...</span>
+                    <span className="text-amber-400 font-semibold">Wird gespeichert...</span>
                   </>
                 ) : (
                   <>
                     <Check className="w-3 h-3 text-emerald-400" />
-                    <span className="text-emerald-400 font-semibold">Saved to Cloud</span>
+                    <span className="text-emerald-400 font-semibold">In Cloud gespeichert</span>
                   </>
                 )}
               </div>
@@ -532,7 +543,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
           <div className="flex flex-wrap items-center gap-3">
             {/* Total Distance */}
             <div className="bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 text-center">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Distance</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Gesamtdistanz</div>
               <div className="text-xl font-pace font-bold text-cyan-300">
                 {totalMeters.toLocaleString()}<span className="text-xs text-slate-500 font-sans ml-1">{poolLength.slice(-1)}</span>
               </div>
@@ -540,26 +551,26 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
 
             {/* Estimated Duration */}
             <div className="bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 text-center">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Est. Duration</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Geschätzte Dauer</div>
               <div className="text-xl font-pace font-bold text-amber-300">
-                {estimatedMins}<span className="text-xs text-slate-500 font-sans ml-1">min</span>
+                {estimatedMins}<span className="text-xs text-slate-500 font-sans ml-1">Min.</span>
               </div>
             </div>
 
             {/* Focus Tag */}
             <div className="bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Primary Focus</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Hauptschwerpunkt</div>
               <select
                 value={currentSession.focus}
                 onChange={e => handleUpdateSession({ focus: e.target.value as any })}
                 className="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-xs text-cyan-300 font-bold outline-none cursor-pointer"
               >
-                <option value="Aerobic">Aerobic</option>
-                <option value="Threshold">Threshold</option>
-                <option value="Speed">Speed</option>
-                <option value="Technique">Technique</option>
-                <option value="Recovery">Recovery</option>
-                <option value="Test Set">Test Set</option>
+                <option value="Aerobic">Grundlagenausdauer (GA1)</option>
+                <option value="Threshold">Schwellenbereich (CSS)</option>
+                <option value="Speed">Schnelligkeit & Sprint</option>
+                <option value="Technique">Technik & Rumpf</option>
+                <option value="Recovery">Regeneration</option>
+                <option value="Test Set">Leistungstest</option>
               </select>
             </div>
 
@@ -569,40 +580,40 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                 type="button"
                 onClick={() => setIsSaveModalOpen(true)}
                 className="px-3 py-2 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 rounded-xl transition flex items-center space-x-1.5 text-xs font-bold cursor-pointer shadow-sm shadow-cyan-950"
-                title="Save this completed session into your squad workout library"
+                title="Einheit in der Trainingsbibliothek speichern"
               >
                 <Bookmark className="w-3.5 h-3.5 text-cyan-400" />
-                <span className="hidden sm:inline">Save to Library</span>
+                <span className="hidden sm:inline">In Bibliothek</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleQuickMarkCompleted}
                 className="p-2 sm:px-3 sm:py-2 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-300 rounded-xl transition flex items-center space-x-1.5 text-xs font-bold cursor-pointer shadow-sm shadow-emerald-950"
-                title="Mark workout as completed on deck and save to library"
+                title="Training als absolviert markieren und in Bibliothek ablegen"
               >
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="hidden md:inline">Completed</span>
+                <span className="hidden md:inline">Absolviert</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleCopyToClipboard}
                 className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl transition flex items-center space-x-1.5 text-xs font-semibold cursor-pointer"
-                title="Copy whiteboard workout to clipboard"
+                title="Whiteboard-Training in die Zwischenablage kopieren"
               >
                 {copiedNotification ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                <span className="hidden sm:inline">{copiedNotification ? 'Copied!' : 'Copy Text'}</span>
+                <span className="hidden sm:inline">{copiedNotification ? 'Kopiert!' : 'Text kopieren'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleExplicitSave}
                 className="px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-cyan-500/20 flex items-center space-x-2 transition cursor-pointer"
-                title="Save session changes"
+                title="Änderungen am Training speichern"
               >
                 <Save className="w-4 h-4" />
-                <span>Save Workout</span>
+                <span>Training speichern</span>
               </button>
             </div>
           </div>
@@ -626,7 +637,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                 }`}
               >
                 <Flame className="w-3 h-3 text-amber-300" />
-                <span>Drills</span>
+                <span>Technik</span>
               </button>
 
               <button
@@ -639,7 +650,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                 }`}
               >
                 <Bookmark className="w-3 h-3 text-cyan-300" />
-                <span>Saved ({savedWorkouts.length})</span>
+                <span>Gespeichert ({savedWorkouts.length})</span>
               </button>
 
               <button
@@ -652,7 +663,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                 }`}
               >
                 <Sparkles className="w-3 h-3 text-amber-300" />
-                <span>Base Plans</span>
+                <span>Basispläne</span>
               </button>
             </div>
 
@@ -663,19 +674,19 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                   <div>
                     <h3 className="text-xs font-bold text-white flex items-center space-x-1.5">
                       <Flame className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Drill Library ({drillLibrary?.length || 0})</span>
+                      <span>Übungsbibliothek ({drillLibrary?.length || 0})</span>
                     </h3>
-                    <p className="text-[10px] text-slate-400">Drag drills directly into any set block on the right</p>
+                    <p className="text-[10px] text-slate-400">Übungen per Drag & Drop rechts in Serien ziehen</p>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => setIsNewDrillModalOpen(true)}
                     className="p-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1"
-                    title="Create custom drill"
+                    title="Eigene Technikübung erstellen"
                   >
                     <Plus className="w-3 h-3" />
-                    <span className="text-[10px]">New</span>
+                    <span className="text-[10px]">Neu</span>
                   </button>
                 </div>
 
@@ -687,24 +698,33 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                       type="text"
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
-                      placeholder="Search drills, cues, strokes..."
+                      placeholder="Übungen, Schwerpunkte, Lagen suchen..."
                       className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-500"
                     />
                   </div>
 
                   <div className="flex items-center space-x-1 overflow-x-auto pb-1 text-[11px] no-scrollbar">
-                    {['All', 'Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly', 'IM', 'Kick', 'Pull'].map(cat => (
+                    {[
+                      { id: 'All', label: 'Alle' },
+                      { id: 'Freestyle', label: 'Kraul' },
+                      { id: 'Backstroke', label: 'Rücken' },
+                      { id: 'Breaststroke', label: 'Brust' },
+                      { id: 'Butterfly', label: 'Delphin' },
+                      { id: 'IM', label: 'Lagen' },
+                      { id: 'Kick', label: 'Beine' },
+                      { id: 'Pull', label: 'Armzug' },
+                    ].map(cat => (
                       <button
-                        key={cat}
+                        key={cat.id}
                         type="button"
-                        onClick={() => setFilterCategory(cat)}
+                        onClick={() => setFilterCategory(cat.id)}
                         className={`px-2 py-0.5 rounded-md whitespace-nowrap transition text-[10px] font-semibold ${
-                          filterCategory === cat
+                          filterCategory === cat.id
                             ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
                             : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
                         }`}
                       >
-                        {cat}
+                        {cat.label}
                       </button>
                     ))}
                   </div>
@@ -714,7 +734,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                 <div className="flex-1 overflow-y-auto space-y-2 pr-1">
                   {(filteredDrills?.length || 0) === 0 ? (
                     <div className="text-center py-10 text-xs text-slate-500">
-                      No drills match your filter.
+                      Keine Übungen gefunden.
                     </div>
                   ) : (
                     (filteredDrills || []).map((drill) => (
@@ -732,13 +752,13 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                 {drill.name}
                               </h4>
                               <span className="text-[10px] text-cyan-400/80 font-mono">
-                                {drill.stroke} • {drill.defaultDistance}m
+                                {formatStrokeGerman(drill.stroke)} • {drill.defaultDistance}m
                               </span>
                             </div>
                           </div>
 
                           <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800">
-                            {drill.intensity}
+                            {formatIntensityShortGerman(drill.intensity)}
                           </span>
                         </div>
 
@@ -750,14 +770,14 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                           <div className="flex items-center space-x-1">
                             {drill.equipment.map(eq => (
                               <span key={eq} className="text-[9px] px-1 py-0.2 rounded bg-slate-900 text-slate-400">
-                                {eq}
+                                {formatEquipmentGerman(eq)}
                               </span>
                             ))}
                           </div>
 
                           {/* Quick Add Dropdown */}
                           <div className="flex items-center space-x-1">
-                            <span className="text-[10px] text-slate-500 mr-1">Add:</span>
+                            <span className="text-[10px] text-slate-500 mr-1">+ Serie:</span>
                             {currentSession.blocks.map(b => (
                               <button
                                 key={b.id}
@@ -771,9 +791,9 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                   equipment: drill.equipment,
                                 })}
                                 className="px-1.5 py-0.5 bg-slate-800 hover:bg-cyan-600 text-slate-300 hover:text-white rounded text-[9px] transition"
-                                title={`Add to ${b.title}`}
+                                title={`Zu "${b.title}" hinzufügen`}
                               >
-                                {b.type === 'warmup' ? 'Warm' : b.type === 'preset' ? 'Pre' : b.type === 'main' ? 'Main' : b.type === 'secondary' ? 'Sec' : 'Cool'}
+                                {b.type === 'warmup' ? 'Ein' : b.type === 'preset' ? 'Vor' : b.type === 'main' ? 'Haupt' : b.type === 'secondary' ? 'Neben' : 'Aus'}
                               </button>
                             ))}
                           </div>
@@ -792,19 +812,19 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                   <div>
                     <h3 className="text-xs font-bold text-white flex items-center space-x-1.5">
                       <Bookmark className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Saved Workouts ({savedWorkouts.length})</span>
+                      <span>Gespeicherte Trainings ({savedWorkouts.length})</span>
                     </h3>
-                    <p className="text-[10px] text-slate-400">Completed workouts and saved squad templates</p>
+                    <p className="text-[10px] text-slate-400">Absolvierte Einheiten & Kadervorlagen</p>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => setIsSaveModalOpen(true)}
                     className="p-1 px-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1"
-                    title="Save current session to library"
+                    title="Aktuelle Einheit in Bibliothek speichern"
                   >
                     <Plus className="w-3 h-3" />
-                    <span className="text-[10px]">Save Current</span>
+                    <span className="text-[10px]">Aktuelles speichern</span>
                   </button>
                 </div>
 
@@ -814,7 +834,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                     type="text"
                     value={workoutSearchQuery}
                     onChange={e => setWorkoutSearchQuery(e.target.value)}
-                    placeholder="Search workouts, tags, focus..."
+                    placeholder="Trainings, Tags, Fokus suchen..."
                     className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-500"
                   />
                 </div>
@@ -837,11 +857,11 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                               {workout.isCompleted && (
                                 <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 flex items-center space-x-0.5">
                                   <CheckCircle2 className="w-2.5 h-2.5" />
-                                  <span>Done</span>
+                                  <span>Erledigt</span>
                                 </span>
                               )}
                               <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
-                                {workout.focus}
+                                {formatFocusGerman(workout.focus)}
                               </span>
                             </div>
                             <h4 className="text-xs font-bold text-white line-clamp-1">
@@ -861,7 +881,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                         )}
 
                         <div className="flex items-center justify-between pt-1.5 border-t border-slate-900 text-[10px]">
-                          <span className="text-slate-500">{workout.blocks?.length || 0} blocks</span>
+                          <span className="text-slate-500">{workout.blocks?.length || 0} Serien</span>
 
                           <div className="flex items-center space-x-1.5">
                             {onDeleteWorkoutFromLibrary && workout.source !== 'coach_inspiration' && (
@@ -869,7 +889,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                 type="button"
                                 onClick={() => onDeleteWorkoutFromLibrary(workout.id)}
                                 className="p-1 text-slate-500 hover:text-rose-400 transition"
-                                title="Delete from library"
+                                title="Aus Bibliothek löschen"
                               >
                                 <Trash2 className="w-3 h-3" />
                               </button>
@@ -879,18 +899,18 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                               type="button"
                               onClick={() => handleAppendWorkout(workout)}
                               className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-semibold transition"
-                              title="Append blocks to current workout"
+                              title="Serien an aktuelles Training anhängen"
                             >
-                              + Append
+                              + Anhängen
                             </button>
 
                             <button
                               type="button"
                               onClick={() => handleLoadWorkout(workout)}
                               className="px-2 py-0.5 rounded bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold transition flex items-center space-x-0.5"
-                              title="Replace current workout with this plan"
+                              title="Aktuelles Training mit dieser Vorlage ersetzen"
                             >
-                              <span>Load</span>
+                              <span>Laden</span>
                               <ArrowRight className="w-2.5 h-2.5" />
                             </button>
                           </div>
@@ -907,9 +927,9 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                 <div className="pb-2.5 border-b border-slate-800 mb-2.5">
                   <h3 className="text-xs font-bold text-white flex items-center space-x-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Base Inspiration Plans ({INSPIRATION_WORKOUTS.length})</span>
+                    <span>Basis-Inspirationspläne ({INSPIRATION_WORKOUTS.length})</span>
                   </h3>
-                  <p className="text-[10px] text-slate-400">German championship base sets with dolphin dives, pull & medley</p>
+                  <p className="text-[10px] text-slate-400">Wettkampf-Basisserien mit Delphinkicks, Armzug & Lagen</p>
                 </div>
 
                 <div className="flex-1 overflow-y-auto space-y-3 pr-1">
@@ -921,7 +941,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                       <div className="flex items-start justify-between">
                         <div>
                           <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800/80">
-                            Base Plan {plan.originalPlanIndex ? `#${plan.originalPlanIndex}` : ''}
+                            Basisplan {plan.originalPlanIndex ? `#${plan.originalPlanIndex}` : ''}
                           </span>
                           <h4 className="text-xs font-black text-white mt-1">
                             {plan.name}
@@ -944,7 +964,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                           </div>
                         ))}
                         {(plan.blocks?.length || 0) > 4 && (
-                          <div className="text-[9px] text-slate-500">+ {(plan.blocks?.length || 0) - 4} more blocks</div>
+                          <div className="text-[9px] text-slate-500">+ {(plan.blocks?.length || 0) - 4} weitere Serien</div>
                         )}
                       </div>
 
@@ -954,14 +974,14 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                           onClick={() => handleAppendWorkout(plan)}
                           className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-semibold transition"
                         >
-                          + Append
+                          + Anhängen
                         </button>
                         <button
                           type="button"
                           onClick={() => handleLoadWorkout(plan)}
                           className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-black text-[10px] transition flex items-center space-x-1 shadow-sm"
                         >
-                          <span>Load Plan</span>
+                          <span>Plan laden</span>
                           <ArrowRight className="w-2.5 h-2.5" />
                         </button>
                       </div>
@@ -1003,7 +1023,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                           disabled={blockIdx === 0}
                           onClick={() => handleMoveBlock(blockIdx, 'up')}
                           className="p-1 text-slate-500 hover:text-white disabled:opacity-20 transition"
-                          title="Move block up"
+                          title="Serie nach oben verschieben"
                         >
                           <ChevronUp className="w-3.5 h-3.5" />
                         </button>
@@ -1012,7 +1032,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                           disabled={blockIdx === (currentSession?.blocks?.length || 0) - 1}
                           onClick={() => handleMoveBlock(blockIdx, 'down')}
                           className="p-1 text-slate-500 hover:text-white disabled:opacity-20 transition"
-                          title="Move block down"
+                          title="Serie nach unten verschieben"
                         >
                           <ChevronDown className="w-3.5 h-3.5" />
                         </button>
@@ -1038,7 +1058,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                     <div className="flex items-center space-x-2">
                       {/* Rounds Multiplier */}
                       <div className="flex items-center space-x-1 bg-slate-950 px-2 py-1 rounded-lg border border-slate-800 text-xs">
-                        <span className="text-slate-400 text-[11px]">Rounds:</span>
+                        <span className="text-slate-400 text-[11px]">Durchgänge:</span>
                         <input
                           type="number"
                           min={1}
@@ -1055,14 +1075,14 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                         className="flex items-center space-x-1 px-2.5 py-1 bg-cyan-600/30 hover:bg-cyan-600 text-cyan-300 hover:text-white rounded-lg text-xs font-semibold transition cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
-                        <span>Add Rep</span>
+                        <span>Wdh. hinzufügen</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => handleDuplicateBlock(block)}
                         className="p-1.5 text-slate-500 hover:text-slate-200 rounded-lg transition cursor-pointer"
-                        title="Duplicate entire set block"
+                        title="Ganze Serie duplizieren"
                       >
                         <Copy className="w-3.5 h-3.5" />
                       </button>
@@ -1071,7 +1091,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                         type="button"
                         onClick={() => handleRemoveBlock(block.id)}
                         className="p-1.5 text-slate-500 hover:text-red-400 rounded-lg transition cursor-pointer"
-                        title="Delete set block"
+                        title="Serie löschen"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -1082,7 +1102,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                   <div className="space-y-3">
                     {(block.items?.length || 0) === 0 ? (
                       <div className="border border-dashed border-slate-800 rounded-xl py-6 text-center text-xs text-slate-500">
-                        Drag drills from the left library here, or click "Add Rep"
+                        Übungen aus der linken Bibliothek hierher ziehen oder auf „Wdh. hinzufügen“ klicken
                       </div>
                     ) : (
                       (block.items || []).map((item, itemIdx) => {
@@ -1144,7 +1164,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                 className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-cyan-300 font-semibold cursor-pointer"
                               >
                                 {STROKES.map(s => (
-                                  <option key={s} value={s}>{s}</option>
+                                  <option key={s} value={s}>{formatStrokeGerman(s)}</option>
                                 ))}
                               </select>
 
@@ -1155,7 +1175,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                 className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-amber-300 font-medium cursor-pointer"
                               >
                                 {INTENSITIES.map(i => (
-                                  <option key={i} value={i}>{i}</option>
+                                  <option key={i} value={i}>{formatIntensityShortGerman(i)}</option>
                                 ))}
                               </select>
 
@@ -1165,9 +1185,9 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                 onChange={e => handleUpdateItem(block.id, item.id, { sendOffMode: e.target.value as any })}
                                 className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-300 text-[11px] cursor-pointer"
                               >
-                                <option value="lane-scaled">Lane-Scaled Send-Offs</option>
-                                <option value="fixed-interval">Fixed Squad Send-Off</option>
-                                <option value="rest-after">Fixed Rest Seconds</option>
+                                <option value="lane-scaled">Bahnen-CSS Abgangszeiten</option>
+                                <option value="fixed-interval">Fester Abgang (Min:Sek)</option>
+                                <option value="rest-after">Feste Pause (Sekunden)</option>
                               </select>
 
                               {item.sendOffMode === 'fixed-interval' && (
@@ -1179,14 +1199,14 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                     onChange={e => handleUpdateItem(block.id, item.id, { fixedInterval: e.target.value })}
                                     placeholder="1:30"
                                     className="w-16 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs text-center font-mono text-cyan-300"
-                                    title="Send-off interval (e.g. 1:30)"
+                                    title="Abgangszeit (z.B. 1:30)"
                                   />
                                 </div>
                               )}
 
                               {item.sendOffMode === 'rest-after' && (
                                 <div className="flex items-center space-x-1">
-                                  <span className="text-[10px] text-slate-400 font-mono">Rest:</span>
+                                  <span className="text-[10px] text-slate-400 font-mono">Pause:</span>
                                   <select
                                     value={item.restSeconds || 15}
                                     onChange={e => handleUpdateItem(block.id, item.id, { restSeconds: Number(e.target.value) })}
@@ -1204,7 +1224,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                   type="button"
                                   onClick={() => handleDuplicateItem(block.id, item)}
                                   className="p-1 text-slate-500 hover:text-white rounded"
-                                  title="Duplicate rep"
+                                  title="Wiederholung duplizieren"
                                 >
                                   <Copy className="w-3.5 h-3.5" />
                                 </button>
@@ -1212,7 +1232,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                   type="button"
                                   onClick={() => handleRemoveItem(block.id, item.id)}
                                   className="p-1 text-slate-500 hover:text-red-400 rounded"
-                                  title="Delete rep"
+                                  title="Wiederholung löschen"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -1225,14 +1245,14 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                 type="text"
                                 value={item.description}
                                 onChange={e => handleUpdateItem(block.id, item.id, { description: e.target.value })}
-                                placeholder="Coaching cue / set instruction (e.g. Descend 1-4, count strokes, 4 dolphins off wall)..."
+                                placeholder="Trainingshinweis / Fokus (z.B. 1-4 steigernd, Züge zählen, 4 Delphinkicks nach Wende)..."
                                 className="w-full bg-slate-900/60 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-cyan-500"
                               />
                             </div>
 
                             {/* Equipment Badges Selector */}
                             <div className="flex flex-wrap items-center gap-1">
-                              <span className="text-[10px] text-slate-500 mr-1">Gear:</span>
+                              <span className="text-[10px] text-slate-500 mr-1">Material:</span>
                               {ALL_EQUIPMENT.map(eq => {
                                 const currentEq = Array.isArray(item.equipment) ? item.equipment : [];
                                 const hasEq = currentEq.includes(eq);
@@ -1252,7 +1272,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                         : 'bg-slate-900 text-slate-500 hover:text-slate-300 border border-slate-800'
                                     }`}
                                   >
-                                    {eq}
+                                    {formatEquipmentGerman(eq)}
                                   </button>
                                 );
                               })}
@@ -1263,7 +1283,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                               <div className="pt-2 border-t border-slate-800/80">
                                 <div className="flex items-center space-x-1.5 text-[10px] text-slate-400 font-semibold mb-1">
                                   <Sparkles className="w-3 h-3 text-cyan-400" />
-                                  <span>Squad Lane Send-Offs for this {item.distance}m effort:</span>
+                                  <span>Bahnen-Abgangszeiten für diese {item.distance}m Belastung:</span>
                                 </div>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1.5">
                                   {lanes.map((l) => {
@@ -1279,7 +1299,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                                         className="bg-slate-900/90 px-2 py-1 rounded-md border border-slate-800 flex items-center justify-between text-[11px]"
                                       >
                                         <span className="font-semibold truncate text-slate-300" style={{ color: l.color }}>
-                                          L{l.laneNumber}:
+                                          B{l.laneNumber}:
                                         </span>
                                         <span className="font-pace font-bold text-cyan-300">
                                           @{sendOff.sendOffStr}
@@ -1308,7 +1328,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
               className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-emerald-500/30 text-emerald-300 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+ Warm-Up Block</span>
+              <span>+ Einschwimm-Serie</span>
             </button>
             <button
               type="button"
@@ -1316,7 +1336,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
               className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-amber-500/30 text-amber-300 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+ Pre-Set Block</span>
+              <span>+ Vorbereitungsserie</span>
             </button>
             <button
               type="button"
@@ -1324,7 +1344,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
               className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-red-500/30 text-red-300 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+ Main Set Block</span>
+              <span>+ Hauptserie</span>
             </button>
             <button
               type="button"
@@ -1332,7 +1352,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
               className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-blue-500/30 text-blue-300 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+ Secondary / Pull Block</span>
+              <span>+ Nebenserie / Armzug</span>
             </button>
             <button
               type="button"
@@ -1340,7 +1360,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
               className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-purple-500/30 text-purple-300 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+ Cool Down Block</span>
+              <span>+ Ausschwimm-Serie</span>
             </button>
           </div>
         </div>
@@ -1352,62 +1372,71 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
           <div className="bg-slate-900 border border-cyan-500/40 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden p-6 space-y-4">
             <h3 className="text-base font-bold text-white flex items-center space-x-2">
               <Flame className="w-4 h-4 text-cyan-400" />
-              <span>Add Custom Squad Drill to Library</span>
+              <span>Neue Technikübung zur Kaderbibliothek hinzufügen</span>
             </h3>
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Drill Name</label>
+                <label className="block text-slate-400 font-semibold mb-1">Name der Übung</label>
                 <input
                   type="text"
                   value={newDrillName}
                   onChange={e => setNewDrillName(e.target.value)}
-                  placeholder="e.g. Fist to Finger Catch Progression"
+                  placeholder="z.B. Faust-zu-Fingerspitzen Wasserfassen"
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-cyan-400"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Category</label>
+                  <label className="block text-slate-400 font-semibold mb-1">Kategorie</label>
                   <select
                     value={newDrillCategory}
                     onChange={e => setNewDrillCategory(e.target.value as any)}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white"
                   >
-                    {['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly', 'IM', 'Kick', 'Pull', 'Starts & Turns'].map(c => (
-                      <option key={c} value={c}>{c}</option>
+                    {[
+                      { id: 'Freestyle', label: 'Kraul' },
+                      { id: 'Backstroke', label: 'Rücken' },
+                      { id: 'Breaststroke', label: 'Brust' },
+                      { id: 'Butterfly', label: 'Delphin' },
+                      { id: 'IM', label: 'Lagen' },
+                      { id: 'Kick', label: 'Beine' },
+                      { id: 'Pull', label: 'Armzug' },
+                      { id: 'Starts & Turns', label: 'Starts & Wenden' },
+                    ].map(c => (
+                      <option key={c.id} value={c.id}>{c.label}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Stroke Type</label>
+                  <label className="block text-slate-400 font-semibold mb-1">Schwimmart</label>
                   <select
                     value={newDrillStroke}
                     onChange={e => setNewDrillStroke(e.target.value as any)}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white"
                   >
                     {STROKES.map(s => (
-                      <option key={s} value={s}>{s}</option>
+                      <option key={s} value={s}>{formatStrokeGerman(s)}</option>
                     ))}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Technical Cue / Focus Instruction</label>
+                <label className="block text-slate-400 font-semibold mb-1">Technischer Fokus & Bewegungshinweis</label>
                 <textarea
                   value={newDrillCue}
                   onChange={e => setNewDrillCue(e.target.value)}
-                  placeholder="e.g. Initiate high-elbow catch, keep hips high, breathe every 4th cycle"
+                  placeholder="z.B. Frühes Wasserfassen mit hohem Ellbogen, Hüfte an der Oberfläche, 4er-Atmung"
                   rows={2}
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:border-cyan-400 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Required Equipment</label>
+                <label className="block text-slate-400 font-semibold mb-1">Benötigtes Material</label>
                 <div className="flex flex-wrap gap-1.5">
                   {ALL_EQUIPMENT.map(eq => {
                     const selected = newDrillEquipment.includes(eq);
@@ -1422,7 +1451,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                           selected ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400' : 'bg-slate-950 text-slate-400 border border-slate-800'
                         }`}
                       >
-                        {eq}
+                        {formatEquipmentGerman(eq)}
                       </button>
                     );
                   })}
@@ -1436,14 +1465,14 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
                 onClick={() => setIsNewDrillModalOpen(false)}
                 className="px-4 py-2 text-xs text-slate-400 hover:text-white"
               >
-                Cancel
+                Abbrechen
               </button>
               <button
                 type="button"
                 onClick={handleCreateCustomDrill}
                 className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-bold"
               >
-                Save to Library
+                In Bibliothek speichern
               </button>
             </div>
           </div>
@@ -1459,7 +1488,7 @@ export const WorkoutBuilder: React.FC<WorkoutBuilderProps> = ({
           if (onSaveWorkoutToLibrary) {
             onSaveWorkoutToLibrary(workout);
           }
-          showToast(`Saved "${workout.name}" to Workout Library!`);
+          showToast(`„${workout.name}“ in Trainingsbibliothek gespeichert!`);
         }}
       />
 

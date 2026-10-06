@@ -47,7 +47,7 @@ import {
   subscribeToSavedWorkouts 
 } from './services/workoutLibraryService';
 import { normalizeSeason } from './utils/normalizeSeason';
-import { Waves, Sparkles, RefreshCw, Radio, Shield, User as UserIcon } from 'lucide-react';
+import { Waves, Sparkles, Radio, Shield, User as UserIcon } from 'lucide-react';
 
 const STORAGE_KEY_SEASON = 'swim_coach_season_v2';
 const STORAGE_KEY_DRILLS = 'swim_coach_drills_v2';
@@ -125,7 +125,7 @@ export default function App() {
           });
 
           // Show subtle notification of remote sync
-          setCloudNotification('Squad updates synchronized from cloud');
+          setCloudNotification('Kader-Aktualisierungen aus der Cloud synchronisiert');
           setTimeout(() => setCloudNotification(null), 3500);
         } else {
           // Local write acknowledging or initial server state
@@ -174,11 +174,25 @@ export default function App() {
     setSavedWorkouts(prev => prev.filter(w => w.id !== id));
   };
 
+  const handleImportWorkoutsToLibrary = async (workouts: SavedWorkoutItem[]) => {
+    if (currentUser?.role !== 'admin') return;
+    for (const w of workouts) {
+      await saveWorkoutToLibrary(w);
+    }
+    setSavedWorkouts(prev => {
+      const existingIds = new Set(prev.map(p => p.id));
+      const newItems = workouts.filter(w => !existingIds.has(w.id));
+      return [...newItems, ...prev];
+    });
+    setCloudNotification(`${workouts.length} Trainingsplan${workouts.length === 1 ? '' : 'pläne'} erfolgreich in die Bibliothek importiert!`);
+    setTimeout(() => setCloudNotification(null), 3500);
+  };
+
   const handleChangeCycleFocus = (focusType: CycleFocusType, weeksCount?: number) => {
     if (currentUser?.role !== 'admin') return;
     const updatedSeason = applyCycleFocusToSeason(season, focusType, weeksCount);
     updateSeasonAndPersist(updatedSeason);
-    setCloudNotification(`Cycle focus updated: ${focusType.replace('_', ' ').toUpperCase()}`);
+    setCloudNotification(`Zyklus-Schwerpunkt aktualisiert: ${focusType === 'endurance_focus' ? 'Ausdauer' : focusType === 'threshold_focus' ? 'Schwelle' : focusType === 'vo2max_focus' ? 'VO2max' : focusType === 'speed_power_focus' ? 'Sprint & Kraft' : 'Wettkampf'}`);
     setTimeout(() => setCloudNotification(null), 3500);
   };
 
@@ -196,7 +210,7 @@ export default function App() {
     handleUpdateWeek(updatedWeek);
     setCurrentWeekNumber(weekNumber);
     setActiveTab('planner');
-    setCloudNotification(`Session added to Week ${weekNumber} (${session.dayOfWeek})`);
+    setCloudNotification(`Einheit zu Woche ${weekNumber} hinzugefügt (${session.dayOfWeek})`);
     setTimeout(() => setCloudNotification(null), 3000);
   };
 
@@ -357,20 +371,6 @@ export default function App() {
     updateSeasonAndPersist(updatedSeason);
   };
 
-  const handleResetToDefaults = async () => {
-    if (currentUser?.role !== 'admin') return;
-    if (window.confirm('Reset squad data to initial championship template across all devices?')) {
-      const resetPlan = {
-        ...INITIAL_SEASON,
-        id: 'active_season',
-      };
-      await updateSeasonAndPersist(resetPlan);
-      setDrillLibrary(INITIAL_DRILLS);
-      setCurrentWeekNumber(1);
-      setActiveSession(INITIAL_SEASON.weeks[0].sessions[0]);
-    }
-  };
-
   // Role switching helper for quick previewing / testing
   const handleSwitchRole = () => {
     if (!currentUser) return;
@@ -378,7 +378,7 @@ export default function App() {
       const swimmerUser: AppUser = {
         ...currentUser,
         role: 'swimmer',
-        displayName: 'Sarah M. (Swimmer Mode)',
+        displayName: 'Sarah M. (Athleten-Modus)',
       };
       saveStoredUser(swimmerUser);
       setCurrentUser(swimmerUser);
@@ -388,7 +388,7 @@ export default function App() {
       const adminUser: AppUser = {
         ...currentUser,
         role: 'admin',
-        displayName: 'Coach Nikolas',
+        displayName: 'Trainer Nikolas',
       };
       saveStoredUser(adminUser);
       setCurrentUser(adminUser);
@@ -543,6 +543,7 @@ export default function App() {
                 onAddSessionToWeek={handleAddSessionToWeek}
                 onDeleteWorkout={handleDeleteWorkoutFromLibrary}
                 onSaveWorkout={handleSaveWorkoutToLibrary}
+                onImportWorkouts={handleImportWorkoutsToLibrary}
               />
             )}
 
@@ -577,26 +578,18 @@ export default function App() {
           <div className="flex items-center space-x-2">
             <span className={`w-2 h-2 rounded-full ${isSwimmer ? 'bg-emerald-400' : 'bg-cyan-400'}`} />
             <span className="font-semibold text-slate-400">Swim Coach</span>
-            <span>• Squad Pace Scaling & Macrocycle Periodization Engine</span>
+            <span>• Kader-Pacing & Makrozyklus-Periodisierungsplaner</span>
           </div>
 
           <div className="flex items-center space-x-4">
-            {!isSwimmer ? (
-              <button
-                onClick={handleResetToDefaults}
-                className="text-slate-500 hover:text-cyan-400 transition flex items-center space-x-1 cursor-pointer"
-              >
-                <RefreshCw className="w-3 h-3" />
-                <span>Reset Defaults</span>
-              </button>
-            ) : (
+            {isSwimmer && (
               <span className="text-emerald-400/90 font-medium flex items-center space-x-1">
                 <Shield className="w-3 h-3" />
-                <span>Swimmer Portal (Read-Only)</span>
+                <span>Athleten-Portal (Schreibgeschützt)</span>
               </span>
             )}
-            <span>{season?.poolLength || '25m'} Pool</span>
-            <span>{season?.lanes?.length || 0} Lanes Configured</span>
+            <span>{season?.poolLength || '25m'} Becken</span>
+            <span>{season?.lanes?.length || 0} Bahnen konfiguriert</span>
           </div>
         </div>
       </footer>

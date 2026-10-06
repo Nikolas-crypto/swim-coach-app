@@ -35,6 +35,11 @@ import {
 import { WorkoutPickerModal } from './WorkoutPickerModal';
 import { SaveWorkoutModal } from './SaveWorkoutModal';
 import { INSPIRATION_WORKOUTS } from '../data/inspirationPlans';
+import { 
+  formatDayGerman, 
+  formatFocusGerman, 
+  formatPhaseGerman 
+} from '../utils/germanTranslations';
 
 interface WeeklyPlannerProps {
   weeks: WeekCycle[];
@@ -163,7 +168,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
       weekNumber: currentWeek.weekNumber,
       dayOfWeek: day,
       scheduledTime: slot ? `${slot.startTime} - ${slot.endTime}` : '06:00 - 07:30',
-      name: `W${currentWeek.weekNumber} ${day}: ${slot?.sessionTitle || 'Squad Practice'}`,
+      name: `W${currentWeek.weekNumber} ${formatDayGerman(day)}: ${slot?.sessionTitle || 'Kadertraining'}`,
       focus: slot?.primaryFocus || 'Aerobic',
       totalDistance: 3000,
       estimatedMinutes: 60,
@@ -172,7 +177,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
         {
           id: `b-warmup-${Date.now()}`,
           type: 'warmup',
-          title: 'Warm-Up',
+          title: 'Einschwimmen & Körperaktivierung',
           rounds: 1,
           items: [
             {
@@ -181,7 +186,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               distance: 400,
               stroke: 'Choice',
               intensity: 'Recovery',
-              description: 'Smooth loosen up & bilateral breathing',
+              description: 'Locker nach Wahl mit ruhiger Gleitphase & 3er-Atmung',
               equipment: [],
               sendOffMode: 'lane-scaled',
             },
@@ -190,7 +195,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
         {
           id: `b-preset-${Date.now()}`,
           type: 'preset',
-          title: 'Pre-Set: Drill & Kick',
+          title: 'Vorbereitungsserie: Technik & Beine',
           rounds: 1,
           items: [
             {
@@ -199,7 +204,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               distance: 50,
               stroke: 'Kick',
               intensity: 'Aerobic (EN1)',
-              description: 'Streamline flutter kick & hip roll',
+              description: 'Streamline-Kicks mit Brett, Fokus auf Beckenstabilität',
               equipment: ['Kickboard'],
               sendOffMode: 'lane-scaled',
             },
@@ -208,7 +213,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
         {
           id: `b-main-${Date.now()}`,
           type: 'main',
-          title: 'Main Set',
+          title: 'Hauptserie',
           rounds: 1,
           items: [
             {
@@ -217,7 +222,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               distance: 200,
               stroke: 'Freestyle',
               intensity: 'Threshold (EN2)',
-              description: 'CSS pacing hold on lane send-off',
+              description: 'Konstantes CSS-Pacing der Bahn halten',
               equipment: [],
               sendOffMode: 'lane-scaled',
             },
@@ -227,7 +232,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               distance: 100,
               stroke: 'Choice',
               intensity: 'Aerobic (EN1)',
-              description: 'Aerobic cruise descend by rounds',
+              description: 'Aerobes Dahingleiten mit gleichmäßiger Zugzahl',
               equipment: [],
               sendOffMode: 'lane-scaled',
             },
@@ -236,7 +241,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
         {
           id: `b-cool-${Date.now()}`,
           type: 'cooldown',
-          title: 'Cool Down',
+          title: 'Ausschwimmen',
           rounds: 1,
           items: [
             {
@@ -245,7 +250,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               distance: 300,
               stroke: 'Choice',
               intensity: 'Recovery',
-              description: 'Easy flush & deep exhalation',
+              description: 'Locker ausschwimmen & tiefe Ausatmung ins Wasser',
               equipment: [],
               sendOffMode: 'lane-scaled',
             },
@@ -321,7 +326,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               disabled={currentWeekNumber <= 1}
               onClick={() => onSelectWeek(currentWeekNumber - 1)}
               className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white disabled:opacity-30 disabled:pointer-events-none transition"
-              title="Previous Week"
+              title="Vorherige Woche"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -329,18 +334,18 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
-                  Microcycle Planning
+                  Mikrozyklus-Planung
                 </span>
                 <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold border ${
                   currentWeek.isConfirmed 
                     ? 'bg-emerald-950 text-emerald-300 border-emerald-800' 
                     : 'bg-amber-950 text-amber-300 border-amber-800'
                 }`}>
-                  {currentWeek.isConfirmed ? '✓ Cycle Confirmed' : 'Draft Cycle'}
+                  {currentWeek.isConfirmed ? '✓ Woche bestätigt' : 'Entwurf'}
                 </span>
                 {cycleFocus && (
                   <span className="text-[11px] px-2.5 py-0.5 rounded-full font-bold border border-cyan-500/40 bg-cyan-950/60 text-cyan-300">
-                    Cycle Focus: {cycleFocus.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    Schwerpunkt: {cycleFocus === 'endurance_focus' ? 'Ausdauer' : cycleFocus === 'threshold_focus' ? 'Schwelle (CSS)' : cycleFocus === 'vo2max_focus' ? 'VO2max' : cycleFocus === 'speed_power_focus' ? 'Sprint & Kraft' : 'Wettkampf'}
                   </span>
                 )}
               </div>
@@ -354,7 +359,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               disabled={!nextWeekExists && currentWeekNumber >= (safeWeeks?.length || 0)}
               onClick={() => onSelectWeek(currentWeekNumber + 1)}
               className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white disabled:opacity-30 disabled:pointer-events-none transition"
-              title="Next Week"
+              title="Nächste Woche"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -373,7 +378,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               }`}
             >
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span>{currentWeek.isConfirmed ? 'Structure Confirmed' : 'Confirm Week Structure'}</span>
+              <span>{currentWeek.isConfirmed ? 'Struktur bestätigt' : 'Wochenstruktur bestätigen'}</span>
             </button>
 
             {/* Auto Populate Next Week Trigger */}
@@ -383,7 +388,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               className="px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-cyan-500/20 flex items-center space-x-2 transition cursor-pointer"
             >
               <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
-              <span>Auto-Populate Week {currentWeek.weekNumber + 1}</span>
+              <span>Woche {currentWeek.weekNumber + 1} auto-generieren</span>
             </button>
           </div>
         </div>
@@ -394,7 +399,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
           <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-400 font-semibold block text-[11px]">Total Week Volume</span>
+                <span className="text-slate-400 font-semibold block text-[11px]">Wochenumfang (Ist)</span>
                 {!isEditingTargetVolume && (
                   <button
                     type="button"
@@ -403,10 +408,10 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                       setIsEditingTargetVolume(true);
                     }}
                     className="text-[10px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center space-x-1 px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 hover:border-cyan-500/40 transition cursor-pointer"
-                    title="Change weekly volume goal"
+                    title="Wochenziel anpassen"
                   >
                     <Edit3 className="w-2.5 h-2.5" />
-                    <span>Edit Goal</span>
+                    <span>Ziel anpassen</span>
                   </button>
                 )}
               </div>
@@ -449,9 +454,9 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                     type="button"
                     onClick={() => setTargetVolumeInput(actualVolume)}
                     className="px-1.5 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-cyan-400 transition"
-                    title="Set goal equal to currently planned session volume"
+                    title="Ziel auf aktuell geplanten Umfang setzen"
                   >
-                    = Actual
+                    = Ist-Umfang
                   </button>
                 </div>
                 <div className="flex items-center space-x-1.5 pt-1">
@@ -460,14 +465,14 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                     onClick={handleSaveTargetVolume}
                     className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded py-1 font-bold text-[10px] transition cursor-pointer"
                   >
-                    Save Goal
+                    Ziel speichern
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsEditingTargetVolume(false)}
                     className="px-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded py-1 text-[10px] transition cursor-pointer"
                   >
-                    Cancel
+                    Abbrechen
                   </button>
                 </div>
               </div>
@@ -478,9 +483,9 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                   setIsEditingTargetVolume(true);
                 }}
                 className="text-[10px] text-slate-400 hover:text-cyan-300 cursor-pointer flex items-center space-x-1 group mt-1"
-                title="Click to edit target volume goal"
+                title="Klicken, um Wochenziel zu bearbeiten"
               >
-                <span>Target: <strong className="text-slate-300 group-hover:text-cyan-300">{(currentWeek.targetVolumeMeters || 20000).toLocaleString()}{poolLength.slice(-1)}</strong></span>
+                <span>Ziel: <strong className="text-slate-300 group-hover:text-cyan-300">{(currentWeek.targetVolumeMeters || 20000).toLocaleString()}{poolLength.slice(-1)}</strong></span>
                 <Edit3 className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition text-cyan-400" />
               </div>
             )}
@@ -488,7 +493,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
 
           {/* Volume Progression Overload */}
           <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-            <span className="text-slate-400 font-semibold block text-[11px]">Progression Delta</span>
+            <span className="text-slate-400 font-semibold block text-[11px]">Progressions-Delta</span>
             <div className="flex items-center space-x-1.5 mt-0.5">
               {volumeDeltaPercent >= 0 ? (
                 <ArrowUpRight className="w-4 h-4 text-emerald-400" />
@@ -500,29 +505,29 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               </span>
             </div>
             <span className="text-[10px] text-slate-500">
-              vs Week {currentWeek.weekNumber - 1 || 1} volume
+              im Vgl. zu Woche {currentWeek.weekNumber - 1 || 1}
             </span>
           </div>
 
           {/* Planned Sessions */}
           <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-            <span className="text-slate-400 font-semibold block text-[11px]">Planned Sessions</span>
+            <span className="text-slate-400 font-semibold block text-[11px]">Geplante Einheiten</span>
             <div className="text-xl font-pace font-bold text-white mt-0.5">
-              {currentWeek.sessions?.length || 0} <span className="text-xs text-slate-500 font-sans font-normal">practices</span>
+              {currentWeek.sessions?.length || 0} <span className="text-xs text-slate-500 font-sans font-normal">Einheiten</span>
             </div>
             <span className="text-[10px] text-slate-500">
-              Across {lanes?.length || 0} squad lanes
+              Über {lanes?.length || 0} Kaderbahnen
             </span>
           </div>
 
           {/* Season Phase */}
           <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-            <span className="text-slate-400 font-semibold block text-[11px]">Periodization Phase</span>
+            <span className="text-slate-400 font-semibold block text-[11px]">Periodisierungsphase</span>
             <div className="text-sm font-bold text-amber-300 mt-1 truncate">
-              {currentWeek.phase}
+              {formatPhaseGerman(currentWeek.phase)}
             </div>
             <span className="text-[10px] text-slate-500">
-              Week {currentWeek.weekNumber} of season macrocycle
+              Woche {currentWeek.weekNumber} des Saison-Makrozyklus
             </span>
           </div>
         </div>
@@ -533,10 +538,10 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
         <div className="flex items-center justify-between">
           <h3 className="text-base font-bold text-white flex items-center space-x-2">
             <Calendar className="w-4 h-4 text-cyan-400" />
-            <span>Weekly Training Matrix</span>
+            <span>Wöchentliche Trainingsmatrix</span>
           </h3>
           <span className="text-xs text-slate-400">
-            Click any session to open in the interactive workout builder
+            Klicke auf eine Einheit, um sie im Trainings-Editor zu öffnen
           </span>
         </div>
 
@@ -553,9 +558,9 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                 <div>
                   <div className="flex items-center justify-between pb-2.5 border-b border-slate-800 mb-3">
                     <div>
-                      <h4 className="text-sm font-bold text-white tracking-wide">{day}</h4>
+                      <h4 className="text-sm font-bold text-white tracking-wide">{formatDayGerman(day)}</h4>
                       <span className="text-[11px] text-slate-500">
-                        {daySessions.length} {daySessions.length === 1 ? 'session' : 'sessions'} planned
+                        {daySessions.length} {daySessions.length === 1 ? 'Einheit' : 'Einheiten'} geplant
                       </span>
                     </div>
 
@@ -564,7 +569,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                         type="button"
                         onClick={() => handleOpenPickerForDay(day)}
                         className="p-1.5 bg-slate-800 hover:bg-amber-600 text-slate-300 hover:text-white rounded-lg text-xs transition flex items-center space-x-1"
-                        title={`Pick from Base Inspiration Plans or Workout Library for ${day}`}
+                        title={`Vorlage oder Inspiration aus Bibliothek für ${formatDayGerman(day)} wählen`}
                       >
                         <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                       </button>
@@ -573,7 +578,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                         type="button"
                         onClick={() => handleAddSessionToDay(day)}
                         className="p-1.5 bg-slate-800 hover:bg-cyan-600 text-slate-300 hover:text-white rounded-lg text-xs transition"
-                        title={`Add blank session to ${day}`}
+                        title={`Neue leere Einheit für ${formatDayGerman(day)} anlegen`}
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
@@ -584,14 +589,14 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                   <div className="space-y-3">
                     {daySessions.length === 0 ? (
                       <div className="py-7 text-center text-xs text-slate-500 border border-dashed border-slate-800/80 rounded-xl space-y-1">
-                        <span>Rest & Recovery Day</span>
+                        <span>Ruhe- & Regenerationstag</span>
                         <div className="flex items-center justify-center space-x-2 pt-1">
                           <button
                             type="button"
                             onClick={() => handleAddSessionToDay(day)}
                             className="text-cyan-400 hover:text-cyan-300 font-semibold"
                           >
-                            + Blank
+                            + Leer
                           </button>
                           <span>•</span>
                           <button
@@ -600,7 +605,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                             className="text-amber-400 hover:text-amber-300 font-semibold flex items-center space-x-1"
                           >
                             <Sparkles className="w-3 h-3 text-amber-400" />
-                            <span>From Library</span>
+                            <span>Aus Bibliothek</span>
                           </button>
                         </div>
                       </div>
@@ -626,7 +631,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                                   <span>{session.scheduledTime || '06:00 - 07:30'}</span>
                                   <span>•</span>
                                   <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold border ${focusBadgeColor}`}>
-                                    {session.focus}
+                                    {formatFocusGerman(session.focus)}
                                   </span>
                                 </div>
                                 <h5 className="text-xs font-bold text-white group-hover/card:text-cyan-300 transition">
@@ -658,7 +663,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                                   type="button"
                                   onClick={() => handleOpenSaveModalForSession(session)}
                                   className="p-1.5 text-slate-500 hover:text-cyan-400 hover:bg-slate-800 rounded transition"
-                                  title="Save this completed session into your squad workout library"
+                                  title="Einheit in Trainingsbibliothek speichern"
                                 >
                                   <Bookmark className="w-3 h-3" />
                                 </button>
@@ -666,7 +671,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                                   type="button"
                                   onClick={() => handleDuplicateSession(session)}
                                   className="p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded transition"
-                                  title="Duplicate session"
+                                  title="Einheit duplizieren"
                                 >
                                   <Copy className="w-3 h-3" />
                                 </button>
@@ -674,7 +679,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                                   type="button"
                                   onClick={() => handleDeleteSession(session.id)}
                                   className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded transition"
-                                  title="Delete session"
+                                  title="Einheit löschen"
                                 >
                                   <Trash2 className="w-3 h-3" />
                                 </button>
@@ -684,7 +689,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                                   className="px-2.5 py-1 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold rounded-lg transition flex items-center space-x-1 cursor-pointer"
                                 >
                                   <Edit3 className="w-3 h-3" />
-                                  <span>Edit</span>
+                                  <span>Bearbeiten</span>
                                 </button>
                               </div>
                             </div>
@@ -710,10 +715,10 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
               </div>
               <div>
                 <h3 className="text-lg font-black text-white tracking-wide">
-                  Auto-Populate Week {currentWeek.weekNumber + 1}
+                  Woche {currentWeek.weekNumber + 1} auto-generieren
                 </h3>
                 <p className="text-xs text-cyan-300/80">
-                  Generate the next microcycle from Week {currentWeek.weekNumber}'s confirmed structure
+                  Erstelle den nächsten Mikrozyklus basierend auf der bestätigten Struktur von Woche {currentWeek.weekNumber}
                 </p>
               </div>
             </div>
@@ -721,34 +726,34 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
             {/* Progression Method Selector */}
             <div className="space-y-3">
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Select Progression Pattern
+                Progressionsmuster wählen
               </label>
 
               <div className="space-y-2">
                 {[
                   {
                     id: 'overload_volume' as ProgressionMode,
-                    title: 'Progressive Overload (+8% Volume)',
-                    desc: 'Increases reps in main sets (e.g. 4x200 -> 5x200), expands aerobic base capacity.',
-                    badge: 'Recommended for Build Weeks',
+                    title: 'Progressive Überlastung (+8% Umfang)',
+                    desc: 'Erhöht Wiederholungen in Hauptserien (z.B. 4x200 -> 5x200), baut aerobe Basiskapazität aus.',
+                    badge: 'Empfohlen für Aufbauwochen',
                   },
                   {
                     id: 'sharpen_threshold' as ProgressionMode,
-                    title: 'Threshold Sharpening & Pacing',
-                    desc: 'Tightens send-off intervals by 2-5s, increases quality threshold density.',
-                    badge: 'CSS Focus',
+                    title: 'Schwellenschärfung & Pacing',
+                    desc: 'Verkürzt Abgangszeiten um 2-5s, erhöht die Dichte im CSS-Schwellenbereich.',
+                    badge: 'CSS-Fokus',
                   },
                   {
                     id: 'deload_recovery' as ProgressionMode,
-                    title: 'Stepped Deload (-22% Volume)',
-                    desc: 'Cuts reps and volume for supercompensation & muscular recovery before the next block.',
-                    badge: 'Every 3rd-4th Week',
+                    title: 'Stufenweise Entlastung (-22% Umfang)',
+                    desc: 'Reduziert Serien & Umfang für Superkompensation vor dem nächsten Block.',
+                    badge: 'Jede 3.–4. Woche',
                   },
                   {
                     id: 'taper_speed' as ProgressionMode,
-                    title: 'Championship Taper (-30% Volume)',
-                    desc: 'Drops total distance, sharpens race breakouts, dive starts, and max sprint speed.',
-                    badge: 'Championship Prep',
+                    title: 'Wettkampf-Tapering (-30% Umfang)',
+                    desc: 'Senkt Gesamtstrecke, schärft Wenden, Startsprünge und maximale Sprintpower.',
+                    badge: 'Meisterschafts-Prep',
                   },
                 ].map(mode => (
                   <button
@@ -779,13 +784,13 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
             <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs space-y-1.5">
               <div className="font-bold text-white flex items-center space-x-1.5">
                 <Flame className="w-3.5 h-3.5 text-amber-400" />
-                <span>Next Week Projection:</span>
+                <span>Vorschau nächste Woche:</span>
               </div>
               <div className="text-slate-400 text-xs">
-                • Target Volume: ~{Math.round(actualVolume * (selectedProgressionMode === 'overload_volume' ? 1.08 : selectedProgressionMode === 'deload_recovery' ? 0.78 : 1.02)).toLocaleString()}{poolLength.slice(-1)}
+                • Zielumfang: ~{Math.round(actualVolume * (selectedProgressionMode === 'overload_volume' ? 1.08 : selectedProgressionMode === 'deload_recovery' ? 0.78 : 1.02)).toLocaleString()}{poolLength.slice(-1)}
               </div>
               <div className="text-slate-400 text-xs">
-                • Automatically retains squad lanes (Lanes 1 to {lanes?.length || 0}) and time schedules.
+                • Übernimmt automatisch alle Bahnen (Bahn 1 bis {lanes?.length || 0}) und Trainingszeiten.
               </div>
             </div>
 
@@ -795,7 +800,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                 onClick={() => setIsAutoPopulateModalOpen(false)}
                 className="px-4 py-2 text-xs text-slate-400 hover:text-white"
               >
-                Cancel
+                Abbrechen
               </button>
               <button
                 type="button"
@@ -803,7 +808,7 @@ export const WeeklyPlanner: React.FC<WeeklyPlannerProps> = ({
                 className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-cyan-500/20 flex items-center space-x-2 transition"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Generate Week {currentWeek.weekNumber + 1}</span>
+                <span>Woche {currentWeek.weekNumber + 1} erstellen</span>
               </button>
             </div>
           </div>

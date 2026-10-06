@@ -7,238 +7,238 @@ import {
 } from '../types/swim';
 
 export const INITIAL_DRILLS: DrillLibraryItem[] = [
-  // FREESTYLE
+  // KRAUL / FREISTIL
   {
     id: 'drill-fs-catchup',
-    name: 'Catch-Up Freestyle',
+    name: 'Abschlag-Kraul (Catch-Up)',
     category: 'Freestyle',
     stroke: 'Freestyle',
     defaultDistance: 50,
     equipment: [],
-    focusCue: 'Touch hands at full extension before initiating next pull',
+    focusCue: 'Vorne erst abklatschen/berühren, bevor der nächste Armzug startet',
     intensity: 'Aerobic (EN1)',
-    description: 'Forces long stroke, front quadrant balance, and patient catch.',
+    description: 'Erzwingt langen Zugweg, Front-Quadrant-Gleiten und ruhigen Wasserfass-Moment.',
   },
   {
     id: 'drill-fs-fingertip',
-    name: 'Fingertip Drag',
+    name: 'Fingerspitzenstreifen (Fingertip Drag)',
     category: 'Freestyle',
     stroke: 'Freestyle',
     defaultDistance: 50,
     equipment: [],
-    focusCue: 'High elbow recovery, brush water surface with fingertips',
+    focusCue: 'Hoher Ellbogen bei Überwasserphase, Fingerspitzen streifen die Wasseroberfläche',
     intensity: 'Aerobic (EN1)',
-    description: 'Promotes high elbows during recovery and prevents arm swinging.',
+    description: 'Fördert hohe Ellbogenführung und verhindert ein seitliches Herumschleudern des Arms.',
   },
   {
     id: 'drill-fs-6-1-6',
-    name: '6-1-6 Rotation Drill',
+    name: '6-1-6 Rotationsübung',
     category: 'Freestyle',
     stroke: 'Freestyle',
     defaultDistance: 50,
     equipment: ['Fins'],
-    focusCue: '6 kicks on side, 1 crisp pull, pause 6 kicks on other side',
+    focusCue: '6 Beinschläge in Seitenlage, 1 kraftvoller Zug, 6 Beinschläge Gegenseite',
     intensity: 'Aerobic (EN1)',
-    description: 'Builds core rotation balance and body-line streamline on side.',
+    description: 'Schult Rumpfrotation, Wasserlage auf der Längsachse und Streamline-Stabilität.',
   },
   {
     id: 'drill-fs-fist',
-    name: 'Fist Drill',
+    name: 'Faustschwimmen (Fist Drill)',
     category: 'Freestyle',
     stroke: 'Freestyle',
     defaultDistance: 50,
     equipment: [],
-    focusCue: 'Swim with closed fists, feel forearm catch early',
+    focusCue: 'Mit geschlossenen Fäusten schwimmen, Unterarm-Wasserfassen spüren',
     intensity: 'Aerobic (EN1)',
-    description: 'Develops forearm engagement (EVF - early vertical forearm) instead of relying solely on hands.',
+    description: 'Aktiviert den Unterarm als Vortriebsfläche (Early Vertical Forearm), statt nur die Handfläche zu nutzen.',
   },
   {
     id: 'drill-fs-zipper',
-    name: 'Zipper Drill',
+    name: 'Reißverschluss-Übung (Zipper Drill)',
     category: 'Freestyle',
     stroke: 'Freestyle',
     defaultDistance: 50,
     equipment: ['Snorkel'],
-    focusCue: 'Thumb slides up torso/ribs to armpit before reaching forward',
+    focusCue: 'Daumen streift am Oberkörper/Rippen bis zur Achsel vor der Vorschwingphase',
     intensity: 'Aerobic (EN1)',
-    description: 'Ensures vertical elbow lift and tight body recovery path.',
+    description: 'Gewährleistet senkrechtes Heben des Ellbogens und körpernahe Rückholphase.',
   },
 
-  // BACKSTROKE
+  // RÜCKEN
   {
     id: 'drill-bk-singlearm',
-    name: 'Single Arm Backstroke',
+    name: 'Einarmiges Rückenschwimmen',
     category: 'Backstroke',
     stroke: 'Backstroke',
     defaultDistance: 50,
     equipment: ['Fins'],
-    focusCue: 'Non-pulling arm at side, deep hip rotation through catch',
+    focusCue: 'Passiver Arm am Oberschenkel angelegt, tiefe Rumpfrotation beim Zug',
     intensity: 'Aerobic (EN1)',
-    description: 'Isolates arm cycle mechanics and emphasizes body roll on back.',
+    description: 'Isoliert die Zugphasenmechanik und betont den konstanten Beinschlag.',
   },
   {
     id: 'drill-bk-cup',
-    name: 'Forehead Cup Balance',
+    name: 'Becher-Balance auf der Stirn',
     category: 'Backstroke',
     stroke: 'Backstroke',
     defaultDistance: 50,
     equipment: [],
-    focusCue: 'Keep head dead still while rotating body underneath',
+    focusCue: 'Kopf vollkommen ruhig halten, Rumpf rollt unter dem Kopf durch',
     intensity: 'Recovery',
-    description: 'Eliminates head bobbing and stabilizes spine alignment.',
+    description: 'Verhindert Kopfbewegungen und stabilisiert die gerade Wirbelsäulenachse.',
   },
   {
     id: 'drill-bk-doublearm',
-    name: 'Double Arm Backstroke',
+    name: 'Doppelarm-Rücken (Double Arm)',
     category: 'Backstroke',
     stroke: 'Backstroke',
     defaultDistance: 50,
     equipment: [],
-    focusCue: 'Both arms recover together, deep simultaneous scull',
+    focusCue: 'Beide Arme gleichzeitig zurückführen, breites Druckfassen mit Kraulbeinschlag',
     intensity: 'Recovery',
-    description: 'Great for chest opening, steady flutter kick, and cool-down.',
+    description: 'Öffnet den Brustkorb, dehnt die Schultern und eignet sich hervorragend zum Ausschwimmen.',
   },
 
-  // BREASTSTROKE
+  // BRUST
   {
     id: 'drill-br-2k1p',
-    name: '2 Kicks 1 Pull Breaststroke',
+    name: 'Brust: 2 Beinschläge – 1 Armzug',
     category: 'Breaststroke',
     stroke: 'Breaststroke',
     defaultDistance: 50,
     equipment: [],
-    focusCue: 'Hold streamline glide on second kick for 2 seconds',
+    focusCue: 'Beim 2. Beinschlag volle Streckung / Gleitphase 2 Sekunden halten',
     intensity: 'Aerobic (EN1)',
-    description: 'Teaches maximum horizontal glide distance per stroke cycle.',
+    description: 'Vermittelt maximale horizontale Gleitweite pro Zyklus und minimiert Frontwiderstand.',
   },
   {
     id: 'drill-br-flykick',
-    name: 'Breast Pull with Dolphin Kick',
+    name: 'Brust-Armzug mit Delphinbeinschlag',
     category: 'Breaststroke',
     stroke: 'Breaststroke',
     defaultDistance: 50,
     equipment: ['Fins'],
-    focusCue: 'Quick hands shooting forward over water surface',
+    focusCue: 'Hände schießen blitzschnell flach über der Wasseroberfläche nach vorn',
     intensity: 'Aerobic (EN1)',
-    description: 'Accelerates hand recovery speed and lifts hips higher.',
+    description: 'Beschleunigt den Armvorschub und hält die Hüfte hoch an der Wasseroberfläche.',
   },
 
-  // BUTTERFLY
+  // DELPHIN / SCHMETTERLING
   {
     id: 'drill-fly-biondi',
-    name: 'Biondi Drill (Chest Press)',
+    name: 'Biondi-Übung (Brustdruck-Welle)',
     category: 'Butterfly',
     stroke: 'Butterfly',
     defaultDistance: 50,
     equipment: ['Fins'],
-    focusCue: 'Hands at sides, rhythmic chest press through buoyant lungs',
+    focusCue: 'Hände angelegt, rhythmischer Druck aus dem Brustbein einleiten',
     intensity: 'Aerobic (EN1)',
-    description: 'Teaches the natural undulation of butterfly starting from sternum.',
+    description: 'Schult die natürliche Delphinwellenbewegung aus dem oberen Rumpf ohne Armeinsatz.',
   },
   {
     id: 'drill-fly-leftrightfull',
-    name: 'Left-Right-Full Butterfly',
+    name: 'Links-Rechts-Gesamt Delphin',
     category: 'Butterfly',
     stroke: 'Butterfly',
     defaultDistance: 50,
     equipment: [],
-    focusCue: '2 left arm, 2 right arm, 2 full butterfly strokes',
+    focusCue: '2x linker Arm, 2x rechter Arm, 2x voller Zug ohne Atmungsabbruch',
     intensity: 'Threshold (EN2)',
-    description: 'Maintains breath control and prevents stroke degradation under fatigue.',
+    description: 'Erhält saubere Technik und Rhythmusgefühl auch unter einsetzender Ermüdung.',
   },
 
-  // KICK & LEGS
+  // BEINE & ANTREIBER
   {
     id: 'drill-kick-tombstone',
-    name: 'Tombstone Board Kick',
+    name: 'Kantenbrett-Treten (Tombstone Kick)',
     category: 'Kick',
     stroke: 'Kick',
     defaultDistance: 50,
     equipment: ['Kickboard'],
-    focusCue: 'Hold kickboard vertically like a tombstone pushing water',
+    focusCue: 'Schwimmbrett senkrecht als Wasserbremse vor den Körper halten',
     intensity: 'Threshold (EN2)',
-    description: 'Creates immense drag to build explosive quad and hip power.',
+    description: 'Erzeugt extremen Wasserwiderstand und trainiert explosive Oberschenkel- und Gesäßpower.',
   },
   {
     id: 'drill-kick-underwater-dolphin',
-    name: 'Underwater Streamline Dolphin',
+    name: 'Unterwasser-Delphinbeine (Strecktauchen)',
     category: 'Kick',
     stroke: 'Kick',
     defaultDistance: 50,
     equipment: ['Fins'],
-    focusCue: 'Tight locked streamline behind ears, kick both directions',
+    focusCue: 'Eng verriegelte Streamline hinter den Ohren, Vor- und Rückschlag gleichmäßig',
     intensity: 'VO2Max (EN3)',
-    description: 'Essential for the 5th stroke - breakout speed off every wall.',
+    description: 'Unverzichtbare 5. Schwimmart – maximale Abstoß- und Renngeschwindigkeit an jeder Wende.',
   },
   {
     id: 'drill-kick-vertical',
-    name: 'Vertical Kicking (Deep End)',
+    name: 'Vertikaltreten im Tiefwasser',
     category: 'Kick',
     stroke: 'Kick',
     defaultDistance: 25,
     equipment: [],
-    focusCue: 'Hands out of water / crossed on chest, keep chin dry',
+    focusCue: 'Hände aus dem Wasser / überkreuzt auf Brust, Kinn trocken halten',
     intensity: 'Sprint (SP)',
-    description: 'Pure leg endurance test in deep water.',
+    description: 'Reiner Kraftausdauertest für die Beine ohne Wandkontakt.',
   },
 
-  // PULL & STRENGTH
+  // ARME & KRAFT
   {
     id: 'drill-pull-buoy-paddles',
-    name: 'Pull Buoy & Power Paddles',
+    name: 'Pullbuoy & Power-Paddles',
     category: 'Pull',
     stroke: 'Pull',
     defaultDistance: 100,
     equipment: ['Pull Buoy', 'Paddles'],
-    focusCue: 'Full acceleration from catch to hip exit',
+    focusCue: 'Volle Beschleunigung vom Wasserfassen bis zum Abdruck an der Hüfte',
     intensity: 'Aerobic (EN1)',
-    description: 'Builds upper body power and lat recruitment.',
+    description: 'Stärkt den Latissimus und schult die lange Beschleunigungsphase unter Wasser.',
   },
   {
     id: 'drill-pull-hypoxic',
-    name: 'Hypoxic Pull (3-5-7 Breathing)',
+    name: 'Hypoxischer Zug (3er-5er-7er Atmung)',
     category: 'Pull',
     stroke: 'Pull',
     defaultDistance: 100,
     equipment: ['Pull Buoy'],
-    focusCue: 'Breathe every 3, then 5, then 7 strokes per 25',
+    focusCue: 'Bahn 1 auf 3er, Bahn 2 auf 5er, Bahn 3 auf 7er Atemzugrhythmus',
     intensity: 'Threshold (EN2)',
-    description: 'Improves lung volume tolerance, composure, and stroke symmetry.',
+    description: 'Verbessert Atemkontrolle, Lungenvolumen-Ausnutzung und Zug-Symmetrie.',
   },
   {
     id: 'drill-pull-band',
-    name: 'Ankle Band Only (No Buoy)',
+    name: 'Knöchelfessel-Schwimmen (ohne Pullbuoy)',
     category: 'Pull',
     stroke: 'Pull',
     defaultDistance: 50,
     equipment: ['Band'],
-    focusCue: 'Ultra-fast arm turnover to prevent sinking legs',
+    focusCue: 'Sehr hohe Zugfrequenz, damit die Beine nicht absinken',
     intensity: 'VO2Max (EN3)',
-    description: 'Forces instant core tension and rapid catch mechanics.',
+    description: 'Erzwingt sofortige Ganzkörperspannung und blitzschnelles Vorschwingen.',
   },
 
-  // STARTS & TURNS
+  // STARTS & WENDEN
   {
     id: 'drill-turn-breakout',
-    name: '15m Blast & Wall Breakouts',
+    name: 'Wenden-Spurt & 15m Tauchphase',
     category: 'Starts & Turns',
     stroke: 'Sprint (SP)' as any,
     defaultDistance: 25,
     equipment: [],
-    focusCue: 'Max speed into wall, fastest flip, 4 dolphins, breakout with no breath',
+    focusCue: 'Mit Topspeed in die Wende, 4 kraftvolle Kicks, Übergang ohne ersten Atemzug',
     intensity: 'Sprint (SP)',
-    description: 'Sharpens race-pace wall transitions and zero-breath breakouts.',
+    description: 'Schärft rennentscheidende Wendenschnelligkeit und explosive Tauchphasen.',
   },
   {
     id: 'drill-im-transition',
-    name: 'IM Turn Transitions (Fly->Back->Breast->Free)',
+    name: 'Lagen-Wendenübergänge (D->R->B->K)',
     category: 'IM',
     stroke: 'IM',
     defaultDistance: 100,
     equipment: [],
-    focusCue: 'Legal touch & explosive change of stroke style',
+    focusCue: 'Regelkonformer Anschlag & sofortiger Wechsel der Schwimmtechnik',
     intensity: 'Threshold (EN2)',
-    description: 'Practices crossover turns and back-to-breast turn legality.',
+    description: 'Perfektioniert Rollwenden Rücken-zu-Brust und den flüssigen Rhythmuswechsel.',
   },
 ];
 
@@ -246,52 +246,52 @@ export const INITIAL_LANES: LaneConfig[] = [
   {
     id: 'lane-1',
     laneNumber: 1,
-    name: 'Lane 1: Senior A / Distance',
-    color: '#ef4444', // Red
-    basePace100mSeconds: 75, // 1:15 base CSS
-    swimmers: ['Alex Rivera (Capt)', 'Marcus Vance', 'Elena Rostova', 'Jack Thompson', 'Samir Patel', 'Chloe Martin'],
+    name: 'Bahn 1: Leistungsgruppe A / Langstrecke',
+    color: '#ef4444', // Rot
+    basePace100mSeconds: 75, // 1:15 Basis-CSS
+    swimmers: ['Alex Rivera (Kpt.)', 'Marcus Vance', 'Elena Rostova', 'Jack Thompson', 'Samir Patel', 'Chloe Martin'],
     maxSwimmers: 8,
-    notes: 'Sub-1:15 base. Targeting National Trials.',
+    notes: 'Basis unter 1:15. Vorbereitung auf Nationale Meisterschaften.',
   },
   {
     id: 'lane-2',
     laneNumber: 2,
-    name: 'Lane 2: Senior B / Medley',
+    name: 'Bahn 2: Leistungsgruppe B / Lagen & Sprint',
     color: '#f97316', // Orange
-    basePace100mSeconds: 85, // 1:25 base CSS
+    basePace100mSeconds: 85, // 1:25 Basis-CSS
     swimmers: ['Liam O’Connor', 'Maya Lin', 'David Zhao', 'Sienna Brooks', 'Noah Kim', 'Grace Kelly', 'Lucas Silva'],
     maxSwimmers: 8,
-    notes: '1:25 base. Strong IM and 200/400 specialists.',
+    notes: '1:25 Basis. Starke 200m/400m Lagen-Spezialisten.',
   },
   {
     id: 'lane-3',
     laneNumber: 3,
-    name: 'Lane 3: Junior Competitive',
-    color: '#eab308', // Yellow
-    basePace100mSeconds: 95, // 1:35 base CSS
+    name: 'Bahn 3: Jugend-Wettkampfkader',
+    color: '#eab308', // Gelb
+    basePace100mSeconds: 95, // 1:35 Basis-CSS
     swimmers: ['Oliver Bennett', 'Zoe Chen', 'Ethan Hunt', 'Emma Watson', 'Leo Rossi', 'Ava Taylor'],
     maxSwimmers: 7,
-    notes: '1:35 base. Age group state qualifiers.',
+    notes: '1:35 Basis. Landesjugendkader & Altersklassen-Qualifikanten.',
   },
   {
     id: 'lane-4',
     laneNumber: 4,
-    name: 'Lane 4: Masters & Fitness',
-    color: '#10b981', // Emerald
-    basePace100mSeconds: 105, // 1:45 base CSS
+    name: 'Bahn 4: Masters & Ausdauer-Fitness',
+    color: '#10b981', // Grün
+    basePace100mSeconds: 105, // 1:45 Basis-CSS
     swimmers: ['Dr. Arthur Dent', 'Sarah Jenkins', 'Robert Mueller', 'Hannah Abbott', 'Kenji Sato'],
     maxSwimmers: 6,
-    notes: '1:45 base. Masters championship & open water prep.',
+    notes: '1:45 Basis. Masters-Meisterschaften & Freiwasser-Vorbereitung.',
   },
   {
     id: 'lane-5',
     laneNumber: 5,
-    name: 'Lane 5: Squad Transition',
+    name: 'Bahn 5: Nachwuchs & Technikaufbau',
     color: '#06b6d4', // Cyan
-    basePace100mSeconds: 120, // 2:00 base CSS
+    basePace100mSeconds: 120, // 2:00 Basis-CSS
     swimmers: ['Toby Flenderson', 'Mila Kunis', 'Carlos Ramos', 'Lily Evans'],
     maxSwimmers: 6,
-    notes: '2:00 base. Building endurance and stroke efficiency.',
+    notes: '2:00 Basis. Ausdaueraufbau und Optimierung der Wasserlage.',
   },
 ];
 
@@ -301,7 +301,7 @@ export const INITIAL_SCHEDULE: SessionScheduleSlot[] = [
     day: 'Monday',
     startTime: '06:00',
     endTime: '07:30',
-    sessionTitle: 'Aerobic Foundation & Kick Engine',
+    sessionTitle: 'Grundlagenausdauer & Beinschlag-Motor',
     primaryFocus: 'Aerobic',
     poolLength: '25m',
   },
@@ -310,7 +310,7 @@ export const INITIAL_SCHEDULE: SessionScheduleSlot[] = [
     day: 'Tuesday',
     startTime: '17:30',
     endTime: '19:00',
-    sessionTitle: 'Threshold (CSS) Broken Ladders',
+    sessionTitle: 'Schwellentraining (CSS) & Treppensätze',
     primaryFocus: 'Threshold',
     poolLength: '25m',
   },
@@ -319,7 +319,7 @@ export const INITIAL_SCHEDULE: SessionScheduleSlot[] = [
     day: 'Wednesday',
     startTime: '06:00',
     endTime: '07:30',
-    sessionTitle: 'Technical Medley & Active Recovery',
+    sessionTitle: 'Lagentechnik & aktive Erholung',
     primaryFocus: 'Technique',
     poolLength: '25m',
   },
@@ -328,7 +328,7 @@ export const INITIAL_SCHEDULE: SessionScheduleSlot[] = [
     day: 'Thursday',
     startTime: '17:30',
     endTime: '19:00',
-    sessionTitle: 'VO2Max Power & Speed Endurance',
+    sessionTitle: 'VO2max-Leistung & Stehvermögen',
     primaryFocus: 'Speed',
     poolLength: '25m',
   },
@@ -337,7 +337,7 @@ export const INITIAL_SCHEDULE: SessionScheduleSlot[] = [
     day: 'Friday',
     startTime: '06:00',
     endTime: '07:30',
-    sessionTitle: 'Sprint Starts, Turns & Relays',
+    sessionTitle: 'Startsprünge, Wenden & Staffelwechsel',
     primaryFocus: 'Speed',
     poolLength: '25m',
   },
@@ -346,7 +346,7 @@ export const INITIAL_SCHEDULE: SessionScheduleSlot[] = [
     day: 'Saturday',
     startTime: '07:00',
     endTime: '09:00',
-    sessionTitle: 'Long Distance Challenge / Test Set',
+    sessionTitle: 'Langstrecken-Herausforderung / 50m Langbahn',
     primaryFocus: 'Threshold',
     poolLength: '50m',
   },
@@ -355,19 +355,19 @@ export const INITIAL_SCHEDULE: SessionScheduleSlot[] = [
 export const INITIAL_WEEKS: WeekCycle[] = [
   {
     weekNumber: 1,
-    theme: 'Week 1 - Squad Baseline & Aerobic Capacity',
+    theme: 'Woche 1 – Kader-Ausgangsbasis & Grundlagenausdauer',
     phase: 'Base Phase',
     targetVolumeMeters: 18000,
     actualVolumeMeters: 18200,
     isConfirmed: true,
-    notes: 'Setting lane benchmarks and baseline CSS paces at ~3,000m average session volume.',
+    notes: 'Ermittlung der Bahn-Grenzwerte und CSS-Schwellenzeiten bei durchschnittlich ca. 3.000m pro Trainingseinheit.',
     sessions: [
       {
         id: 'w1-session-1',
         weekNumber: 1,
         dayOfWeek: 'Monday',
         scheduledTime: '06:00 - 07:30',
-        name: 'W1 Monday: Aerobic Capacity & Streamline Legs',
+        name: 'W1 Montag: Grundlagenausdauer & Wasserlage (Beine)',
         focus: 'Aerobic',
         totalDistance: 3000,
         estimatedMinutes: 60,
@@ -376,7 +376,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s1-b1',
             type: 'warmup',
-            title: 'Warm-Up & Activation',
+            title: 'Einschwimmen & Körperaktivierung',
             rounds: 1,
             items: [
               {
@@ -385,7 +385,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 400,
                 stroke: 'Freestyle',
                 intensity: 'Recovery',
-                description: 'Smooth long strokes, every 4th 25 backstroke',
+                description: 'Ruhige lange Züge, jede 4. Bahn 25m Rücken zur Schulteröffnung',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -395,7 +395,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 100,
                 stroke: 'IM',
                 intensity: 'Aerobic (EN1)',
-                description: '25 Drill / 25 Swim per stroke order',
+                description: '25m Technikübung / 25m ganzer Zug in Lagenreihenfolge',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -404,7 +404,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s1-b2',
             type: 'preset',
-            title: 'Pre-Set: Leg Engine & Core Stability',
+            title: 'Vorbereitungsserie: Beinkraft & Rumpfstabilität',
             rounds: 1,
             items: [
               {
@@ -413,7 +413,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 50,
                 stroke: 'Kick',
                 intensity: 'Threshold (EN2)',
-                description: 'Odds: Tombstone board kick, Evens: Streamline dolphin on back',
+                description: 'Ungerade: Kantenbrett / Tombstone, Gerade: Delphinbeine in Rückenlage',
                 equipment: ['Kickboard', 'Fins'],
                 sendOffMode: 'lane-scaled',
               },
@@ -422,7 +422,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s1-b3',
             type: 'main',
-            title: 'Main Set: Aerobic Engine Overload',
+            title: 'Hauptserie: Aerobe Ausdauer (GA1 / GA2)',
             rounds: 1,
             items: [
               {
@@ -431,7 +431,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 200,
                 stroke: 'Freestyle',
                 intensity: 'Aerobic (EN1)',
-                description: 'Hold consistent pace (+10s CSS), breathing 3/5 by 50',
+                description: 'Konstantes Tempo (+10s CSS), 3er/5er Atmung im 50m-Wechsel',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -441,7 +441,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 100,
                 stroke: 'Pull',
                 intensity: 'Threshold (EN2)',
-                description: 'Descend 1-4 to race pace effort',
+                description: 'Arme mit Pullbuoy & Paddles, 1-4 steigernd auf Renntempo',
                 equipment: ['Pull Buoy', 'Paddles'],
                 sendOffMode: 'lane-scaled',
               },
@@ -451,7 +451,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 100,
                 stroke: 'Freestyle',
                 intensity: 'Aerobic (EN1)',
-                description: 'Aerobic cruise with high elbows',
+                description: 'Aerobes Dahingleiten mit kontrolliert hohem Ellbogen',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               }
@@ -460,7 +460,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s1-b4',
             type: 'cooldown',
-            title: 'Cool Down',
+            title: 'Ausschwimmen',
             rounds: 1,
             items: [
               {
@@ -469,7 +469,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 300,
                 stroke: 'Choice',
                 intensity: 'Recovery',
-                description: 'Relaxed choice, emphasize deep exhalation in water',
+                description: 'Locker nach Wahl, Fokus auf tiefe und ruhige Ausatmung ins Wasser',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -482,7 +482,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         weekNumber: 1,
         dayOfWeek: 'Tuesday',
         scheduledTime: '17:30 - 19:00',
-        name: 'W1 Tuesday: Threshold (CSS) Broken Ladders',
+        name: 'W1 Dienstag: Schwellentraining (CSS) & Teilstrecken',
         focus: 'Threshold',
         totalDistance: 3200,
         estimatedMinutes: 65,
@@ -491,7 +491,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s2-b1',
             type: 'warmup',
-            title: 'Warm-Up',
+            title: 'Einschwimmen',
             rounds: 1,
             items: [
               {
@@ -500,7 +500,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 400,
                 stroke: 'Choice',
                 intensity: 'Recovery',
-                description: '200 Free / 100 Back / 100 Breast',
+                description: '200 Kraul / 100 Rücken / 100 Brust locker',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -509,7 +509,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s2-b2',
             type: 'main',
-            title: 'Main Set: Critical Swim Speed (CSS) Calibration',
+            title: 'Hauptserie: Kalibrierung der kritischen Schwimmgeschwindigkeit (CSS)',
             rounds: 1,
             items: [
               {
@@ -518,7 +518,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 300,
                 stroke: 'Freestyle',
                 intensity: 'Threshold (EN2)',
-                description: 'Target exact CSS lane send-off pace, 8s rest max',
+                description: 'Exaktes CSS-Abgangstempo der Bahn halten, max. 8s Pause',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -528,7 +528,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 100,
                 stroke: 'IM',
                 intensity: 'Threshold (EN2)',
-                description: 'Fast transitions, strong breast-to-free turn',
+                description: 'Schnelle Wendenübergänge, kräftiger Brust-zu-Kraul-Wechsel',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -538,7 +538,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 50,
                 stroke: 'Choice',
                 intensity: 'Aerobic (EN1)',
-                description: 'Kick / Swim alternating by 50',
+                description: '50m Beine / 50m ganzer Zug im Wechsel',
                 equipment: ['Kickboard'],
                 sendOffMode: 'lane-scaled',
               }
@@ -547,7 +547,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s2-b3',
             type: 'cooldown',
-            title: 'Cool Down',
+            title: 'Ausschwimmen',
             rounds: 1,
             items: [
               {
@@ -556,7 +556,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 300,
                 stroke: 'Choice',
                 intensity: 'Recovery',
-                description: 'Double arm backstroke & sculling',
+                description: 'Doppelarm-Rücken & lockeres Sculling / Wriggen',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -569,7 +569,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         weekNumber: 1,
         dayOfWeek: 'Wednesday',
         scheduledTime: '06:00 - 07:30',
-        name: 'W1 Wednesday: Medley Stroke Technique & Drills',
+        name: 'W1 Mittwoch: Lagentechnik, Feinabstimmung & Rumpf',
         focus: 'Technique',
         totalDistance: 2800,
         estimatedMinutes: 55,
@@ -578,7 +578,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s3-b1',
             type: 'warmup',
-            title: 'Warm-Up',
+            title: 'Einschwimmen',
             rounds: 1,
             items: [
               {
@@ -587,7 +587,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 400,
                 stroke: 'Freestyle',
                 intensity: 'Recovery',
-                description: 'Bilateral breathing 3/5',
+                description: 'Gleichmäßige 3er/5er Atmung im Wechsel',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -596,7 +596,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s3-b2',
             type: 'preset',
-            title: 'Technique Drill Circuit',
+            title: 'Technikzirkel',
             rounds: 1,
             items: [
               {
@@ -605,7 +605,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 50,
                 stroke: 'Drill',
                 intensity: 'Aerobic (EN1)',
-                description: 'Catch-up Free + Fingertip drag with high elbows',
+                description: 'Abschlag-Kraul + Fingerspitzenstreifen mit hohem Ellbogen',
                 equipment: ['Snorkel'],
                 sendOffMode: 'lane-scaled',
               },
@@ -615,7 +615,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 50,
                 stroke: 'Backstroke',
                 intensity: 'Aerobic (EN1)',
-                description: 'Single arm backstroke with high hip roll',
+                description: 'Einarmiges Rückenschwimmen mit betonter Rumpfrotation',
                 equipment: ['Fins'],
                 sendOffMode: 'lane-scaled',
               },
@@ -624,7 +624,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s3-b3',
             type: 'main',
-            title: 'Main Set: IM Technical Efficiency',
+            title: 'Hauptserie: Technische Effizienz auf Lagen',
             rounds: 1,
             items: [
               {
@@ -633,7 +633,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 200,
                 stroke: 'IM',
                 intensity: 'Aerobic (EN1)',
-                description: '50 Fly / 50 Back / 50 Breast / 50 Free, count stroke cycles',
+                description: '50 Delphin / 50 Rücken / 50 Brust / 50 Kraul, Zugzahl zählen',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -643,7 +643,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 100,
                 stroke: 'Choice',
                 intensity: 'Aerobic (EN1)',
-                description: '50 Drill / 50 Perfect Swim holding low stroke count',
+                description: '50m Technikübung / 50m perfekter Zug mit niedriger Schlagzahl',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -653,7 +653,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 50,
                 stroke: 'Kick',
                 intensity: 'Recovery',
-                description: 'Easy kick on back without board',
+                description: 'Lockeres Beinetreten in Rückenlage ohne Brett',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               }
@@ -662,7 +662,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s3-b4',
             type: 'cooldown',
-            title: 'Cool Down',
+            title: 'Ausschwimmen',
             rounds: 1,
             items: [
               {
@@ -671,7 +671,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 200,
                 stroke: 'Choice',
                 intensity: 'Recovery',
-                description: 'Silent easy swim',
+                description: 'Geräuschloses, entspanntes Ausschwimmen',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -684,7 +684,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         weekNumber: 1,
         dayOfWeek: 'Thursday',
         scheduledTime: '17:30 - 19:00',
-        name: 'W1 Thursday: VO2Max Capacity & Lactate Tolerance',
+        name: 'W1 Donnerstag: VO2max-Kapazität & Laktattoleranz',
         focus: 'Speed',
         totalDistance: 3100,
         estimatedMinutes: 60,
@@ -693,7 +693,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s4-b1',
             type: 'warmup',
-            title: 'Warm-Up',
+            title: 'Einschwimmen',
             rounds: 1,
             items: [
               {
@@ -702,7 +702,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 400,
                 stroke: 'Freestyle',
                 intensity: 'Recovery',
-                description: 'Smooth build',
+                description: 'Flüssiges Einschwimmen mit lockerem Armzug',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -711,7 +711,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s4-b2',
             type: 'main',
-            title: 'Main Set: Redline VO2Max Repeats',
+            title: 'Hauptserie: Intensive VO2max-Wiederholungen',
             rounds: 1,
             items: [
               {
@@ -720,7 +720,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 100,
                 stroke: 'Freestyle',
                 intensity: 'VO2Max (EN3)',
-                description: '100% target base pace minus 2 seconds, 25s rest',
+                description: 'Ziel: Basis-CSS minus 2 Sekunden, 25 Sekunden Pause',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -730,7 +730,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 50,
                 stroke: 'Kick',
                 intensity: 'Sprint (SP)',
-                description: 'All-out underwater dolphin kick breakout',
+                description: 'Maximaler Unterwasser-Delphinbeinschlag bis 15m-Marke',
                 equipment: ['Fins'],
                 sendOffMode: 'lane-scaled',
               },
@@ -740,7 +740,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 100,
                 stroke: 'Pull',
                 intensity: 'Aerobic (EN1)',
-                description: 'Aerobic flush with pull buoy and paddles',
+                description: 'Aerobes Durchspülen mit Pullbuoy und Paddles',
                 equipment: ['Pull Buoy', 'Paddles'],
                 sendOffMode: 'lane-scaled',
               }
@@ -749,7 +749,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s4-b3',
             type: 'cooldown',
-            title: 'Cool Down',
+            title: 'Ausschwimmen',
             rounds: 1,
             items: [
               {
@@ -758,7 +758,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 300,
                 stroke: 'Choice',
                 intensity: 'Recovery',
-                description: 'Easy recovery',
+                description: 'Aktive Erholung und Entlastung der Schultern',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -771,7 +771,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         weekNumber: 1,
         dayOfWeek: 'Friday',
         scheduledTime: '06:00 - 07:30',
-        name: 'W1 Friday: Sprint Explosiveness & Starts/Turns',
+        name: 'W1 Freitag: Sprint-Explosivität & Start/Wenden-Feinschliff',
         focus: 'Speed',
         totalDistance: 2600,
         estimatedMinutes: 50,
@@ -780,7 +780,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s5-b1',
             type: 'warmup',
-            title: 'Warm-Up',
+            title: 'Einschwimmen',
             rounds: 1,
             items: [
               {
@@ -789,7 +789,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 400,
                 stroke: 'Freestyle',
                 intensity: 'Recovery',
-                description: 'Long and loose',
+                description: 'Lang, flüssig und raumgreifend',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -798,7 +798,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s5-b2',
             type: 'main',
-            title: 'Main Set: Blast 25s & Relay Starts',
+            title: 'Hauptserie: 25m Sprints & Staffelabstöße vom Startblock',
             rounds: 1,
             items: [
               {
@@ -807,7 +807,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 25,
                 stroke: 'Sprint (SP)' as any,
                 intensity: 'Sprint (SP)',
-                description: 'Dive starts from blocks, max breakout speed to 15m mark',
+                description: 'Kopfsprünge vom Startblock, maximale Geschwindigkeit bis zur 15m-Marke',
                 equipment: [],
                 sendOffMode: 'fixed-interval',
                 fixedInterval: '1:15',
@@ -818,7 +818,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 50,
                 stroke: 'Freestyle',
                 intensity: 'Sprint (SP)',
-                description: 'Sprint 25 fast / 25 easy recovery',
+                description: '25m maximaler Sprint / 25m lockeres Ausschwimmen',
                 equipment: [],
                 sendOffMode: 'fixed-interval',
                 fixedInterval: '1:30',
@@ -829,7 +829,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 100,
                 stroke: 'Choice',
                 intensity: 'Aerobic (EN1)',
-                description: 'Smooth aerobic pacing',
+                description: 'Ruhiges aerobes Dahingleiten zur Laktatreduktion',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               }
@@ -838,7 +838,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s5-b3',
             type: 'cooldown',
-            title: 'Cool Down',
+            title: 'Ausschwimmen',
             rounds: 1,
             items: [
               {
@@ -847,7 +847,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 300,
                 stroke: 'Choice',
                 intensity: 'Recovery',
-                description: 'Active recovery with pull buoy',
+                description: 'Aktives Ausschwimmen mit Pullbuoy',
                 equipment: ['Pull Buoy'],
                 sendOffMode: 'lane-scaled',
               },
@@ -860,7 +860,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
         weekNumber: 1,
         dayOfWeek: 'Saturday',
         scheduledTime: '07:00 - 09:00',
-        name: 'W1 Saturday: 50m Olympic Pool Aerobic Endurance',
+        name: 'W1 Samstag: 50m Olympia-Langbahn Ausdauerleiter',
         focus: 'Threshold',
         totalDistance: 3500,
         estimatedMinutes: 70,
@@ -869,7 +869,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s6-b1',
             type: 'warmup',
-            title: 'Long Course Warm-Up',
+            title: 'Langbahn-Einschwimmen',
             rounds: 1,
             items: [
               {
@@ -878,7 +878,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 500,
                 stroke: 'Freestyle',
                 intensity: 'Aerobic (EN1)',
-                description: 'Long course feel: 200 Free / 100 Pull / 100 Kick / 100 IM Drill',
+                description: 'Langbahngefühl: 200m Kraul / 100m Arme / 100m Beine / 100m Lagen-Technik',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -887,7 +887,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s6-b2',
             type: 'main',
-            title: 'Main Set: The Aerobic Ladder',
+            title: 'Hauptserie: Die aerobe Ausdauerleiter',
             rounds: 1,
             items: [
               {
@@ -896,7 +896,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 600,
                 stroke: 'Freestyle',
                 intensity: 'Aerobic (EN1)',
-                description: 'Paced @ base + 12s, steady heart rate',
+                description: 'Gleichmäßig auf Basis-CSS + 12s, ruhiger Herzschlag',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -906,7 +906,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 400,
                 stroke: 'Pull',
                 intensity: 'Aerobic (EN1)',
-                description: 'With paddles & buoy, hold stroke count under 38 per 50m',
+                description: 'Mit Paddles & Pullbuoy, Zugzahl unter 38 Zügen pro 50m halten',
                 equipment: ['Pull Buoy', 'Paddles'],
                 sendOffMode: 'lane-scaled',
               },
@@ -916,7 +916,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 200,
                 stroke: 'IM',
                 intensity: 'Threshold (EN2)',
-                description: 'Quality stroke technique under fatigue',
+                description: 'Saubere Lagentechnik auch unter einsetzender Ermüdung',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -926,7 +926,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 100,
                 stroke: 'Kick',
                 intensity: 'Threshold (EN2)',
-                description: 'Steady kick split pacing with kickboard',
+                description: 'Konstante Beinschlag-Zwischenzeiten mit Brett',
                 equipment: ['Kickboard'],
                 sendOffMode: 'lane-scaled',
               },
@@ -935,7 +935,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
           {
             id: 'w1-s6-b3',
             type: 'cooldown',
-            title: 'Cool Down',
+            title: 'Ausschwimmen',
             rounds: 1,
             items: [
               {
@@ -944,7 +944,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
                 distance: 300,
                 stroke: 'Choice',
                 intensity: 'Recovery',
-                description: 'Loosen arms, stretches on deck',
+                description: 'Arme lockern, Dehnen am Beckenrand',
                 equipment: [],
                 sendOffMode: 'lane-scaled',
               },
@@ -956,7 +956,7 @@ export const INITIAL_WEEKS: WeekCycle[] = [
   },
 ];
 
-// Helper to generate full 12-week macrocycle targets for visualization (scaled to ~3,000m/session base)
+// 12-Wochen Makrozyklus-Ziele für die Saisonplanung (Basis: ca. 3.000m pro Einheit)
 export const SEASON_MACROCYCLE_TARGETS: {
   weekNumber: number;
   theme: string;
@@ -964,24 +964,24 @@ export const SEASON_MACROCYCLE_TARGETS: {
   targetVolumeMeters: number;
   focus: string;
 }[] = [
-  { weekNumber: 1, theme: 'Baseline & Aerobic Base', phase: 'Base Phase', targetVolumeMeters: 18000, focus: 'CSS Benchmarks' },
-  { weekNumber: 2, theme: 'Progressive Overload 1', phase: 'Build Phase', targetVolumeMeters: 19000, focus: 'Volume + CSS Ladders' },
-  { weekNumber: 3, theme: 'Threshold Expansion', phase: 'Build Phase', targetVolumeMeters: 20000, focus: 'EN2 Threshold Sets' },
-  { weekNumber: 4, theme: 'Active Recovery & Test', phase: 'Deload / Recovery', targetVolumeMeters: 14500, focus: 'Deload & 400m CSS Test' },
-  { weekNumber: 5, theme: 'VO2Max Power Build', phase: 'Build Phase', targetVolumeMeters: 20500, focus: 'Aerobic Power + Kick' },
-  { weekNumber: 6, theme: 'Peak Aerobic Volume', phase: 'Build Phase', targetVolumeMeters: 21500, focus: 'Highest Volume of Season' },
-  { weekNumber: 7, theme: 'Threshold Density', phase: 'Threshold Peak', targetVolumeMeters: 20000, focus: 'Lactate Shuttling' },
-  { weekNumber: 8, theme: 'Mid-Season Deload', phase: 'Deload / Recovery', targetVolumeMeters: 15000, focus: 'Technique & Stroke Refinement' },
-  { weekNumber: 9, theme: 'Race Pace Specificity', phase: 'Threshold Peak', targetVolumeMeters: 19000, focus: 'Broken 200s & Race Pace' },
-  { weekNumber: 10, theme: 'Taper Phase 1 - Volume Drop', phase: 'Taper Phase', targetVolumeMeters: 15500, focus: '-25% Volume, High Speed' },
-  { weekNumber: 11, theme: 'Taper Phase 2 - Power & Rest', phase: 'Taper Phase', targetVolumeMeters: 12000, focus: 'Starts, Relays & Speed' },
-  { weekNumber: 12, theme: 'Championship Peak Week', phase: 'Race Week', targetVolumeMeters: 9000, focus: 'Championship Meet!' },
+  { weekNumber: 1, theme: 'Grundlagen & Aerobe Basis', phase: 'Base Phase', targetVolumeMeters: 18000, focus: 'CSS-Leistungstest' },
+  { weekNumber: 2, theme: 'Progressiver Aufbau 1', phase: 'Build Phase', targetVolumeMeters: 19000, focus: 'Umfang & CSS-Treppen' },
+  { weekNumber: 3, theme: 'Schwellenerweiterung', phase: 'Build Phase', targetVolumeMeters: 20000, focus: 'GA2-Schwellensätze' },
+  { weekNumber: 4, theme: 'Aktive Erholung & Test', phase: 'Deload / Recovery', targetVolumeMeters: 14500, focus: 'Entlastung & 400m CSS-Test' },
+  { weekNumber: 5, theme: 'VO2max Kraftaufbau', phase: 'Build Phase', targetVolumeMeters: 20500, focus: 'Aerobe Spitzenleistung & Beine' },
+  { weekNumber: 6, theme: 'Maximaler Saisonumfang', phase: 'Build Phase', targetVolumeMeters: 21500, focus: 'Höchster Trainingsumfang' },
+  { weekNumber: 7, theme: 'Schwellendichte & Laktat', phase: 'Threshold Peak', targetVolumeMeters: 20000, focus: 'Laktat-Kompensation' },
+  { weekNumber: 8, theme: 'Zwischenerholung & Technik', phase: 'Deload / Recovery', targetVolumeMeters: 15000, focus: 'Technikfeinschliff & SWOLF' },
+  { weekNumber: 9, theme: 'Wettkampfspezifisches Tempo', phase: 'Threshold Peak', targetVolumeMeters: 19000, focus: 'Teilstreckentraining & Renntempo' },
+  { weekNumber: 10, theme: 'Tapering 1 – Umfangreduktion', phase: 'Taper Phase', targetVolumeMeters: 15500, focus: '-25% Umfang, hohe Schnelligkeit' },
+  { weekNumber: 11, theme: 'Tapering 2 – Frische & Power', phase: 'Taper Phase', targetVolumeMeters: 12000, focus: 'Startsprünge, Staffeln & Sprint' },
+  { weekNumber: 12, theme: 'Meisterschafts-Höhepunkt', phase: 'Race Week', targetVolumeMeters: 9000, focus: 'Wettkampfwoche – Bestzeiten!' },
 ];
 
 export const INITIAL_SEASON: SeasonPlan = {
   id: 'season-2026-winter-state',
-  name: 'Winter State Championship Buildup',
-  goal: 'Peak squad performance & state championship qualifying standards at Week 12',
+  name: 'Meisterschafts-Aufbau Wintersaison 2026',
+  goal: 'Spitzenform des Kaders & Erreichen der Meisterschafts-Pflichtzeiten in Woche 12',
   poolLength: '25m',
   totalWeeks: 12,
   currentWeekNumber: 1,

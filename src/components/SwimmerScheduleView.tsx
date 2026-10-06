@@ -24,6 +24,14 @@ import {
   Timer,
   Sparkles
 } from 'lucide-react';
+import { 
+  translateStroke, 
+  translateIntensity, 
+  translateEquipment, 
+  translateCycleFocus, 
+  formatDayGerman,
+  translateBlockType
+} from '../utils/germanTranslations';
 
 interface SwimmerScheduleViewProps {
   currentWeek: WeekCycle;
@@ -102,14 +110,14 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
           <div>
             <div className="flex items-center space-x-2">
               <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded-full border border-cyan-800">
-                Swimmer Schedule Portal
+                Athleten-Trainingsportal
               </span>
               <span className="text-xs font-semibold text-slate-400">
-                Read-Only Access
+                Ansichtsmodus (Aktuelle Woche)
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
-              Current Week: Week {currentWeek.weekNumber} Schedule
+              Aktuelle Woche: Trainingsplan Woche {currentWeek.weekNumber}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
               {currentWeek.theme} • <span className="text-cyan-300 font-semibold">{currentWeek.phase}</span>
@@ -120,21 +128,21 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
         {/* Volume & Status Pills */}
         <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
           <div className="bg-slate-950/80 border border-slate-800 rounded-xl px-3.5 py-2">
-            <div className="text-[10px] uppercase font-bold text-slate-400">Target Volume</div>
+            <div className="text-[10px] uppercase font-bold text-slate-400">Soll-Umfang</div>
             <div className="text-sm font-extrabold text-cyan-300">
               {(currentWeek.targetVolumeMeters || 0).toLocaleString()} {poolLength === '25y' ? 'yd' : 'm'}
             </div>
           </div>
           <div className="bg-slate-950/80 border border-slate-800 rounded-xl px-3.5 py-2">
-            <div className="text-[10px] uppercase font-bold text-slate-400">Planned Mileage</div>
+            <div className="text-[10px] uppercase font-bold text-slate-400">Geplanter Umfang</div>
             <div className="text-sm font-extrabold text-emerald-400">
               {(currentWeek.actualVolumeMeters || 0).toLocaleString()} {poolLength === '25y' ? 'yd' : 'm'}
             </div>
           </div>
           <div className="bg-slate-950/80 border border-slate-800 rounded-xl px-3.5 py-2">
-            <div className="text-[10px] uppercase font-bold text-slate-400">Scheduled Sessions</div>
+            <div className="text-[10px] uppercase font-bold text-slate-400">Geplante Einheiten</div>
             <div className="text-sm font-extrabold text-white">
-              {currentWeek.sessions?.length || 0} Workouts
+              {currentWeek.sessions?.length || 0} Einheiten
             </div>
           </div>
         </div>
@@ -149,18 +157,18 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
             </div>
             <div>
               <div className="text-xs font-bold text-white flex items-center space-x-1.5">
-                <span>Your Squad Lane Pace:</span>
-                <span className="text-cyan-400 font-extrabold">{activeLane?.name || `Lane 1`}</span>
+                <span>Deine Bahnen-Pace:</span>
+                <span className="text-cyan-400 font-extrabold">{activeLane?.name || `Bahn 1`}</span>
               </div>
               <div className="text-[11px] text-slate-400">
-                Base CSS Pace: <span className="font-mono text-cyan-300 font-bold">{Math.floor(activeLane?.basePace100mSeconds / 60)}:{String(activeLane?.basePace100mSeconds % 60).padStart(2, '0')}</span> / 100{poolLength === '25y' ? 'y' : 'm'}
-                {activeLane?.swimmers?.length ? ` • Swimmers: ${activeLane.swimmers.join(', ')}` : ''}
+                Basis-CSS-Zeit: <span className="font-mono text-cyan-300 font-bold">{Math.floor(activeLane?.basePace100mSeconds / 60)}:{String(activeLane?.basePace100mSeconds % 60).padStart(2, '0')}</span> / 100{poolLength === '25y' ? 'y' : 'm'}
+                {activeLane?.swimmers?.length ? ` • Schwimmer: ${activeLane.swimmers.join(', ')}` : ''}
               </div>
             </div>
           </div>
 
           <div className="flex items-center space-x-1.5">
-            <span className="text-xs text-slate-400 font-semibold mr-1">Switch Lane:</span>
+            <span className="text-xs text-slate-400 font-semibold mr-1">Bahn wechseln:</span>
             {lanes.map((lane) => (
               <button
                 key={lane.id}
@@ -171,7 +179,7 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
                     : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
                 }`}
               >
-                L{lane.laneNumber}
+                B{lane.laneNumber}
               </button>
             ))}
           </div>
@@ -182,7 +190,7 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
       <div>
         <h2 className="text-sm font-extrabold text-slate-300 uppercase tracking-wider mb-3 flex items-center space-x-2">
           <Calendar className="w-4 h-4 text-cyan-400" />
-          <span>Week {currentWeek.weekNumber} Schedule by Day</span>
+          <span>Wochenplan nach Wochentag (Woche {currentWeek.weekNumber})</span>
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
@@ -197,9 +205,11 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
                 className={`rounded-2xl border p-3.5 transition flex flex-col justify-between min-h-[140px] relative ${
                   session
                     ? isSelected
-                      ? 'bg-cyan-950/40 border-cyan-500/60 shadow-lg shadow-cyan-950/50 cursor-pointer ring-1 ring-cyan-500/40'
-                      : 'bg-slate-900/90 border-slate-800 hover:border-slate-700 cursor-pointer'
-                    : 'bg-slate-950/40 border-slate-900 opacity-60'
+                    : 'bg-slate-900/90 border-slate-800 hover:border-slate-700 cursor-pointer'
+                } ${
+                  isSelected ? 'bg-cyan-950/40 border-cyan-500/60 shadow-lg shadow-cyan-950/50 cursor-pointer ring-1 ring-cyan-500/40' : ''
+                } ${
+                  !session ? 'bg-slate-950/40 border-slate-900 opacity-60' : ''
                 }`}
               >
                 {/* Day Header */}
@@ -207,11 +217,11 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
                   <span className={`text-xs font-black uppercase tracking-wider ${
                     isToday ? 'text-cyan-400' : 'text-slate-300'
                   }`}>
-                    {day.substring(0, 3)}
+                    {formatDayGerman(day).substring(0, 2)}
                   </span>
                   {isToday && (
                     <span className="text-[9px] font-extrabold bg-cyan-500 text-slate-950 px-1.5 py-0.2 rounded-full uppercase">
-                      Today
+                      Heute
                     </span>
                   )}
                 </div>
@@ -224,12 +234,12 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
                     </div>
                     <div className="flex items-center space-x-1 text-[11px] text-slate-400">
                       <Clock className="w-3 h-3 text-slate-500" />
-                      <span>{session.scheduledTime || '06:00 AM'}</span>
+                      <span>{session.scheduledTime || '06:00 Uhr'}</span>
                     </div>
 
                     <div className="flex items-center justify-between pt-1">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${getFocusBadgeColor(session.focus)}`}>
-                        {session.focus}
+                        {translateCycleFocus(session.focus)}
                       </span>
                       <span className="text-[11px] font-mono font-extrabold text-cyan-300">
                         {(session.totalDistance || 0).toLocaleString()}{poolLength === '25y' ? 'y' : 'm'}
@@ -238,17 +248,17 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center text-center p-2">
-                    <span className="text-xs text-slate-500 font-semibold">Rest / Recovery</span>
-                    <span className="text-[10px] text-slate-600">No scheduled squad session</span>
+                    <span className="text-xs text-slate-500 font-semibold">Ruhetag / Erholung</span>
+                    <span className="text-[10px] text-slate-600">Keine geplante Trainingseinheit</span>
                   </div>
                 )}
 
                 {/* View Details hint */}
                 {session && (
                   <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-                    <span className="text-slate-400">{session.blocks?.length || 0} sets</span>
+                    <span className="text-slate-400">{session.blocks?.length || 0} Serien</span>
                     <span className={`font-bold ${isSelected ? 'text-cyan-400' : 'text-slate-500'}`}>
-                      {isSelected ? 'Viewing' : 'View'} →
+                      {isSelected ? 'Aktiv' : 'Ansehen'} →
                     </span>
                   </div>
                 )}
@@ -266,10 +276,10 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-xs font-black text-cyan-400 uppercase tracking-widest bg-cyan-950 px-2.5 py-0.5 rounded-full border border-cyan-800">
-                  {selectedSession.dayOfWeek} Workout
+                  {formatDayGerman(selectedSession.dayOfWeek)} Einheit
                 </span>
                 <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${getFocusBadgeColor(selectedSession.focus)}`}>
-                  {selectedSession.focus} Focus
+                  Schwerpunkt: {translateCycleFocus(selectedSession.focus)}
                 </span>
                 {selectedSession.scheduledTime && (
                   <span className="text-xs font-semibold text-slate-400 flex items-center space-x-1">
@@ -285,15 +295,15 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
 
             <div className="flex items-center space-x-3">
               <div className="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-right">
-                <div className="text-[10px] uppercase font-bold text-slate-400">Total Distance</div>
+                <div className="text-[10px] uppercase font-bold text-slate-400">Gesamtstrecke</div>
                 <div className="text-lg font-black text-cyan-400 font-mono">
                   {(selectedSession.totalDistance || 0).toLocaleString()} {poolLength === '25y' ? 'yd' : 'm'}
                 </div>
               </div>
               <div className="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-right">
-                <div className="text-[10px] uppercase font-bold text-slate-400">Estimated Duration</div>
+                <div className="text-[10px] uppercase font-bold text-slate-400">Geschätzte Dauer</div>
                 <div className="text-lg font-black text-slate-200 font-mono">
-                  {selectedSession.estimatedMinutes || 60} mins
+                  {selectedSession.estimatedMinutes || 60} Min
                 </div>
               </div>
             </div>
@@ -324,11 +334,11 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
                         block.type === 'secondary' ? 'bg-purple-400' : 'bg-teal-400'
                       }`} />
                       <h3 className="text-base font-extrabold text-white uppercase tracking-wider">
-                        {block.title || `${block.type.toUpperCase()} BLOCK`}
+                        {block.title || `${translateBlockType(block.type).toUpperCase()}-SERIE`}
                       </h3>
                       {block.rounds > 1 && (
                         <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300">
-                          {block.rounds}x Rounds
+                          {block.rounds} Runden
                         </span>
                       )}
                     </div>
@@ -352,10 +362,10 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
                           <div className="space-y-1">
                             <div className="flex flex-wrap items-center gap-1.5">
                               <span className="text-xs font-extrabold text-white">
-                                {item.stroke}
+                                {translateStroke(item.stroke)}
                               </span>
                               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                                {item.intensity}
+                                {translateIntensity(item.intensity)}
                               </span>
 
                               {/* Equipment Tags */}
@@ -364,7 +374,7 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
                                   key={eq}
                                   className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded border ${getEquipmentBadgeColor(eq)}`}
                                 >
-                                  {eq}
+                                  {translateEquipment(eq)}
                                 </span>
                               ))}
                             </div>
@@ -377,7 +387,7 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
 
                             {item.notes && (
                               <p className="text-[11px] text-cyan-300/90 italic">
-                                Focus Cue: {item.notes}
+                                Technikfokus: {item.notes}
                               </p>
                             )}
                           </div>
@@ -387,7 +397,7 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
                         <div className="sm:text-right shrink-0">
                           {item.sendOffMode === 'fixed-interval' && item.fixedInterval && (
                             <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-1">
-                              <span className="text-[10px] uppercase font-bold text-slate-400">Interval</span>
+                              <span className="text-[10px] uppercase font-bold text-slate-400">Abgang</span>
                               <span className="font-mono font-extrabold text-sm text-cyan-300 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
                                 @ {item.fixedInterval}
                               </span>
@@ -396,18 +406,18 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
 
                           {item.sendOffMode === 'rest-after' && (
                             <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-1">
-                              <span className="text-[10px] uppercase font-bold text-slate-400">Rest Interval</span>
+                              <span className="text-[10px] uppercase font-bold text-slate-400">Pause</span>
                               <span className="font-mono font-extrabold text-sm text-amber-300 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
-                                :{item.restSeconds || 15}s Rest
+                                {item.restSeconds || 15}s Pause
                               </span>
                             </div>
                           )}
 
                           {item.sendOffMode === 'lane-scaled' && (
                             <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-1">
-                              <span className="text-[10px] uppercase font-bold text-cyan-400">Lane Scaled</span>
+                              <span className="text-[10px] uppercase font-bold text-cyan-400">Bahnenspezifisch</span>
                               <span className="font-mono font-extrabold text-xs text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800">
-                                {activeLane ? `L${activeLane.laneNumber} Pace` : 'Base Pace'}
+                                {activeLane ? `Bahn ${activeLane.laneNumber}` : 'Basis-Pace'}
                               </span>
                             </div>
                           )}
@@ -423,9 +433,9 @@ export const SwimmerScheduleView: React.FC<SwimmerScheduleViewProps> = ({
       ) : (
         <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-12 text-center">
           <Calendar className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-          <h3 className="text-lg font-bold text-white">No Workout Selected</h3>
+          <h3 className="text-lg font-bold text-white">Keine Trainingseinheit ausgewählt</h3>
           <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-            Select any day from the schedule above to view full workout sets, intervals, and coach focus notes.
+            Wähle einen beliebigen Wochentag oben aus, um alle Serien, Abgangszeiten und Trainerhinweise anzuzeigen.
           </p>
         </div>
       )}

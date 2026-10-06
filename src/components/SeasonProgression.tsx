@@ -106,15 +106,15 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               <span className="flex items-center space-x-1.5 text-cyan-400 text-xs font-bold uppercase tracking-wider">
                 <TrendingUp className="w-4 h-4" />
-                <span>Macrocycle Periodization Architecture</span>
+                <span>Makrozyklus-Periodisierungsarchitektur</span>
               </span>
               <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getAccentBorder(currentFocusType)} bg-slate-950/80`}>
-                Active Focus: {currentPreset.name}
+                Aktiver Schwerpunkt: {currentPreset.name}
               </span>
             </div>
 
             <h2 className="text-2xl font-black text-white tracking-tight">
-              {season.name} ({season.totalWeeks} Weeks)
+              {season.name} ({season.totalWeeks} Wochen)
             </h2>
 
             <p className="text-slate-400 text-sm max-w-2xl leading-relaxed">
@@ -124,9 +124,9 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <div className="bg-slate-950 px-5 py-3 rounded-xl border border-slate-800 text-right">
-              <span className="text-xs text-slate-400 block font-semibold">Active Cycle Progress</span>
+              <span className="text-xs text-slate-400 block font-semibold">Zyklus-Fortschritt</span>
               <span className="text-lg font-black text-emerald-400">
-                Week {season.currentWeekNumber} of {season.totalWeeks}
+                Woche {season.currentWeekNumber} von {season.totalWeeks}
               </span>
             </div>
 
@@ -136,10 +136,10 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                 setSelectedDurationWeeks(season.totalWeeks || 8);
                 setIsFocusModalOpen(true);
               }}
-              className="px-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-bold flex items-center space-x-2 shadow-lg shadow-cyan-900/40 transition"
+              className="px-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-bold flex items-center space-x-2 shadow-lg shadow-cyan-900/40 transition cursor-pointer"
             >
               <RefreshCw className="w-4 h-4" />
-              <span>Switch Cycle Focus</span>
+              <span>Zyklus-Schwerpunkt wechseln</span>
             </button>
           </div>
         </div>
@@ -148,7 +148,7 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
         <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center space-x-2 overflow-x-auto pb-1">
           <span className="text-xs font-bold text-slate-400 shrink-0 flex items-center space-x-1 mr-1">
             <Compass className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Cycle Presets:</span>
+            <span>Schwerpunkt-Vorlagen:</span>
           </span>
           {(Object.keys(CYCLE_FOCUS_PRESETS) as CycleFocusType[]).map((focusKey) => {
             const preset = CYCLE_FOCUS_PRESETS[focusKey];
@@ -162,7 +162,7 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                     onChangeCycleFocus(focusKey, preset.suggestedDurationWeeks);
                   }
                 }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center space-x-1.5 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center space-x-1.5 cursor-pointer ${
                   isActive
                     ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30'
                     : 'bg-slate-950/80 text-slate-400 hover:text-white border border-slate-800'
@@ -182,14 +182,14 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
           <div className="flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider">
             <Target className="w-4 h-4" />
-            <span>Physiological Adaptation</span>
+            <span>Physiologische Anpassung</span>
           </div>
-          <h4 className="text-sm font-bold text-white">Target Biological Objective</h4>
+          <h4 className="text-sm font-bold text-white">Biologische Zielanpassung</h4>
           <p className="text-xs text-slate-400 leading-relaxed">
             {currentPreset.physiologicalAdaptation}
           </p>
           <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 text-[11px] text-slate-300">
-            <strong className="text-cyan-300 block mb-0.5">Cycle Structure:</strong>
+            <strong className="text-cyan-300 block mb-0.5">Zyklus-Struktur:</strong>
             {currentPreset.weeklyStructureSummary}
           </div>
         </div>
@@ -199,9 +199,9 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider">
               <Award className="w-4 h-4" />
-              <span>Target Benchmarks & Performance Test Protocols</span>
+              <span>Leistungs-Benchmarks & Testprotokolle</span>
             </div>
-            <span className="text-[10px] text-slate-400 font-bold">Standard Squad Milestones</span>
+            <span className="text-[10px] text-slate-400 font-bold">Standardisierte Kader-Meilensteine</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -215,7 +215,7 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                   <p className="text-[11px] text-slate-400 mt-1">{bm.targetDescription}</p>
                 </div>
                 <div className="mt-2 pt-2 border-t border-slate-900 text-[10px] text-slate-500 font-mono">
-                  Test: {bm.testProtocol}
+                  Testprotokoll: {bm.testProtocol}
                 </div>
               </div>
             ))}
@@ -229,21 +229,21 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
           <div>
             <h3 className="text-base font-bold text-white flex items-center space-x-2">
               <BarChart2 className="w-5 h-5 text-cyan-400" />
-              <span>Weekly Volume Progression Curve ({season.poolLength})</span>
+              <span>Wöchentliche Umfangs-Progressionskurve ({season.poolLength})</span>
             </h3>
             <p className="text-xs text-slate-400">
-              Comparing Planned Actual Volume vs {currentPreset.shortLabel} Target Benchmark
+              Vergleich des geplanten Volumens mit dem {currentPreset.shortLabel} Soll-Benchmark
             </p>
           </div>
 
           <div className="flex items-center space-x-4 text-xs">
             <div className="flex items-center space-x-2">
               <span className="w-3 h-3 rounded-sm bg-cyan-500 shadow-sm shadow-cyan-500/50" />
-              <span className="text-slate-300">Planned Sessions Volume</span>
+              <span className="text-slate-300">Geplantes Trainingsvolumen</span>
             </div>
             <div className="flex items-center space-x-2">
               <span className="w-3 h-3 rounded-sm bg-slate-700 border border-slate-600 border-dashed" />
-              <span className="text-slate-400">Target Benchmark</span>
+              <span className="text-slate-400">Soll-Vorgabe (Benchmark)</span>
             </div>
           </div>
         </div>
@@ -275,9 +275,9 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                 >
                   {/* Tooltip on Hover */}
                   <div className="opacity-0 group-hover:opacity-100 pointer-events-none absolute -top-20 z-20 bg-slate-950 border border-slate-700 text-white rounded-lg p-2 text-[10px] whitespace-nowrap shadow-xl transition">
-                    <div className="font-bold text-cyan-300">Week {target.weekNumber}: {target.theme}</div>
-                    <div>Actual: {actualVol ? `${actualVol.toLocaleString()}${season.poolLength.slice(-1)}` : 'Not planned'}</div>
-                    <div className="text-slate-400">Target: {weekTargetVol.toLocaleString()}${season.poolLength.slice(-1)} ({target.phase})</div>
+                    <div className="font-bold text-cyan-300">Woche {target.weekNumber}: {target.theme}</div>
+                    <div>Geplant: {actualVol ? `${actualVol.toLocaleString()}${season.poolLength.slice(-1)}` : 'Nicht geplant'}</div>
+                    <div className="text-slate-400">Soll: {weekTargetVol.toLocaleString()}${season.poolLength.slice(-1)} ({target.phase})</div>
                     <div className="text-amber-300 text-[9px] mt-0.5">{target.focus}</div>
                   </div>
 
@@ -314,10 +314,10 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
           </div>
 
           <div className="flex justify-between text-[11px] text-slate-500 pt-2 px-1">
-            <span>Cycle Start / Calibration</span>
-            <span>Progression & Loading</span>
-            <span>Regeneration & Flush</span>
-            <span>Peak Adaptation & Testing</span>
+            <span>Zyklusstart / Kalibrierung</span>
+            <span>Progression & Belastung</span>
+            <span>Regeneration & Spülung</span>
+            <span>Spitzenform & Überprüfung</span>
           </div>
         </div>
       </div>
@@ -328,10 +328,10 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
           <div>
             <h3 className="text-base font-bold text-white flex items-center space-x-2">
               <Calendar className="w-4 h-4 text-cyan-400" />
-              <span>{currentPreset.name} — Weekly Microcycle Plan</span>
+              <span>{currentPreset.name} — Wöchentlicher Mikrozyklus-Plan</span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Click any row to jump to that week in the planner or edit target volume
+              Klicke auf eine Zeile, um zur Woche im Planer zu springen oder das Soll-Volumen zu bearbeiten
             </p>
           </div>
         </div>
@@ -340,12 +340,12 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400">
-                <th className="py-2.5 px-3">Week</th>
-                <th className="py-2.5 px-3">Theme & Focus</th>
-                <th className="py-2.5 px-3">Target Volume</th>
-                <th className="py-2.5 px-3">Planned Volume</th>
-                <th className="py-2.5 px-3">Primary Energy Zone</th>
-                <th className="py-2.5 px-3">Key Highlight Session</th>
+                <th className="py-2.5 px-3">Woche</th>
+                <th className="py-2.5 px-3">Thema & Schwerpunkt</th>
+                <th className="py-2.5 px-3">Soll-Umfang</th>
+                <th className="py-2.5 px-3">Ist-Planung</th>
+                <th className="py-2.5 px-3">Primäre Energiezone</th>
+                <th className="py-2.5 px-3">Kern-Trainingseinheit (Schlüsseleinheit)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 font-medium">
@@ -377,7 +377,7 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                         }`}>
                           {target.weekNumber}
                         </span>
-                        {isCurrent && <span className="text-[10px] text-cyan-400 font-bold">Active</span>}
+                        {isCurrent && <span className="text-[10px] text-cyan-400 font-bold">Aktiv</span>}
                       </div>
                     </td>
 
@@ -477,16 +477,16 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                   <Compass className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-white">Select Season Cycle Focus</h3>
+                  <h3 className="text-lg font-black text-white">Saisonzyklus-Schwerpunkt auswählen</h3>
                   <p className="text-xs text-slate-400">
-                    Switch periodization architecture to focus your entire squad block on a specific stimulus
+                    Wähle eine Periodisierungsarchitektur, um den gesamten Trainingsblock auf einen spezifischen Reiz auszurichten
                   </p>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsFocusModalOpen(false)}
-                className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+                className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -525,8 +525,8 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                     </div>
 
                     <div className="mt-3 pt-2 border-t border-slate-900 text-[10px] text-slate-500 flex justify-between">
-                      <span>Suggested: {preset.suggestedDurationWeeks} Weeks</span>
-                      <span>Base Vol: ~{preset.defaultWeeklyVolumeBase.toLocaleString()}m</span>
+                      <span>Empfohlen: {preset.suggestedDurationWeeks} Wochen</span>
+                      <span>Basis-Umfang: ~{preset.defaultWeeklyVolumeBase.toLocaleString()}m</span>
                     </div>
                   </div>
                 );
@@ -536,9 +536,9 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
             {/* Duration Selector */}
             <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
               <div>
-                <strong className="text-white block">Cycle Duration in Weeks:</strong>
+                <strong className="text-white block">Zyklusdauer in Wochen:</strong>
                 <span className="text-slate-400 text-[11px]">
-                  How many weekly microcycles should this focused block span?
+                  Über wie viele wöchentliche Mikrozyklen soll sich dieser Schwerpunktblock erstrecken?
                 </span>
               </div>
 
@@ -547,7 +547,7 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
                   <button
                     key={num}
                     onClick={() => setSelectedDurationWeeks(num)}
-                    className={`px-3 py-1.5 rounded-xl font-bold transition ${
+                    className={`px-3 py-1.5 rounded-xl font-bold transition cursor-pointer ${
                       selectedDurationWeeks === num
                         ? 'bg-cyan-500 text-slate-950'
                         : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
@@ -564,16 +564,16 @@ export const SeasonProgression: React.FC<SeasonProgressionProps> = ({
               <button
                 type="button"
                 onClick={() => setIsFocusModalOpen(false)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold"
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold cursor-pointer"
               >
-                Cancel
+                Abbrechen
               </button>
               <button
                 type="button"
                 onClick={handleApplyFocusChange}
-                className="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-lg shadow-cyan-900/40"
+                className="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-lg shadow-cyan-900/40 cursor-pointer"
               >
-                <span>Apply Focus & Update Season Targets</span>
+                <span>Schwerpunkt anwenden & Saisonziele aktualisieren</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>

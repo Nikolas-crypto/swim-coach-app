@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SeasonPlan, SessionScheduleSlot, DayOfWeek } from '../types/swim';
 import { X, Calendar, Target, Clock, Plus, Trash2, CheckCircle2, Dumbbell, Sparkles } from 'lucide-react';
 import { scaleSeasonSessionsToTarget } from '../utils/volumeScaler';
+import { formatDayGerman } from '../utils/germanTranslations';
 
 interface SeasonSettingsModalProps {
   season: SeasonPlan;
@@ -36,7 +37,7 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
       day: 'Monday',
       startTime: '06:00',
       endTime: '07:30',
-      sessionTitle: 'Squad Session',
+      sessionTitle: 'Kader-Trainingseinheit',
       primaryFocus: 'Aerobic',
       poolLength: poolLength,
     };
@@ -80,13 +81,13 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
               <Target className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-wide">Season Setup & Training Schedule</h2>
-              <p className="text-xs text-cyan-300/80">Configure squad season buildup goals and weekly pool slots</p>
+              <h2 className="text-lg font-bold text-white tracking-wide">Saison-Konfiguration & Trainingszeiten</h2>
+              <p className="text-xs text-cyan-300/80">Saisonziele, Makrozyklus-Dauer und wöchentliche Trainingszeiten konfigurieren</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"
+            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -98,20 +99,20 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-cyan-300 uppercase tracking-wider mb-1">
-                Season Name / Campaign
+                Saisonname / Wettkampfphase
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-lg px-3 py-2 text-white outline-none"
-                placeholder="e.g. Winter State Championship 2026"
+                placeholder="z.B. Meisterschafts-Aufbau Wintersaison 2026"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-cyan-300 uppercase tracking-wider mb-1">
-                Pool Course
+                Bahnenlänge / Wettkampfbahn
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {(['25m', '50m', '25y'] as const).map(p => (
@@ -119,13 +120,13 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
                     key={p}
                     type="button"
                     onClick={() => setPoolLength(p)}
-                    className={`py-2 px-3 rounded-lg text-xs font-semibold border transition ${
+                    className={`py-2 px-3 rounded-lg text-xs font-semibold border transition cursor-pointer ${
                       poolLength === p 
                         ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200' 
                         : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
                     }`}
                   >
-                    {p === '25m' ? '25m (SCM)' : p === '50m' ? '50m (LCM)' : '25y (SCY)'}
+                    {p === '25m' ? '25m (Kurzbahn)' : p === '50m' ? '50m (Langbahn)' : '25y (Yards)'}
                   </button>
                 ))}
               </div>
@@ -133,28 +134,28 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
 
             <div className="md:col-span-2">
               <label className="block text-xs font-semibold text-cyan-300 uppercase tracking-wider mb-1">
-                Season Buildup Goal & Peak Event
+                Saisonziel & Saisonhöhepunkt
               </label>
               <textarea
                 value={goal}
                 onChange={e => setGoal(e.target.value)}
                 rows={2}
                 className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-lg px-3 py-2 text-white outline-none resize-none"
-                placeholder="e.g. Peak squad aerobic threshold & qualify 8 swimmers for National Championships in Week 12"
+                placeholder="z.B. Spitzenform des Kaders & Erreichen der Meisterschafts-Pflichtzeiten in Woche 12"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-cyan-300 uppercase tracking-wider mb-1">
-                Total Buildup Duration (Weeks)
+                Gesamtdauer des Aufbaus (Wochen)
               </label>
               <select
                 value={totalWeeks}
                 onChange={e => setTotalWeeks(Number(e.target.value))}
-                className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-lg px-3 py-2 text-white outline-none"
+                className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-lg px-3 py-2 text-white outline-none cursor-pointer"
               >
                 {[8, 10, 12, 14, 16, 20].map(w => (
-                  <option key={w} value={w}>{w} Weeks (Periodized Macrocycle)</option>
+                  <option key={w} value={w}>{w} Wochen (Periodisierter Makrozyklus)</option>
                 ))}
               </select>
             </div>
@@ -166,10 +167,10 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
               <div>
                 <label className="flex items-center space-x-2 text-xs font-bold text-cyan-300 uppercase tracking-wider">
                   <Dumbbell className="w-4 h-4 text-cyan-400" />
-                  <span>Target Average Session Volume</span>
+                  <span>Soll-Durchschnittsumfang pro Einheit</span>
                 </label>
                 <p className="text-xs text-slate-400 mt-1 max-w-lg">
-                  Calibrate your squad workouts around <strong className="text-white">~3,000m average per session</strong>, with natural variation: longer endurance/aerobic sessions around 3,200–3,500m and shorter recovery/sprint sessions around 2,500–2,800m.
+                  Kalibriere die Kadertrainings auf einen Durchschnitt von <strong className="text-white">~3.000m pro Einheit</strong>, mit natürlicher Varianz: längere Grundlageneinheiten ca. 3.200–3.500m, kürzere Sprint-/Regenerationseinheiten ca. 2.500–2.800m.
                 </p>
               </div>
               <div className="flex items-center space-x-2 shrink-0">
@@ -188,18 +189,18 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
 
             {/* Quick Presets */}
             <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-900">
-              <span className="text-[11px] text-slate-500 font-semibold">Presets:</span>
+              <span className="text-[11px] text-slate-500 font-semibold">Schnellauswahl:</span>
               {[
-                { label: 'Shorter (~2,500m)', val: 2500 },
-                { label: 'Standard (~3,000m)', val: 3000 },
-                { label: 'Extended (~3,500m)', val: 3500 },
-                { label: 'High Volume (~4,200m)', val: 4200 },
+                { label: 'Kürzer (~2.500m)', val: 2500 },
+                { label: 'Standard (~3.000m)', val: 3000 },
+                { label: 'Erweitert (~3.500m)', val: 3500 },
+                { label: 'Hoher Umfang (~4.200m)', val: 4200 },
               ].map(p => (
                 <button
                   key={p.val}
                   type="button"
                   onClick={() => setTargetSessionVolume(p.val)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition cursor-pointer ${
                     targetSessionVolume === p.val
                       ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300'
                       : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
@@ -219,7 +220,7 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
                 className="w-4 h-4 rounded border-slate-700 text-cyan-600 focus:ring-cyan-500 bg-slate-900"
               />
               <span>
-                Proportionately scale existing season sessions to average <strong className="text-cyan-300">{targetSessionVolume.toLocaleString()}{poolLength.slice(-1)}</strong> (some longer, some shorter)
+                Bestehende Saisoneinheiten proportional auf durchschnittlich <strong className="text-cyan-300">{targetSessionVolume.toLocaleString()}{poolLength.slice(-1)}</strong> anpassen (manche länger, manche kürzer)
               </span>
             </label>
           </div>
@@ -230,17 +231,17 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center space-x-2">
                   <Calendar className="w-4 h-4 text-cyan-400" />
-                  <span>Weekly Squad Practice Slots</span>
+                  <span>Wöchentliche Kadertrainingszeiten</span>
                 </h3>
-                <p className="text-xs text-slate-400">Regular training days and pool hours used to populate weekly cycles</p>
+                <p className="text-xs text-slate-400">Reguläre Wochentage und Wasserzeiten zur Generierung wöchentlicher Mikrozyklen</p>
               </div>
               <button
                 type="button"
                 onClick={handleAddSlot}
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold rounded-lg transition"
+                className="flex items-center space-x-1.5 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold rounded-lg transition cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Training Slot</span>
+                <span>Trainingszeit hinzufügen</span>
               </button>
             </div>
 
@@ -254,10 +255,10 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
                     <select
                       value={slot.day}
                       onChange={e => handleUpdateSlot(slot.id, { day: e.target.value as DayOfWeek })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-md px-2 py-1 text-xs text-white"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-md px-2 py-1 text-xs text-white cursor-pointer"
                     >
                       {DAYS.map(d => (
-                        <option key={d} value={d}>{d}</option>
+                        <option key={d} value={d}>{formatDayGerman(d)}</option>
                       ))}
                     </select>
                   </div>
@@ -284,30 +285,30 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
                       type="text"
                       value={slot.sessionTitle}
                       onChange={e => handleUpdateSlot(slot.id, { sessionTitle: e.target.value })}
-                      placeholder="Session title"
+                      placeholder="Titel der Trainingseinheit"
                       className="w-full bg-slate-900 border border-slate-700 rounded-md px-2 py-1 text-xs text-white"
                     />
                   </div>
 
-                  <div className="w-32">
+                  <div className="w-36">
                     <select
                       value={slot.primaryFocus}
                       onChange={e => handleUpdateSlot(slot.id, { primaryFocus: e.target.value as any })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-md px-2 py-1 text-xs text-cyan-300 font-medium"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-md px-2 py-1 text-xs text-cyan-300 font-medium cursor-pointer"
                     >
-                      <option value="Aerobic">Aerobic Base</option>
-                      <option value="Threshold">Threshold (CSS)</option>
-                      <option value="Speed">Speed / Sprint</option>
-                      <option value="Technique">Technique / Medley</option>
-                      <option value="Recovery">Recovery</option>
-                      <option value="Test Set">Test Set</option>
+                      <option value="Aerobic">Grundlagenausdauer (GA1)</option>
+                      <option value="Threshold">Schwellenbereich (CSS)</option>
+                      <option value="Speed">Schnelligkeit & Sprint</option>
+                      <option value="Technique">Lagentechnik</option>
+                      <option value="Recovery">Regeneration</option>
+                      <option value="Test Set">Leistungstest</option>
                     </select>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handleRemoveSlot(slot.id)}
-                    className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded transition"
+                    className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded transition cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -322,17 +323,17 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 text-xs font-semibold transition"
+            className="px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 text-xs font-semibold transition cursor-pointer"
           >
-            Cancel
+            Abbrechen
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 flex items-center space-x-2 transition"
+            className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 flex items-center space-x-2 transition cursor-pointer"
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>Save Season Settings</span>
+            <span>Saisoneinstellungen speichern</span>
           </button>
         </div>
       </div>

@@ -5,8 +5,6 @@ import {
   ArrowRight, 
   ShieldCheck, 
   AlertCircle, 
-  Eye, 
-  EyeOff, 
   User as UserIcon, 
   Crown, 
   Sparkles, 
@@ -36,8 +34,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
   
   // Admin form state
   const [adminPasscode, setAdminPasscode] = useState('');
-  const [coachName, setCoachName] = useState('Coach Nikolas');
-  const [showAdminPasscode, setShowAdminPasscode] = useState(false);
+  const [coachName, setCoachName] = useState('Trainer Nikolas');
   
   // Swimmer form state
   const [swimmerName, setSwimmerName] = useState('Sarah M.');
@@ -65,7 +62,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
       onLoginSuccess(user);
     } catch (err: unknown) {
       const errObj = err as Error;
-      setErrorMsg(errObj?.message || 'Invalid coach passcode. Try "cambosquad".');
+      setErrorMsg(errObj?.message || 'Ungültiges Trainer-Passwort.');
       setIsSubmitting(false);
     }
   };
@@ -80,7 +77,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
       onLoginSuccess(user);
     } catch (err: unknown) {
       const errObj = err as Error;
-      setErrorMsg(errObj?.message || 'Failed to enter swimmer portal.');
+      setErrorMsg(errObj?.message || 'Fehler beim Öffnen des Athleten-Portals.');
       setIsSubmitting(false);
     }
   };
@@ -94,7 +91,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
       onLoginSuccess(user);
     } catch (err: unknown) {
       const errObj = err as Error;
-      setErrorMsg(errObj?.message || 'Google sign-in could not be completed.');
+      setErrorMsg(errObj?.message || 'Anmeldung mit Google konnte nicht abgeschlossen werden.');
       setIsSubmitting(false);
     }
   };
@@ -103,7 +100,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
     setErrorMsg(null);
     const user = quickDemoLogin(
       role, 
-      role === 'admin' ? 'Coach Nikolas' : (swimmerName || 'Sarah M.')
+      role === 'admin' ? 'Trainer Nikolas' : (swimmerName || 'Sarah M.')
     );
     onLoginSuccess(user);
   };
@@ -124,11 +121,11 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center justify-center space-x-2">
             <span>Swim Coach</span>
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-widest font-extrabold">
-              Squad
+              Kader
             </span>
           </h1>
           <p className="text-slate-400 text-xs sm:text-sm mt-1">
-            Season Periodization, Multi-Lane Pacing & Whiteboard
+            Saison-Periodisierung, Mehrbahnen-Pacing & Beckenrand-Whiteboard
           </p>
         </div>
 
@@ -147,7 +144,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
             }`}
           >
             <Crown className="w-4 h-4 text-amber-300" />
-            <span>Coach / Admin</span>
+            <span>Trainer / Coach</span>
           </button>
 
           <button
@@ -163,7 +160,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
             }`}
           >
             <UserIcon className="w-4 h-4 text-emerald-300" />
-            <span>Swimmer User</span>
+            <span>Schwimmer / Athlet</span>
           </button>
         </div>
 
@@ -172,14 +169,14 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
           <div className="bg-cyan-950/30 border border-cyan-500/30 rounded-2xl p-4 mb-6 flex items-start space-x-3">
             <Crown className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
             <div className="text-xs text-slate-300 leading-relaxed">
-              <span className="font-bold text-white">Admin Privileges:</span> Full access to Weekly Planner, Workout Builder, Season Progression, Lane Rosters, Poolside Whiteboard, and Season Settings.
+              <span className="font-bold text-white">Trainer-Berechtigung:</span> Voller Zugriff auf Wochenplaner, Trainings-Editor, Saisonverlauf, Bahnen & Kader, Beckenrand-Whiteboard und Saisoneinstellungen.
             </div>
           </div>
         ) : (
           <div className="bg-emerald-950/30 border border-emerald-500/30 rounded-2xl p-4 mb-6 flex items-start space-x-3">
             <Calendar className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
             <div className="text-xs text-slate-300 leading-relaxed">
-              <span className="font-bold text-white">Swimmer Privileges:</span> Read-only view of the current week's training schedule, sessions, sets, intervals, and personal lane pace. Edits are disabled.
+              <span className="font-bold text-white">Athleten-Berechtigung:</span> Nur-Lese-Ansicht des aktuellen Trainingsplans der Woche, Einheiten, Serien, Abgangszeiten und individueller Bahnenzeiten. Bearbeitung ist deaktiviert.
             </div>
           </div>
         )}
@@ -197,47 +194,34 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
           <form onSubmit={handleAdminSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">
-                Coach Display Name
+                Trainer-Anzeigename
               </label>
               <input
                 type="text"
                 value={coachName}
                 onChange={(e) => setCoachName(e.target.value)}
-                placeholder="Coach Nikolas"
+                placeholder="Trainer Nikolas"
                 className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
               />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Admin Passcode
-                </label>
-                <span className="text-[11px] text-cyan-400 font-mono">
-                  Default: <span className="font-bold underline cursor-pointer" onClick={() => setAdminPasscode('cambosquad')}>cambosquad</span>
-                </span>
-              </div>
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
+                Admin-Passwort
+              </label>
               <div className="relative">
                 <input
-                  type={showAdminPasscode ? 'text' : 'password'}
+                  type="password"
                   value={adminPasscode}
                   onChange={(e) => {
                     setAdminPasscode(e.target.value);
                     if (errorMsg) setErrorMsg(null);
                   }}
-                  placeholder="Enter coach passcode (cambosquad)..."
+                  placeholder="Trainer-Passwort eingeben..."
                   autoFocus
                   autoComplete="current-password"
-                  className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 pr-11"
+                  className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowAdminPasscode(!showAdminPasscode)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition p-1"
-                  tabIndex={-1}
-                >
-                  {showAdminPasscode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
               </div>
             </div>
 
@@ -247,7 +231,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
                 disabled={isSubmitting || !adminPasscode.trim()}
                 className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white font-extrabold text-sm tracking-wide shadow-lg shadow-cyan-950/40 transition flex items-center justify-center space-x-2 cursor-pointer"
               >
-                <span>{isSubmitting ? 'Verifying Admin...' : 'Sign In as Coach / Admin'}</span>
+                <span>{isSubmitting ? 'Prüfe Passwort...' : 'Als Trainer anmelden'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -257,7 +241,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
                 className="w-full py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer border border-slate-700/60"
               >
                 <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Instant Quick Access (Admin Demo)</span>
+                <span>Sofort-Zugang (Trainer-Demo)</span>
               </button>
             </div>
           </form>
@@ -268,13 +252,13 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
           <form onSubmit={handleSwimmerSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">
-                Swimmer Name
+                Name des Schwimmers
               </label>
               <input
                 type="text"
                 value={swimmerName}
                 onChange={(e) => setSwimmerName(e.target.value)}
-                placeholder="e.g. Sarah M., Jordan K., Marcus T."
+                placeholder="z.B. Sarah M., Jonas K., Marcus T."
                 autoFocus
                 className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
               />
@@ -284,7 +268,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
             {rosterSwimmers.length > 0 && (
               <div>
                 <label className="block text-[11px] font-bold text-slate-400 mb-1.5 uppercase">
-                  Or pick from squad roster:
+                  Oder aus dem Kader wählen:
                 </label>
                 <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
                   {rosterSwimmers.map(({ name, lane }) => (
@@ -301,7 +285,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
                           : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
                       }`}
                     >
-                      {name} (L{lane})
+                      {name} (Bahn {lane})
                     </button>
                   ))}
                 </div>
@@ -310,7 +294,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
 
             <div>
               <label className="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">
-                Assigned Lane (for CSS paces)
+                Zugewiesene Bahn (für CSS-Pacing)
               </label>
               <select
                 value={assignedLane}
@@ -319,7 +303,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
               >
                 {lanes.map((lane) => (
                   <option key={lane.id} value={lane.laneNumber}>
-                    Lane {lane.laneNumber}: {lane.name} ({Math.floor(lane.basePace100mSeconds / 60)}:{String(lane.basePace100mSeconds % 60).padStart(2, '0')} pace)
+                    Bahn {lane.laneNumber}: {lane.name} ({Math.floor(lane.basePace100mSeconds / 60)}:{String(lane.basePace100mSeconds % 60).padStart(2, '0')} Basis)
                   </option>
                 ))}
               </select>
@@ -331,7 +315,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
                 disabled={isSubmitting || !swimmerName.trim()}
                 className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-white font-extrabold text-sm tracking-wide shadow-lg shadow-emerald-950/40 transition flex items-center justify-center space-x-2 cursor-pointer"
               >
-                <span>{isSubmitting ? 'Entering Portal...' : 'View Current Week Schedule'}</span>
+                <span>{isSubmitting ? 'Öffne Portal...' : 'Trainingsplan der Woche ansehen'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -341,7 +325,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
                 className="w-full py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-emerald-300 text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer border border-slate-700/60"
               >
                 <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Instant Quick Access (Swimmer Demo)</span>
+                <span>Sofort-Zugang (Schwimmer-Demo)</span>
               </button>
             </div>
           </form>
@@ -353,7 +337,7 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
             <div className="w-full border-t border-slate-800" />
           </div>
           <span className="relative bg-slate-900 px-3 text-[11px] uppercase tracking-wider text-slate-400 font-bold">
-            Or Sign In with Google
+            Oder mit Google anmelden
           </span>
         </div>
 
@@ -382,13 +366,13 @@ export const SquadLoginGate: React.FC<SquadLoginGateProps> = ({
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
             />
           </svg>
-          <span>Continue with Google ({activeTab === 'admin' ? 'Coach' : 'Swimmer'})</span>
+          <span>Mit Google fortfahren ({activeTab === 'admin' ? 'Trainer' : 'Schwimmer'})</span>
         </button>
 
         {/* Footer info */}
         <div className="mt-6 text-center pt-4 border-t border-slate-800/80 text-[11px] text-slate-400 flex items-center justify-center space-x-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Role-Based Squad Security • Firebase Firestore Synced</span>
+          <span>Rollenbasierte Kadersicherheit • Firebase Cloud Synchronisation</span>
         </div>
       </div>
     </div>

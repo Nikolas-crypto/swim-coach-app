@@ -17,9 +17,17 @@ import {
   Award, 
   Copy,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Upload
 } from 'lucide-react';
 import { convertInspirationToSession } from '../data/inspirationPlans';
+import { CsvImportModal } from './CsvImportModal';
+import { 
+  formatDayGerman, 
+  formatStrokeGerman, 
+  formatFocusGerman, 
+  formatBlockTypeGerman 
+} from '../utils/germanTranslations';
 
 interface WorkoutLibraryViewProps {
   savedWorkouts: SavedWorkoutItem[];
@@ -28,6 +36,7 @@ interface WorkoutLibraryViewProps {
   onAddSessionToWeek: (weekNumber: number, session: WorkoutSession) => void;
   onDeleteWorkout: (workoutId: string) => void;
   onSaveWorkout: (workout: SavedWorkoutItem) => void;
+  onImportWorkouts?: (workouts: SavedWorkoutItem[]) => void;
 }
 
 export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
@@ -37,10 +46,12 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
   onAddSessionToWeek,
   onDeleteWorkout,
   onSaveWorkout,
+  onImportWorkouts,
 }) => {
   const [activeFilter, setActiveFilter] = useState<'all' | 'completed' | 'inspiration' | 'Endurance' | 'Threshold' | 'VO2Max' | 'Speed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(null);
+  const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   
   // Schedule modal state
   const [schedulingWorkout, setSchedulingWorkout] = useState<SavedWorkoutItem | null>(null);
@@ -89,7 +100,7 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
     const copy: SavedWorkoutItem = {
       ...workout,
       id: `saved-${Date.now()}`,
-      name: `${workout.name} (Copy)`,
+      name: `${workout.name} (Kopie)`,
       completedAt: undefined,
       isCompleted: false,
       source: 'custom_template'
@@ -105,27 +116,36 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
           <div>
             <div className="flex items-center space-x-2 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-1">
               <Bookmark className="w-4 h-4" />
-              <span>Squad Workout & Inspiration Library</span>
+              <span>Kader-Trainings- & Vorlagenbibliothek</span>
             </div>
             <h2 className="text-2xl font-black text-white tracking-tight">
-              Saved Workouts & Base Plan Inspiration
+              Gespeicherte Trainings & Basisplan-Vorlagen
             </h2>
             <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-              Store your squad's completed training sessions and explore base workout plans used as templates across endurance, threshold, and VO2 Max cycles.
+              Speichere absolvierte Kadereinheiten und nutze bewährte Basistrainings als Vorlagen für Ausdauer-, Schwellen- und VO2max-Zyklen.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsCsvModalOpen(true)}
+              className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-cyan-600 via-teal-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-cyan-900/40 cursor-pointer"
+              title=".csv-Datei hochladen oder CSV-Text einfügen, um Einheiten zu importieren"
+            >
+              <Upload className="w-4 h-4" />
+              <span>CSV-Pläne importieren</span>
+            </button>
             <div className="bg-slate-950/80 px-4 py-2.5 rounded-xl border border-slate-800 text-center">
-              <span className="text-[10px] text-slate-400 uppercase font-bold block">Completed</span>
+              <span className="text-[10px] text-slate-400 uppercase font-bold block">Absolviert</span>
               <span className="text-lg font-black text-emerald-400">{completedCount}</span>
             </div>
             <div className="bg-slate-950/80 px-4 py-2.5 rounded-xl border border-slate-800 text-center">
-              <span className="text-[10px] text-slate-400 uppercase font-bold block">Base Plans</span>
+              <span className="text-[10px] text-slate-400 uppercase font-bold block">Basispläne</span>
               <span className="text-lg font-black text-cyan-400">{inspirationCount}</span>
             </div>
             <div className="bg-slate-950/80 px-4 py-2.5 rounded-xl border border-slate-800 text-center">
-              <span className="text-[10px] text-slate-400 uppercase font-bold block">Total In Library</span>
+              <span className="text-[10px] text-slate-400 uppercase font-bold block">Gesamt</span>
               <span className="text-lg font-black text-white">{savedWorkouts.length}</span>
             </div>
           </div>
@@ -137,13 +157,13 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
         {/* Pills */}
         <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 md:pb-0">
           {[
-            { id: 'all', label: `All (${savedWorkouts.length})` },
-            { id: 'completed', label: `Completed Workouts (${completedCount})` },
-            { id: 'inspiration', label: `Base Plans (${inspirationCount})` },
-            { id: 'Endurance', label: 'Endurance' },
-            { id: 'Threshold', label: 'Threshold (CSS)' },
-            { id: 'VO2Max', label: 'VO2 Max' },
-            { id: 'Speed', label: 'Speed & Starts' },
+            { id: 'all', label: `Alle (${savedWorkouts.length})` },
+            { id: 'completed', label: `Absolvierte Einheiten (${completedCount})` },
+            { id: 'inspiration', label: `Basispläne (${inspirationCount})` },
+            { id: 'Endurance', label: 'Ausdauer' },
+            { id: 'Threshold', label: 'Schwellenbereich (CSS)' },
+            { id: 'VO2Max', label: 'VO2max' },
+            { id: 'Speed', label: 'Sprint & Starts' },
           ].map((pill) => (
             <button
               key={pill.id}
@@ -166,7 +186,7 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search workouts, strokes, sets..."
+            placeholder="Trainings, Lagen, Serien suchen..."
             className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
           />
         </div>
@@ -176,10 +196,18 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
       {filteredWorkouts.length === 0 ? (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center">
           <Bookmark className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-white mb-1">No workouts found</h3>
-          <p className="text-xs text-slate-400 max-w-md mx-auto">
-            Try adjusting your search query or filter. When you complete a squad workout in the Weekly Planner or Workout Builder, click "Save to Library" to save it here!
+          <h3 className="text-base font-bold text-white mb-1">Keine Trainings gefunden</h3>
+          <p className="text-xs text-slate-400 max-w-md mx-auto mb-4">
+            Passe Suchbegriff oder Filter an. Du kannst auch externe Schwimmpläne per CSV importieren.
           </p>
+          <button
+            type="button"
+            onClick={() => setIsCsvModalOpen(true)}
+            className="inline-flex items-center space-x-2 px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-cyan-900/40 cursor-pointer"
+          >
+            <Upload className="w-4 h-4" />
+            <span>Pläne aus CSV importieren</span>
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -203,18 +231,18 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${focusColor}`}>
-                        {workout.focus}
+                        {formatFocusGerman(workout.focus)}
                       </span>
                       {isCompleted && (
                         <span className="px-2 py-0.5 rounded-md text-[10px] font-bold border border-emerald-500/40 text-emerald-300 bg-emerald-950/60 flex items-center space-x-1">
                           <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                          <span>Completed Session</span>
+                          <span>Absolvierte Einheit</span>
                         </span>
                       )}
                       {isInspiration && (
                         <span className="px-2 py-0.5 rounded-md text-[10px] font-bold border border-blue-500/40 text-blue-300 bg-blue-950/60 flex items-center space-x-1">
                           <Sparkles className="w-3 h-3 text-blue-400" />
-                          <span>Base Inspiration</span>
+                          <span>Basis-Vorlage</span>
                         </span>
                       )}
                       <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300">
@@ -228,7 +256,7 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                       </span>
                       <span className="text-xs text-slate-500">•</span>
                       <span className="text-xs text-slate-400 font-semibold">
-                        ~{workout.estimatedMinutes}m
+                        ~{workout.estimatedMinutes} Min
                       </span>
                     </div>
                   </div>
@@ -241,7 +269,7 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                   {/* Notes / Completed date */}
                   {workout.completedAt && (
                     <div className="text-[11px] text-emerald-400/90 font-medium mb-1">
-                      Logged on: {new Date(workout.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      Erfasst am: {new Date(workout.completedAt).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </div>
                   )}
 
@@ -270,13 +298,13 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                     <div className="flex items-center justify-between text-[11px] font-bold text-slate-300">
                       <span className="flex items-center space-x-1.5">
                         <Layers className="w-3.5 h-3.5 text-cyan-400" />
-                        <span>Workout Structure ({workout.blocks?.length || 0} blocks)</span>
+                        <span>Trainingsaufbau ({workout.blocks?.length || 0} Serien)</span>
                       </span>
                       <button
                         onClick={() => setExpandedWorkoutId(isExpanded ? null : workout.id)}
                         className="text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 text-[10px]"
                       >
-                        <span>{isExpanded ? 'Hide sets' : 'View full sets'}</span>
+                        <span>{isExpanded ? 'Serien verbergen' : 'Alle Serien anzeigen'}</span>
                         {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                       </button>
                     </div>
@@ -295,13 +323,13 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                           <div key={bIdx} className="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
                             <div className="font-bold text-white text-xs flex justify-between">
                               <span className="text-cyan-300">{b.title}</span>
-                              <span className="text-slate-400 text-[10px] uppercase font-bold">{b.type}</span>
+                              <span className="text-slate-400 text-[10px] uppercase font-bold">{formatBlockTypeGerman(b.type)}</span>
                             </div>
                             <div className="mt-1 space-y-1">
                               {(b.items || []).map((item, iIdx) => (
                                 <div key={iIdx} className="text-[11px] text-slate-300 flex items-start justify-between gap-2">
                                   <span>
-                                    <strong className="text-white">{item.reps}x{item.distance}m</strong> {item.stroke} — {item.description}
+                                    <strong className="text-white">{item.reps}x{item.distance}m</strong> {formatStrokeGerman(item.stroke)} — {item.description}
                                   </span>
                                   {item.fixedInterval && (
                                     <span className="font-mono text-cyan-400 text-[10px] shrink-0 font-bold">
@@ -323,7 +351,7 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => handleDuplicate(workout)}
-                      title="Duplicate as new template"
+                      title="Als neue Vorlage duplizieren"
                       className="p-2 rounded-lg bg-slate-950 text-slate-400 hover:text-white border border-slate-800 transition"
                     >
                       <Copy className="w-3.5 h-3.5" />
@@ -331,7 +359,7 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                     {!isInspiration && (
                       <button
                         onClick={() => onDeleteWorkout(workout.id)}
-                        title="Delete from library"
+                        title="Aus Bibliothek löschen"
                         className="p-2 rounded-lg bg-slate-950 text-rose-400 hover:text-rose-300 border border-slate-800 transition"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -345,7 +373,7 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                       className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition"
                     >
                       <Calendar className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Schedule to Week</span>
+                      <span>In Woche einplanen</span>
                     </button>
 
                     <button
@@ -356,7 +384,7 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                       className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-md shadow-cyan-900/40 transition"
                     >
                       <Dumbbell className="w-3.5 h-3.5" />
-                      <span>Open in Builder</span>
+                      <span>Im Editor öffnen</span>
                     </button>
                   </div>
                 </div>
@@ -375,20 +403,20 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                 <Calendar className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-white">Add Workout to Schedule</h3>
-                <p className="text-xs text-slate-400">Select which week and day slot to schedule this workout</p>
+                <h3 className="text-lg font-black text-white">Training in Wochenplan eintragen</h3>
+                <p className="text-xs text-slate-400">Wähle Zielwoche und Wochentag für diese Einheit aus</p>
               </div>
             </div>
 
             <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
-              <div className="text-slate-400">Workout:</div>
+              <div className="text-slate-400">Einheit:</div>
               <div className="font-bold text-white text-sm">{schedulingWorkout.name}</div>
-              <div className="font-mono text-cyan-400 mt-0.5">{schedulingWorkout.totalDistance.toLocaleString()}m ({schedulingWorkout.focus})</div>
+              <div className="font-mono text-cyan-400 mt-0.5">{schedulingWorkout.totalDistance.toLocaleString()}m ({formatFocusGerman(schedulingWorkout.focus)})</div>
             </div>
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Target Week</label>
+                <label className="block text-slate-400 font-semibold mb-1">Zielwoche</label>
                 <select
                   value={targetWeekNum}
                   onChange={(e) => setTargetWeekNum(Number(e.target.value))}
@@ -396,14 +424,14 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                 >
                   {(season.weeks || []).map((w) => (
                     <option key={w.weekNumber} value={w.weekNumber}>
-                      Week {w.weekNumber} — {w.theme}
+                      Woche {w.weekNumber} — {w.theme}
                     </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Day of Week</label>
+                <label className="block text-slate-400 font-semibold mb-1">Wochentag</label>
                 <select
                   value={targetDay}
                   onChange={(e) => setTargetDay(e.target.value as DayOfWeek)}
@@ -411,7 +439,7 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                 >
                   {(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as DayOfWeek[]).map((d) => (
                     <option key={d} value={d}>
-                      {d}
+                      {formatDayGerman(d)}
                     </option>
                   ))}
                 </select>
@@ -424,20 +452,33 @@ export const WorkoutLibraryView: React.FC<WorkoutLibraryViewProps> = ({
                 onClick={() => setSchedulingWorkout(null)}
                 className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold"
               >
-                Cancel
+                Abbrechen
               </button>
               <button
                 type="button"
                 onClick={handleConfirmSchedule}
                 className="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-lg shadow-cyan-900/40"
               >
-                <span>Schedule Workout</span>
+                <span>Einheit eintragen</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* CSV Import Modal */}
+      <CsvImportModal
+        isOpen={isCsvModalOpen}
+        onClose={() => setIsCsvModalOpen(false)}
+        onImportWorkouts={(importedWorkouts) => {
+          if (onImportWorkouts) {
+            onImportWorkouts(importedWorkouts);
+          } else {
+            importedWorkouts.forEach(w => onSaveWorkout(w));
+          }
+        }}
+      />
     </div>
   );
 };
