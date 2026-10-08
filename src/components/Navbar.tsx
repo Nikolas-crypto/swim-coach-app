@@ -38,6 +38,7 @@ interface NavbarProps {
   user: AppUser;
   onSwitchRole?: () => void;
   onLogout: () => void;
+  onForceSync?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -53,6 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   user,
   onSwitchRole,
   onLogout,
+  onForceSync,
 }) => {
   const isAdmin = user.role === 'admin';
 
@@ -178,17 +180,30 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Controls: User Profile, Sync Status, Course Switcher & Controls */}
           <div className="flex items-center space-x-2 sm:space-x-2.5">
-            {/* Real-time Cloud Sync Indicator */}
-            <div 
-              className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold shadow-inner"
-              title={
+            {/* Real-time Cloud Sync Indicator & Force Sync */}
+            <button 
+              type="button"
+              onClick={isAdmin && onForceSync ? onForceSync : undefined}
+              disabled={syncStatus === 'saving'}
+              className={`hidden lg:flex items-center space-x-1.5 px-3 py-1 rounded-xl border text-xs font-semibold shadow-inner transition cursor-pointer ${
                 syncStatus === 'synced'
-                  ? `Cloud-Datenbank verbunden. Zuletzt synchronisiert: ${lastSyncedAt ? lastSyncedAt.toLocaleTimeString('de-DE') : 'soeben'}. Änderungen werden auf allen Geräten aktualisiert.`
+                  ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300 hover:bg-emerald-950/70'
                   : syncStatus === 'saving'
-                  ? 'Speichere Änderungen in der Cloud...'
+                  ? 'bg-amber-950/40 border-amber-500/30 text-amber-300'
                   : syncStatus === 'error'
-                  ? 'Synchronisierungsfehler. Änderungen lokal zwischengespeichert.'
-                  : 'Verbinde mit Cloud-Datenbank...'
+                  ? 'bg-rose-950/40 border-rose-500/30 text-rose-300 hover:bg-rose-950/70'
+                  : 'bg-slate-900 border-slate-800 text-slate-300'
+              }`}
+              title={
+                isAdmin
+                  ? syncStatus === 'synced'
+                    ? `Cloud-Datenbank verbunden. Zuletzt synchronisiert: ${lastSyncedAt ? lastSyncedAt.toLocaleTimeString('de-DE') : 'soeben'}. Klicken zum manuellen Neusichern.`
+                    : syncStatus === 'saving'
+                    ? 'Speichere Änderungen in der Cloud...'
+                    : syncStatus === 'error'
+                    ? 'Offline oder Verbindungsfehler. Klicken zum erneuten Versuch.'
+                    : 'Klicken zum Sichern in die Cloud'
+                  : 'Echtzeit-Synchronisierung aktiv'
               }
             >
               {syncStatus === 'connected' && (
@@ -200,22 +215,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               {syncStatus === 'synced' && (
                 <>
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[11px] text-emerald-400 font-bold">Synchronisiert</span>
+                  <span className="text-[11px] font-bold">Cloud gesichert</span>
                 </>
               )}
               {syncStatus === 'saving' && (
                 <>
                   <RefreshCw className="w-3 h-3 text-amber-400 animate-spin" />
-                  <span className="text-[11px] text-amber-400 font-bold">Speichert...</span>
+                  <span className="text-[11px] font-bold">Speichert...</span>
                 </>
               )}
               {syncStatus === 'error' && (
                 <>
                   <AlertCircle className="w-3 h-3 text-rose-400" />
-                  <span className="text-[11px] text-rose-400 font-bold">Offline</span>
+                  <span className="text-[11px] font-bold">Offline • Erneut sichern</span>
                 </>
               )}
-            </div>
+            </button>
 
             {/* Pool Course Switcher (Admin editable, Swimmer read-only view) */}
             {isAdmin ? (

@@ -90,6 +90,10 @@
     "/saved_workouts/{workoutId}": {
       "schema": { "$ref": "#/entities/SavedWorkout" },
       "description": "Saved and completed squad workouts library"
+    },
+    "/season_backups/{backupId}": {
+      "schema": { "$ref": "#/entities/Season" },
+      "description": "Historical backup snapshots of squad season and lanes"
     }
   }
 }

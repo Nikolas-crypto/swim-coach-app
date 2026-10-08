@@ -97,20 +97,11 @@ export function normalizeSeason(raw: any): SeasonPlan {
     cycleConfig: raw?.cycleConfig,
     weeklySchedule: Array.isArray(raw?.weeklySchedule) ? raw.weeklySchedule : INITIAL_SEASON.weeklySchedule,
     lanes,
-    weeks: weeks.length > 0 ? weeks : JSON.parse(JSON.stringify(INITIAL_SEASON.weeks)),
+    weeks: Array.isArray(raw?.weeks) && raw.weeks.length > 0 ? weeks : (weeks.length > 0 ? weeks : JSON.parse(JSON.stringify(INITIAL_SEASON.weeks))),
     updatedAt: raw?.updatedAt,
     updatedBy: raw?.updatedBy,
     lastClientId: raw?.lastClientId,
   };
-
-  // If stored season has excessively high session volumes (> 3,600m average), calibrate to ~3,000m target
-  const allSessions = (normalized.weeks || []).flatMap(w => w.sessions || []);
-  if (allSessions.length > 0) {
-    const avgDist = allSessions.reduce((sum, s) => sum + (s.totalDistance || 0), 0) / allSessions.length;
-    if (avgDist > 3600) {
-      return scaleSeasonSessionsToTarget(normalized, normalized.targetSessionVolumeMeters || 3000);
-    }
-  }
 
   return normalized;
 }

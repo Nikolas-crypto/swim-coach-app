@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SeasonPlan, SessionScheduleSlot, DayOfWeek } from '../types/swim';
-import { X, Calendar, Target, Clock, Plus, Trash2, CheckCircle2, Dumbbell, Sparkles } from 'lucide-react';
+import { X, Calendar, Target, Clock, Plus, Trash2, CheckCircle2, Dumbbell, ShieldCheck, History, RotateCcw, AlertTriangle } from 'lucide-react';
 import { scaleSeasonSessionsToTarget } from '../utils/volumeScaler';
 import { formatDayGerman } from '../utils/germanTranslations';
+import { fetchSeasonBackups, restoreSeasonFromBackup, SeasonBackupSummary } from '../services/seasonSync';
 
 interface SeasonSettingsModalProps {
   season: SeasonPlan;
@@ -29,7 +30,52 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
   const [targetSessionVolume, setTargetSessionVolume] = useState<number>(
     season.targetSessionVolumeMeters || 3000
   );
-  const [shouldRescaleSessions, setShouldRescaleSessions] = useState<boolean>(true);
+  // Default to false so opening settings never accidentally mutates custom session distances
+  const [shouldRescaleSessions, setShouldRescaleSessions] = useState<boolean>(false);
+
+  // Cloud Backups state
+  const [backups, setBackups] = useState<SeasonBackupSummary[]>([]);
+  const [isLoadingBackups, setIsLoadingBackups] = useState(false);
+  const [showBackups, setShowBackups] = useState(false);
+  const [restoringId, setRestoringId] = useState<string | null>(null);
+  const [backupNotice, setBackupNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen && showBackups) {
+      loadBackups();
+    }
+  }, [isOpen, showBackups]);
+
+  const loadBackups = async () => {
+    setIsLoadingBackups(true);
+    try {
+      const list = await fetchSeasonBackups(8);
+      setBackups(list);
+    } catch {
+      // Ignored
+    } finally {
+      setIsLoadingBackups(false);
+    }
+  };
+
+  const handleRestore = async (backupItem: SeasonBackupSummary) => {
+    if (!window.confirm(`Möchtest du den Saisonstand vom ${new Date(backupItem.timestamp).toLocaleString('de-DE')} wirklich wiederherstellen? Dies überschreibt den aktuellen Stand in der Cloud.`)) {
+      return;
+    }
+    setRestoringId(backupItem.id);
+    try {
+      await restoreSeasonFromBackup(backupItem.seasonData);
+      setBackupNotice(`Saisonstand (${new Date(backupItem.timestamp).toLocaleTimeString('de-DE')}) erfolgreich wiederhergestellt!`);
+      setTimeout(() => {
+        setBackupNotice(null);
+        onClose();
+      }, 1500);
+    } catch (err) {
+      alert('Fehler beim Wiederherstellen: ' + String(err));
+    } finally {
+      setRestoringId(null);
+    }
+  };
 
   const handleAddSlot = () => {
     const newSlot: SessionScheduleSlot = {
@@ -315,6 +361,79 @@ export const SeasonSettingsModal: React.FC<SeasonSettingsModalProps> = ({
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Cloud Backups & Version History */}
+          <div className="pt-4 border-t border-slate-800">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-sm font-bold text-white flex items-center space-x-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Automatische Cloud-Sicherungen (Backups)</span>
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Jeder gespeicherte Saison- und Bahnenstand wird zusätzlich als Snapshot versioniert gesichert.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowBackups(!showBackups);
+                }}
+                className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition cursor-pointer border border-slate-700"
+              >
+                <History className="w-3.5 h-3.5 text-cyan-400" />
+                <span>{showBackups ? 'Ausblenden' : 'Sicherungen anzeigen'}</span>
+              </button>
+            </div>
+
+            {backupNotice && (
+              <div className="p-3 bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 rounded-xl text-xs flex items-center space-x-2 mb-3">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{backupNotice}</span>
+              </div>
+            )}
+
+            {showBackups && (
+              <div className="bg-slate-950 rounded-xl border border-slate-800 p-3 space-y-2">
+                {isLoadingBackups ? (
+                  <div className="p-4 text-center text-xs text-slate-400">Lade Cloud-Sicherungen...</div>
+                ) : backups.length === 0 ? (
+                  <div className="p-4 text-center text-xs text-slate-400">
+                    Bisher wurden keine historischen Snapshots archiviert. Neue Sicherungen werden bei jeder Änderung automatisch erstellt.
+                  </div>
+                ) : (
+                  backups.map((b) => (
+                    <div 
+                      key={b.id} 
+                      className="flex items-center justify-between p-2.5 bg-slate-900/80 hover:bg-slate-900 border border-slate-800/80 rounded-lg text-xs"
+                    >
+                      <div>
+                        <div className="font-semibold text-white flex items-center space-x-2">
+                          <span>{new Date(b.timestamp).toLocaleString('de-DE')}</span>
+                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono">
+                            {b.lanesCount} Bahnen • {b.totalWeeks} Wo.
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-400 mt-0.5">
+                          {b.name} • Gespeichert von {b.updatedBy}
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRestore(b)}
+                        disabled={restoringId === b.id}
+                        className="flex items-center space-x-1.5 px-2.5 py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 rounded-lg text-xs font-bold transition cursor-pointer disabled:opacity-50"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>{restoringId === b.id ? 'Stelle wieder her...' : 'Wiederherstellen'}</span>
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         </div>
 

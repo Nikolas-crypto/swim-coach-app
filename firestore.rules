@@ -68,5 +68,12 @@ service cloud.firestore {
       allow create, update: if isValidId(workoutId) && isValidSavedWorkout(request.resource.data);
       allow delete: if isValidId(workoutId);
     }
+
+    // Squad season backups collection
+    match /season_backups/{backupId} {
+      allow get, list: if true;
+      allow create, update: if isValidId(backupId) && isValidSeason(request.resource.data);
+      allow delete: if isValidId(backupId);
+    }
   }
 }

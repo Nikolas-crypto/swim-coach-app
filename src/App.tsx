@@ -33,6 +33,8 @@ import {
 import { 
   subscribeToActiveSeason, 
   persistSeasonToCloud, 
+  forceSyncSeasonNow,
+  STORAGE_KEY_BACKUP,
   SyncStatus 
 } from './services/seasonSync';
 import { 
@@ -106,34 +108,28 @@ export default function App() {
 
     const unsubscribeSeason = subscribeToActiveSeason(
       (cloudSeason, isRemoteUpdate) => {
+        // Authoritative cloud season synced
+        setSeason(cloudSeason);
+        try {
+          localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(cloudSeason));
+          localStorage.setItem(STORAGE_KEY_BACKUP, JSON.stringify(cloudSeason));
+        } catch (e) {
+          console.error('Storage cache error', e);
+        }
+
+        // Keep activeSession fresh if it exists in updated season
+        setActiveSession(prev => {
+          for (const week of cloudSeason.weeks) {
+            const matched = week.sessions.find(s => s.id === prev.id);
+            if (matched) return matched;
+          }
+          return cloudSeason.weeks[0]?.sessions[0] || prev;
+        });
+
         if (isRemoteUpdate) {
-          // Received update from cloud from another user/device
-          setSeason(cloudSeason);
-          try {
-            localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(cloudSeason));
-          } catch (e) {
-            console.error('Storage cache error', e);
-          }
-
-          // Keep activeSession fresh if it exists in updated season
-          setActiveSession(prev => {
-            for (const week of cloudSeason.weeks) {
-              const matched = week.sessions.find(s => s.id === prev.id);
-              if (matched) return matched;
-            }
-            return cloudSeason.weeks[0]?.sessions[0] || prev;
-          });
-
           // Show subtle notification of remote sync
-          setCloudNotification('Kader-Aktualisierungen aus der Cloud synchronisiert');
+          setCloudNotification('Kader- & Saisonplan aus der Cloud synchronisiert');
           setTimeout(() => setCloudNotification(null), 3500);
-        } else {
-          // Local write acknowledging or initial server state
-          try {
-            localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(cloudSeason));
-          } catch (e) {
-            // cache update
-          }
         }
       },
       (status, lastSaved) => {
@@ -235,20 +231,41 @@ export default function App() {
       return;
     }
 
-    setSeason(updatedSeason);
+    const seasonWithMeta: SeasonPlan = {
+      ...updatedSeason,
+      updatedAt: new Date().toISOString(),
+    };
+
+    setSeason(seasonWithMeta);
     try {
-      localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(updatedSeason));
+      localStorage.setItem(STORAGE_KEY_SEASON, JSON.stringify(seasonWithMeta));
+      localStorage.setItem(STORAGE_KEY_BACKUP, JSON.stringify(seasonWithMeta));
     } catch (e) {
       console.error('LocalStorage write error', e);
     }
 
     try {
-      await persistSeasonToCloud(updatedSeason, (status, savedTime) => {
+      await persistSeasonToCloud(seasonWithMeta, (status, savedTime) => {
         setSyncStatus(status);
         if (savedTime) setLastSyncedAt(savedTime);
       });
     } catch (err) {
       console.error('Could not save to cloud:', err);
+    }
+  };
+
+  const handleForceSyncToCloud = async () => {
+    if (currentUser?.role !== 'admin') return;
+    try {
+      await forceSyncSeasonNow(season, (status, savedTime) => {
+        setSyncStatus(status);
+        if (savedTime) setLastSyncedAt(savedTime);
+      });
+      setCloudNotification('Kader & Saisonplan erfolgreich in Google Cloud gesichert!');
+      setTimeout(() => setCloudNotification(null), 3500);
+    } catch (e) {
+      setCloudNotification('Fehler beim Sichern in die Cloud. Bitte Netzwerk prüfen.');
+      setTimeout(() => setCloudNotification(null), 4000);
     }
   };
 
@@ -443,6 +460,7 @@ export default function App() {
         user={currentUser}
         onSwitchRole={handleSwitchRole}
         onLogout={handleLogout}
+        onForceSync={handleForceSyncToCloud}
       />
 
       {/* Real-time Cloud Update Toast Indicator */}
